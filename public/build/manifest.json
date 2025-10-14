@@ -1,0 +1,72 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-MRTvBsM0.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/easymde.min.css": {
+    "file": "assets/easymde-BTBZijo9.css",
+    "src": "resources/css/easymde.min.css",
+    "isEntry": true
+  },
+  "resources/css/fancybox.css": {
+    "file": "assets/fancybox-C18KHjl0.css",
+    "src": "resources/css/fancybox.css",
+    "isEntry": true
+  },
+  "resources/css/flatpickr.min.css": {
+    "file": "assets/flatpickr-CfPf6HP5.css",
+    "src": "resources/css/flatpickr.min.css",
+    "isEntry": true
+  },
+  "resources/css/font-awesome.min.css": {
+    "file": "assets/font-awesome-CwvOEDbK.css",
+    "src": "resources/css/font-awesome.min.css",
+    "isEntry": true
+  },
+  "resources/css/fullcalendar.min.css": {
+    "file": "assets/fullcalendar-DeIL_ZPc.css",
+    "src": "resources/css/fullcalendar.min.css",
+    "isEntry": true
+  },
+  "resources/css/highlight.min.css": {
+    "file": "assets/highlight-BYZdjUPA.css",
+    "src": "resources/css/highlight.min.css",
+    "isEntry": true
+  },
+  "resources/css/markdown-editor.css": {
+    "file": "assets/markdown-editor-DKdIq6LY.css",
+    "src": "resources/css/markdown-editor.css",
+    "isEntry": true
+  },
+  "resources/css/nice-select.css": {
+    "file": "assets/nice-select-BhQaxV0Y.css",
+    "src": "resources/css/nice-select.css",
+    "isEntry": true
+  },
+  "resources/css/nice-select2.css": {
+    "file": "assets/nice-select2-Cv4Nukye.css",
+    "src": "resources/css/nice-select2.css",
+    "isEntry": true
+  },
+  "resources/css/nouislider.min.css": {
+    "file": "assets/nouislider-i1GC8Mna.css",
+    "src": "resources/css/nouislider.min.css",
+    "isEntry": true
+  },
+  "resources/css/quill.snow.css": {
+    "file": "assets/quill-CklA8xd4.css",
+    "src": "resources/css/quill.snow.css",
+    "isEntry": true
+  },
+  "resources/css/swiper-bundle.min.css": {
+    "file": "assets/swiper-bundle-75x0V_aG.css",
+    "src": "resources/css/swiper-bundle.min.css",
+    "isEntry": true
+  },
+  "resources/css/tippy.css": {
+    "file": "assets/tippy-DF_zv38w.css",
+    "src": "resources/css/tippy.css",
+    "isEntry": true
+  }
+}
