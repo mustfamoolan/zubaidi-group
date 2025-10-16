@@ -12,14 +12,23 @@ class Invoice extends Model
     protected $fillable = [
         'company_id',
         'invoice_number',
-        'amount',
+        'amount_usd',
+        'exchange_rate',
+        'bank_commission',
+        'total_amount_iqd',
+        'amount', // الاحتفاظ بالحقل القديم للتوافق مع البيانات الموجودة
         'bank_id',
+        'beneficiary_id',
         'invoice_date',
         'beneficiary_company',
         'status',
     ];
 
     protected $casts = [
+        'amount_usd' => 'decimal:2',
+        'exchange_rate' => 'decimal:2',
+        'bank_commission' => 'decimal:2',
+        'total_amount_iqd' => 'decimal:2',
         'amount' => 'decimal:2',
         'invoice_date' => 'date',
     ];
@@ -48,12 +57,39 @@ class Invoice extends Model
         return $this->belongsToMany(Shipment::class, 'invoice_shipment');
     }
 
+    public function beneficiary()
+    {
+        return $this->belongsTo(Beneficiary::class);
+    }
+
     /**
      * العلاقة متعددة الأنواع للحركات
      */
     public function transactions()
     {
         return $this->morphMany(BankTransaction::class, 'reference');
+    }
+
+    /**
+     * حساب المبلغ الإجمالي بالدينار العراقي
+     */
+    public function calculateTotalAmountIqd()
+    {
+        if ($this->amount_usd && $this->exchange_rate) {
+            return ($this->amount_usd * $this->exchange_rate) + $this->bank_commission;
+        }
+
+        // إذا لم تكن الحقول الجديدة متوفرة، استخدم المبلغ القديم
+        return $this->amount ?? 0;
+    }
+
+    /**
+     * الحصول على المبلغ للخصم من المصرف
+     */
+    public function getAmountForDeduction()
+    {
+        // استخدم المبلغ الجديد إذا كان متوفراً، وإلا استخدم القديم
+        return $this->total_amount_iqd ?? $this->amount ?? 0;
     }
 
     /**

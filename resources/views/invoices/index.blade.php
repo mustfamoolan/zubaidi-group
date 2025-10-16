@@ -1,5 +1,5 @@
 <x-layout.company :company="$company">
-    <div x-data="invoiceList">
+    <div x-data="invoiceList" x-init="checkOpenModal()">
         <script src="/assets/js/simple-datatables.js"></script>
 
         <div class="panel px-0 border-[#e0e6ed] dark:border-[#1b2e4b]">
@@ -73,11 +73,36 @@
                         </div>
 
                         <div class="mb-5">
-                            <label for="amount">المبلغ</label>
+                            <label for="amount_usd">المبلغ (بالدولار)</label>
                             <div class="flex">
-                                <input id="amount" name="amount" type="number" step="0.01" placeholder="100.00" class="form-input rounded-none" required />
+                                <input id="amount_usd" name="amount_usd" type="number" step="0.01" placeholder="100.00" class="form-input rounded-none" required oninput="calculateTotalAmount()" />
+                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">USD</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="exchange_rate">سعر الصرف</label>
+                            <div class="flex">
+                                <input id="exchange_rate" name="exchange_rate" type="number" step="0.01" placeholder="1500.00" class="form-input rounded-none" required oninput="calculateTotalAmount()" />
+                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار/دولار</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="bank_commission">عمولة المصرف (دينار عراقي)</label>
+                            <div class="flex">
+                                <input id="bank_commission" name="bank_commission" type="number" step="0.01" placeholder="0.00" class="form-input rounded-none" value="0" oninput="calculateTotalAmount()" />
                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار</div>
                             </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="total_amount_iqd">المبلغ الإجمالي (دينار عراقي)</label>
+                            <div class="flex">
+                                <input id="total_amount_iqd" name="total_amount_iqd" type="number" step="0.01" placeholder="0.00" class="form-input rounded-none bg-gray-100" readonly />
+                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار</div>
+                            </div>
+                            <small class="text-gray-500">يتم حسابه تلقائياً: (المبلغ بالدولار × سعر الصرف) + عمولة المصرف</small>
                         </div>
 
                         <div class="mb-5">
@@ -96,8 +121,16 @@
                         </div>
 
                         <div class="mb-5">
-                            <label for="beneficiary_company">الشركة المستفيدة</label>
-                            <input id="beneficiary_company" name="beneficiary_company" type="text" placeholder="اسم الشركة المستفيدة" class="form-input" required />
+                            <label for="beneficiary_id">اسم المستفيد</label>
+                            <select id="beneficiary_id" name="beneficiary_id" class="form-select" required>
+                                <option value="">اختر المستفيد</option>
+                                @foreach($beneficiaries as $beneficiary)
+                                    <option value="{{ $beneficiary->id }}">{{ $beneficiary->name }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <a href="{{ route('companies.beneficiaries.create', $company) }}" class="text-primary hover:underline">إضافة مستفيد جديد</a>
+                            </p>
                         </div>
 
                         <div class="mb-5">
@@ -119,6 +152,20 @@
     </div>
 
     <script>
+        // دالة حساب المبلغ الإجمالي
+        function calculateTotalAmount() {
+            const amountUsd = parseFloat(document.getElementById('amount_usd')?.value || 0);
+            const exchangeRate = parseFloat(document.getElementById('exchange_rate')?.value || 0);
+            const bankCommission = parseFloat(document.getElementById('bank_commission')?.value || 0);
+
+            const totalAmount = (amountUsd * exchangeRate) + bankCommission;
+
+            const totalInput = document.getElementById('total_amount_iqd');
+            if (totalInput) {
+                totalInput.value = totalAmount.toFixed(2);
+            }
+        }
+
         document.addEventListener("alpine:init", () => {
             Alpine.data('invoiceList', () => ({
                 selectedRows: [],
@@ -127,10 +174,10 @@
                     {
                         id: {{ $invoice->id }},
                         invoice: '{{ $invoice->invoice_number }}',
-                        name: '{{ $invoice->beneficiary_company }}',
+                        name: '{{ $invoice->beneficiary->name ?? $invoice->beneficiary_company }}',
                         bank: '{{ $invoice->bank->name ?? "غير محدد" }}',
                         date: '{{ $invoice->invoice_date->format("d M Y") }}',
-                        amount: '{{ number_format($invoice->amount, 2) }}',
+                        amount: '{{ number_format($invoice->total_amount_iqd ?? $invoice->amount, 2) }}',
                         status: '{{ $invoice->status === "paid" ? "مدفوعة" : "غير مدفوعة" }}',
                         action: {{ $invoice->id }},
                     },
@@ -153,6 +200,21 @@
                         this.setTableData();
                         this.initializeTable();
                     });
+                },
+
+                checkOpenModal() {
+                    // فحص إذا كان هناك query parameter لفتح modal
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('open_modal') === 'true') {
+                        // إزالة parameter من URL
+                        const newUrl = window.location.pathname;
+                        window.history.replaceState({}, document.title, newUrl);
+
+                        // فتح modal
+                        setTimeout(() => {
+                            this.$dispatch('open-modal', 'add-invoice-modal');
+                        }, 100);
+                    }
                 },
 
                 initializeTable() {

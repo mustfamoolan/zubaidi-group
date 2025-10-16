@@ -47,6 +47,15 @@
                         <p class="text-xs text-gray-500 mt-1">اترك هذا الحقل فارغًا إذا كنت لا تريد تغيير الصورة. الأنواع المسموح بها: JPG, PNG, GIF. الحد الأقصى للحجم: 2MB</p>
                     </div>
 
+                    <div>
+                        <label for="password_confirmation">كلمة المرور للتأكيد</label>
+                        <input id="password_confirmation" name="password_confirmation" type="password" class="form-input" placeholder="أدخل كلمة مرورك لتأكيد التعديل" required />
+                        <p class="text-xs text-gray-500 mt-1">أدخل كلمة مرورك الحالية لتأكيد التعديل</p>
+                        @error('password_confirmation')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="flex items-center justify-end">
                         <a href="{{ route('companies.index') }}" class="btn btn-outline-danger ltr:mr-3 rtl:ml-3">إلغاء</a>
                         <button type="submit" class="btn btn-primary">حفظ التغييرات</button>

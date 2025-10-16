@@ -51,12 +51,12 @@
                 </div>
 
                 <div>
-                    <label for="container_size">حجم الحاوية</label>
+                    <label for="container_size">حجم الحاوية (قياسها بالمترية)</label>
                     <select id="container_size" name="container_size" class="form-select">
                         <option value="">اختر الحجم</option>
-                        <option value="20ft" {{ old('container_size') === '20ft' ? 'selected' : '' }}>20 قدم</option>
-                        <option value="40ft" {{ old('container_size') === '40ft' ? 'selected' : '' }}>40 قدم</option>
-                        <option value="40ft_hc" {{ old('container_size') === '40ft_hc' ? 'selected' : '' }}>40 قدم HC</option>
+                        <option value="C" {{ old('container_size') === 'C' ? 'selected' : '' }}>C (20 قدم)</option>
+                        <option value="B" {{ old('container_size') === 'B' ? 'selected' : '' }}>B (40 قدم)</option>
+                        <option value="M" {{ old('container_size') === 'M' ? 'selected' : '' }}>M (45 قدم)</option>
                     </select>
                 </div>
 

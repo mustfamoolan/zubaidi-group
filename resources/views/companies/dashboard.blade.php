@@ -187,7 +187,7 @@
                         </svg>
                     </a>
 
-                    <a href="{{ route('companies.invoices.create', $company) }}" class="flex items-center gap-3 p-4 rounded-lg bg-success-light dark:bg-success/20 hover:bg-success hover:text-white transition-all group">
+                    <a href="{{ route('companies.invoices.index', $company) }}?open_modal=true" class="flex items-center gap-3 p-4 rounded-lg bg-success-light dark:bg-success/20 hover:bg-success hover:text-white transition-all group">
                         <div class="w-10 h-10 rounded-full bg-success text-white grid place-content-center">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 4V20M20 12H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>

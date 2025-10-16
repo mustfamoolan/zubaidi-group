@@ -6,6 +6,9 @@ use App\Models\Invoice;
 use App\Models\Company;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\URL;
+use TCPDF;
 
 class InvoiceController extends Controller
 {
@@ -14,9 +17,10 @@ class InvoiceController extends Controller
      */
     public function index(Company $company)
     {
-        $invoices = $company->invoices()->with(['bank', 'shipments'])->orderBy('invoice_date', 'desc')->get();
+        $invoices = $company->invoices()->with(['bank', 'shipments', 'beneficiary'])->orderBy('invoice_date', 'desc')->get();
         $banks = $company->banks;
-        return view('invoices.index', compact('company', 'invoices', 'banks'));
+        $beneficiaries = $company->beneficiaries()->orderBy('name')->get();
+        return view('invoices.index', compact('company', 'invoices', 'banks', 'beneficiaries'));
     }
 
     /**
@@ -26,7 +30,8 @@ class InvoiceController extends Controller
     {
         $banks = $company->banks;
         $shipments = $company->shipments;
-        return view('invoices.create', compact('company', 'banks', 'shipments'));
+        $beneficiaries = $company->beneficiaries()->orderBy('name')->get();
+        return view('invoices.create', compact('company', 'banks', 'shipments', 'beneficiaries'));
     }
 
     /**
@@ -36,21 +41,36 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'invoice_number' => 'required|string|unique:invoices,invoice_number',
-            'amount' => 'required|numeric|min:0',
+            'amount_usd' => 'required|numeric|min:0',
+            'exchange_rate' => 'required|numeric|min:0',
+            'bank_commission' => 'nullable|numeric|min:0',
             'bank_id' => 'nullable|exists:banks,id',
             'invoice_date' => 'required|date',
-            'beneficiary_company' => 'required|string|max:255',
+            'beneficiary_id' => 'required|exists:beneficiaries,id',
+            'beneficiary_company' => 'nullable|string|max:255',
             'status' => 'required|in:paid,unpaid',
             'shipments' => 'nullable|array',
             'shipments.*' => 'exists:shipments,id',
         ]);
 
+        // حساب المبلغ الإجمالي بالدينار العراقي
+        $totalAmountIqd = ($request->amount_usd * $request->exchange_rate) + ($request->bank_commission ?? 0);
+
+        // الحصول على اسم المستفيد
+        $beneficiary = \App\Models\Beneficiary::find($request->beneficiary_id);
+        $beneficiaryName = $beneficiary ? $beneficiary->name : $request->beneficiary_company;
+
         $invoice = $company->invoices()->create([
             'invoice_number' => $request->invoice_number,
-            'amount' => $request->amount,
+            'amount_usd' => $request->amount_usd,
+            'exchange_rate' => $request->exchange_rate,
+            'bank_commission' => $request->bank_commission ?? 0,
+            'total_amount_iqd' => $totalAmountIqd,
+            'amount' => $totalAmountIqd, // الاحتفاظ بالحقل القديم للتوافق
             'bank_id' => $request->bank_id,
             'invoice_date' => $request->invoice_date,
-            'beneficiary_company' => $request->beneficiary_company,
+            'beneficiary_id' => $request->beneficiary_id,
+            'beneficiary_company' => $beneficiaryName,
             'status' => $request->status,
         ]);
 
@@ -89,7 +109,8 @@ class InvoiceController extends Controller
     {
         $banks = $company->banks;
         $shipments = $company->shipments;
-        return view('invoices.edit', compact('company', 'invoice', 'banks', 'shipments'));
+        $beneficiaries = $company->beneficiaries()->orderBy('name')->get();
+        return view('invoices.edit', compact('company', 'invoice', 'banks', 'shipments', 'beneficiaries'));
     }
 
     /**
@@ -99,61 +120,75 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'invoice_number' => 'required|string|unique:invoices,invoice_number,' . $invoice->id,
-            'amount' => 'required|numeric|min:0',
+            'amount_usd' => 'required|numeric|min:0',
+            'exchange_rate' => 'required|numeric|min:0',
+            'bank_commission' => 'nullable|numeric|min:0',
             'bank_id' => 'nullable|exists:banks,id',
             'invoice_date' => 'required|date',
-            'beneficiary_company' => 'required|string|max:255',
+            'beneficiary_id' => 'required|exists:beneficiaries,id',
+            'beneficiary_company' => 'nullable|string|max:255',
             'status' => 'required|in:paid,unpaid',
             'shipments' => 'nullable|array',
             'shipments.*' => 'exists:shipments,id',
         ]);
 
         $oldBankId = $invoice->bank_id;
-        $oldAmount = $invoice->amount;
+        $oldAmount = $invoice->getAmountForDeduction();
+        $oldStatus = $invoice->status;
+
+        // حساب المبلغ الإجمالي الجديد بالدينار العراقي
+        $totalAmountIqd = ($request->amount_usd * $request->exchange_rate) + ($request->bank_commission ?? 0);
+
+        // الحصول على اسم المستفيد
+        $beneficiary = \App\Models\Beneficiary::find($request->beneficiary_id);
+        $beneficiaryName = $beneficiary ? $beneficiary->name : $request->beneficiary_company;
 
         $invoice->update([
             'invoice_number' => $request->invoice_number,
-            'amount' => $request->amount,
+            'amount_usd' => $request->amount_usd,
+            'exchange_rate' => $request->exchange_rate,
+            'bank_commission' => $request->bank_commission ?? 0,
+            'total_amount_iqd' => $totalAmountIqd,
+            'amount' => $totalAmountIqd, // الاحتفاظ بالحقل القديم للتوافق
             'bank_id' => $request->bank_id,
             'invoice_date' => $request->invoice_date,
-            'beneficiary_company' => $request->beneficiary_company,
+            'beneficiary_id' => $request->beneficiary_id,
+            'beneficiary_company' => $beneficiaryName,
             'status' => $request->status,
         ]);
+
+        // التعامل مع الحركات المصرفية
+        $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, $request->status);
 
         // تحديث ربط الفاتورة بالشحنات
         if ($request->has('shipments')) {
             $invoice->shipments()->sync($request->shipments);
         }
 
-        // إذا تغير المصرف أو المبلغ، نحتاج لتحديث الحركات
-        if ($oldBankId != $request->bank_id || $oldAmount != $request->amount) {
-            // حذف الحركة القديمة إن وُجدت
-            if ($oldBankId) {
-                \App\Models\BankTransaction::where('reference_type', \App\Models\Invoice::class)
-                    ->where('reference_id', $invoice->id)
-                    ->delete();
+        return redirect()->route('companies.invoices.index', $company)
+            ->with('success', 'تم تحديث الفاتورة بنجاح وتم تحديث حركة المصرف');
+    }
 
-                // إعادة حساب رصيد المصرف القديم
-                $oldBank = \App\Models\Bank::find($oldBankId);
-                if ($oldBank) {
-                    $oldBank->updateBalance();
-                }
+    /**
+     * إدارة الحركات المصرفية المبسطة
+     */
+    private function handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $newBankId, $newAmount, $newStatus)
+    {
+        // إذا كانت الفاتورة مدفوعة سابقاً، نرجع المبلغ
+        if ($oldStatus === 'paid' && $oldBankId) {
+            $oldBank = \App\Models\Bank::find($oldBankId);
+            if ($oldBank) {
+                $oldBank->refundInvoiceWithDetails($invoice, 'تعديل الفاتورة');
             }
-
-            // إضافة حركة جديدة للمصرف الجديد
-            if ($request->bank_id) {
-                $newBank = \App\Models\Bank::find($request->bank_id);
-                if ($newBank) {
-                    $newBank->deductInvoice($invoice);
-                }
-            }
-
-            return redirect()->route('companies.invoices.index', $company)
-                ->with('success', 'تم تحديث الفاتورة بنجاح وتم تحديث حركة المصرف');
         }
 
-        return redirect()->route('companies.invoices.index', $company)
-            ->with('success', 'تم تحديث الفاتورة بنجاح');
+        // إذا أصبحت الفاتورة مدفوعة الآن، نخصم المبلغ
+        if ($newStatus === 'paid' && $newBankId) {
+            $newBank = \App\Models\Bank::find($newBankId);
+            if ($newBank) {
+                $newBank->deductInvoiceWithDetails($invoice, 'تحديث الفاتورة');
+            }
+        }
     }
 
     /**
@@ -161,16 +196,11 @@ class InvoiceController extends Controller
      */
     public function destroy(Company $company, Invoice $invoice)
     {
-        // حذف الحركة المرتبطة من المصرف
-        if ($invoice->bank_id) {
-            \App\Models\BankTransaction::where('reference_type', \App\Models\Invoice::class)
-                ->where('reference_id', $invoice->id)
-                ->delete();
-
-            // إعادة حساب رصيد المصرف
+        // إرجاع المبلغ للمصرف إذا كانت الفاتورة مدفوعة
+        if ($invoice->bank_id && $invoice->status === 'paid') {
             $bank = \App\Models\Bank::find($invoice->bank_id);
             if ($bank) {
-                $bank->updateBalance();
+                $bank->deleteInvoice($invoice);
             }
         }
 
@@ -208,5 +238,218 @@ class InvoiceController extends Controller
         return redirect()->route('companies.invoices.show', [$company, $invoice])
             ->with('success', 'تم ربط الشحنة بالفاتورة بنجاح');
     }
-}
 
+    /**
+     * عرض الفاتورة كـ PDF في المتصفح
+     */
+    public function viewPdf(Company $company, Invoice $invoice)
+    {
+        $invoice->load(['bank', 'shipments', 'beneficiary']);
+
+        // إنشاء PDF باستخدام TCPDF
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        // إعدادات المستند
+        $pdf->SetCreator('Al-Zubaidi Group');
+        $pdf->SetAuthor('Al-Zubaidi Group');
+        $pdf->SetTitle("فاتورة #{$invoice->invoice_number}");
+        $pdf->SetSubject('فاتورة');
+
+        // إزالة الهيدر والفوتر الافتراضيين
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        // إضافة صفحة
+        $pdf->AddPage();
+
+        // إعداد الخط العربي
+        $pdf->SetFont('dejavusans', '', 12);
+
+        // محتوى الفاتورة
+        $html = $this->generateInvoiceHtml($company, $invoice);
+
+        // كتابة المحتوى
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        return $pdf->Output("invoice-{$invoice->invoice_number}.pdf", 'I');
+    }
+
+    /**
+     * توليد HTML للفاتورة
+     */
+    private function generateInvoiceHtml(Company $company, Invoice $invoice)
+    {
+        $html = '
+        <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
+            فاتورة
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 14px; font-weight: bold;">' . $company->name . '</div>
+            <div style="font-size: 10px;">العراق، بغداد</div>
+            <div style="font-size: 10px;">info@alzubaidgroup.com</div>
+            <div style="font-size: 10px;">+964 (0) 770 123 4567</div>
+        </div>
+
+        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; margin-bottom: 20px;">
+            <tr>
+                <td style="width: 50%;">
+                    <strong>معلومات الفاتورة</strong><br>
+                    رقم الفاتورة: #' . $invoice->invoice_number . '<br>
+                    تاريخ الإصدار: ' . $invoice->invoice_date->format('Y-m-d') . '<br>
+                    الحالة: ' . ($invoice->status === 'paid' ? 'مدفوعة' : 'غير مدفوعة') . '
+                </td>
+                <td style="width: 50%;">
+                    <strong>معلومات المستفيد</strong><br>
+                    اسم المستفيد: ' . $invoice->beneficiary_company . '<br>
+                    ' . ($invoice->beneficiary ? 'المستفيد المسجل: ' . $invoice->beneficiary->name : '') . '
+                </td>
+            </tr>
+        </table>
+
+        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; margin-bottom: 20px;">
+            <tr style="background-color: #f5f5f5;">
+                <th style="width: 40%;">الوصف</th>
+                <th style="width: 30%;">المبلغ</th>
+                <th style="width: 30%;">العملة</th>
+            </tr>
+            <tr>
+                <td>المبلغ الأصلي</td>
+                <td>' . number_format($invoice->amount_usd ?? 0, 2) . '</td>
+                <td>USD</td>
+            </tr>
+            <tr>
+                <td>سعر الصرف</td>
+                <td>' . number_format($invoice->exchange_rate ?? 0, 2) . '</td>
+                <td>دينار/دولار</td>
+            </tr>
+            <tr>
+                <td>المبلغ بعد التحويل</td>
+                <td>' . number_format(($invoice->amount_usd ?? 0) * ($invoice->exchange_rate ?? 0), 2) . '</td>
+                <td>دينار عراقي</td>
+            </tr>
+            <tr>
+                <td>عمولة المصرف</td>
+                <td>' . number_format($invoice->bank_commission ?? 0, 2) . '</td>
+                <td>دينار عراقي</td>
+            </tr>
+            <tr style="background-color: #f5f5f5; font-weight: bold;">
+                <td>المبلغ الإجمالي</td>
+                <td>' . number_format($invoice->total_amount_iqd ?? $invoice->amount ?? 0, 2) . '</td>
+                <td>دينار عراقي</td>
+            </tr>
+        </table>';
+
+        if ($invoice->bank) {
+            $html .= '
+            <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
+                <strong>معلومات المصرف:</strong><br>
+                اسم المصرف: ' . $invoice->bank->name . '<br>
+                العملة: ' . $invoice->bank->currency . '
+            </div>';
+        }
+
+        if ($invoice->shipments && $invoice->shipments->count() > 0) {
+            $html .= '
+            <table border="1" cellpadding="3" cellspacing="0" style="width: 100%; margin-bottom: 20px;">
+                <tr style="background-color: #f5f5f5;">
+                    <th style="width: 10%;">م.</th>
+                    <th style="width: 20%;">رقم الحاوية</th>
+                    <th style="width: 20%;">رقم البوليصة</th>
+                    <th style="width: 15%;">الحالة</th>
+                    <th style="width: 15%;">الوزن</th>
+                    <th style="width: 10%;">حجم الحاوية</th>
+                    <th style="width: 10%;">عدد الكراتين</th>
+                </tr>';
+
+            foreach ($invoice->shipments as $index => $shipment) {
+                $containerSize = '';
+                if ($shipment->container_size === 'C') {
+                    $containerSize = '20 قدم';
+                } elseif ($shipment->container_size === 'B') {
+                    $containerSize = '40 قدم';
+                } elseif ($shipment->container_size === 'M') {
+                    $containerSize = '45 قدم';
+                } else {
+                    $containerSize = $shipment->container_size ?? 'غير محدد';
+                }
+
+                $html .= '
+                <tr>
+                    <td>' . ($index + 1) . '</td>
+                    <td>' . $shipment->container_number . '</td>
+                    <td>' . $shipment->policy_number . '</td>
+                    <td>' . ($shipment->status === 'shipped' ? 'مشحون' : 'غير مشحون') . '</td>
+                    <td>' . ($shipment->weight ?? 'غير محدد') . '</td>
+                    <td>' . $containerSize . '</td>
+                    <td>' . ($shipment->carton_count ?? 'غير محدد') . '</td>
+                </tr>';
+            }
+
+            $html .= '</table>';
+        }
+
+        $html .= '
+        <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
+            <p><strong>شكراً لاختياركم خدماتنا</strong></p>
+            <p>هذه الفاتورة صادرة من نظام إدارة الفواتير - مجموعة الزبيدي</p>
+            <p>تاريخ الطباعة: ' . now()->format('Y-m-d H:i') . '</p>
+        </div>';
+
+        return $html;
+    }
+
+    /**
+     * تحميل الفاتورة كـ PDF
+     */
+    public function downloadPdf(Company $company, Invoice $invoice)
+    {
+        $invoice->load(['bank', 'shipments', 'beneficiary']);
+
+        // إنشاء PDF باستخدام TCPDF
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        // إعدادات المستند
+        $pdf->SetCreator('Al-Zubaidi Group');
+        $pdf->SetAuthor('Al-Zubaidi Group');
+        $pdf->SetTitle("فاتورة #{$invoice->invoice_number}");
+        $pdf->SetSubject('فاتورة');
+
+        // إزالة الهيدر والفوتر الافتراضيين
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        // إضافة صفحة
+        $pdf->AddPage();
+
+        // إعداد الخط العربي
+        $pdf->SetFont('dejavusans', '', 12);
+
+        // محتوى الفاتورة
+        $html = $this->generateInvoiceHtml($company, $invoice);
+
+        // كتابة المحتوى
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        return $pdf->Output("invoice-{$invoice->invoice_number}.pdf", 'D');
+    }
+
+    /**
+     * الحصول على رابط مشاركة الفاتورة
+     */
+    public function getShareLink(Company $company, Invoice $invoice)
+    {
+        // إنشاء رابط مؤقت صالح لمدة 24 ساعة
+        $url = URL::temporarySignedRoute(
+            'companies.invoices.pdf',
+            now()->addHours(24),
+            ['company' => $company->id, 'invoice' => $invoice->id]
+        );
+
+        return response()->json([
+            'success' => true,
+            'share_link' => $url,
+            'expires_at' => now()->addHours(24)->format('Y-m-d H:i:s')
+        ]);
+    }
+}

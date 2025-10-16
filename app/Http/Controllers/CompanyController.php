@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
@@ -141,7 +142,15 @@ class CompanyController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'password_confirmation' => 'required|string',
         ]);
+
+        // التحقق من كلمة المرور
+        if (!Hash::check($request->password_confirmation, auth()->user()->password)) {
+            return redirect()->back()
+                ->withErrors(['password_confirmation' => 'كلمة المرور غير صحيحة'])
+                ->withInput();
+        }
 
         $data = [
             'name' => $request->name,
@@ -166,9 +175,19 @@ class CompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         $company = Company::findOrFail($id);
+
+        $request->validate([
+            'password_confirmation' => 'required|string',
+        ]);
+
+        // التحقق من كلمة المرور
+        if (!Hash::check($request->password_confirmation, auth()->user()->password)) {
+            return redirect()->back()
+                ->withErrors(['password_confirmation' => 'كلمة المرور غير صحيحة']);
+        }
 
         // حذف الصورة إذا كانت موجودة
         if ($company->image) {

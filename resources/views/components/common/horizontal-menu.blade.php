@@ -59,6 +59,19 @@
         </a>
     </li>
 
+    <!-- المستفيدين -->
+    <li class="menu nav-item relative">
+        <a href="{{ route('companies.beneficiaries.index', $company) }}" class="nav-link">
+            <div class="flex items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                    <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="px-1">المستفيدين</span>
+            </div>
+        </a>
+    </li>
+
     <!-- الشحنات -->
     <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">

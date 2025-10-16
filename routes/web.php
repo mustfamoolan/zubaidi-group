@@ -10,6 +10,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\BeneficiaryController;
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -35,12 +36,20 @@ Route::middleware('auth')->group(function () {
     Route::post('companies/{company}/invoices/{invoice}/pay', [InvoiceController::class, 'processPayment'])->name('companies.invoices.pay');
     Route::post('companies/{company}/invoices/{invoice}/attach-shipment', [InvoiceController::class, 'attachShipment'])->name('companies.invoices.attach-shipment');
 
+    // Invoice PDF Routes
+    Route::get('companies/{company}/invoices/{invoice}/pdf', [InvoiceController::class, 'viewPdf'])->name('companies.invoices.pdf');
+    Route::get('companies/{company}/invoices/{invoice}/download', [InvoiceController::class, 'downloadPdf'])->name('companies.invoices.download');
+    Route::get('companies/{company}/invoices/{invoice}/share-link', [InvoiceController::class, 'getShareLink'])->name('companies.invoices.share-link');
+
     // Shipments Management
     Route::resource('companies.shipments', ShipmentController::class);
     Route::patch('companies/{company}/shipments/{shipment}/update-received-status', [ShipmentController::class, 'updateReceivedStatus'])->name('companies.shipments.update-received-status');
     Route::patch('companies/{company}/shipments/{shipment}/update-entry-status', [ShipmentController::class, 'updateEntryStatus'])->name('companies.shipments.update-entry-status');
     Route::patch('companies/{company}/shipments/{shipment}/update-entry-permit-status', [ShipmentController::class, 'updateEntryPermitStatus'])->name('companies.shipments.update-entry-permit-status');
     Route::post('companies/{company}/shipments/{shipment}/attach-invoice', [ShipmentController::class, 'attachInvoice'])->name('companies.shipments.attach-invoice');
+
+    // Beneficiaries Routes
+    Route::resource('companies.beneficiaries', BeneficiaryController::class);
 
     // Quick Update for Shipments
     Route::get('companies/{company}/shipments-quick-update', [\App\Http\Controllers\QuickUpdateController::class, 'index'])->name('companies.shipments.quick-update');

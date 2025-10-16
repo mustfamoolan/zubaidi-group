@@ -71,7 +71,17 @@
 
                 <div class="border border-[#e0e6ed] dark:border-[#1b2e4b] rounded p-4">
                     <h6 class="text-[#3b3f5c] dark:text-white-light font-semibold text-sm mb-1">حجم الحاوية</h6>
-                    <p class="text-lg font-bold">{{ $shipment->container_size ?? '-' }}</p>
+                    <p class="text-lg font-bold">
+                        @if($shipment->container_size === 'C')
+                            C (20 قدم)
+                        @elseif($shipment->container_size === 'B')
+                            B (40 قدم)
+                        @elseif($shipment->container_size === 'M')
+                            M (45 قدم)
+                        @else
+                            {{ $shipment->container_size ?? '-' }}
+                        @endif
+                    </p>
                 </div>
 
                 <div class="border border-[#e0e6ed] dark:border-[#1b2e4b] rounded p-4">
@@ -128,10 +138,10 @@
                     </button>
                 </div>
 
-                <!-- حالة تصريح الدخول -->
+                <!-- حالة أوراق الدخول -->
                 <div class="border border-[#e0e6ed] dark:border-[#1b2e4b] rounded p-4">
                     <div class="flex items-center justify-between mb-3">
-                        <h6 class="font-semibold">حالة تصريح الدخول</h6>
+                        <h6 class="font-semibold">حالة أوراق الدخول</h6>
                         @if($shipment->entry_permit_status === 'received')
                             <span class="badge bg-success">مستلم</span>
                         @else
@@ -144,7 +154,7 @@
                     @endif
 
                     <button type="button" class="btn btn-sm btn-primary w-full" @click="$dispatch('open-modal', 'entry-permit-status-modal')">
-                        تحديث حالة تصريح الدخول
+                        تحديث حالة أوراق الدخول
                     </button>
                 </div>
             </div>
@@ -325,7 +335,7 @@
         </div>
     </div>
 
-    <!-- Modal تحديث حالة تصريح الدخول -->
+    <!-- Modal تحديث حالة أوراق الدخول -->
     <div x-data="{ open: false }"
          @open-modal.window="if ($event.detail === 'entry-permit-status-modal') open = true"
          @close-modal.window="open = false"
@@ -337,7 +347,7 @@
             <div @click="open = false" class="fixed inset-0 bg-[black]/60"></div>
             <div class="panel my-8 w-full max-w-lg overflow-hidden rounded-lg border-0 p-0">
                 <div class="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                    <h5 class="text-lg font-bold">تحديث حالة تصريح الدخول</h5>
+                    <h5 class="text-lg font-bold">تحديث حالة أوراق الدخول</h5>
                     <button @click="open = false" type="button" class="text-white-dark hover:text-dark">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -350,7 +360,7 @@
                         @method('PATCH')
 
                         <div class="mb-5">
-                            <label class="block mb-3 font-semibold">حالة تصريح الدخول</label>
+                            <label class="block mb-3 font-semibold">حالة أوراق الدخول</label>
                             <div class="space-y-2">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="radio" name="entry_permit_status" value="received" class="form-radio" {{ $shipment->entry_permit_status === 'received' ? 'checked' : '' }} />

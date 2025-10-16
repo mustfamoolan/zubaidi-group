@@ -1,7 +1,7 @@
 <x-layout.company :company="$company">
     <div x-data="invoicePreview">
         <div class="flex items-center lg:justify-end justify-center flex-wrap gap-4 mb-6">
-            <button type="button" class="btn btn-info gap-2">
+            <button type="button" class="btn btn-info gap-2" @click="openShareModal">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                     class="w-5 h-5">
                     <path
@@ -13,7 +13,7 @@
                 إرسال الفاتورة
             </button>
 
-            <button type="button" class="btn btn-primary gap-2" @click="print">
+            <a href="{{ route('companies.invoices.pdf', [$company, $invoice]) }}" target="_blank" class="btn btn-primary gap-2">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                     class="w-5 h-5">
                     <path
@@ -35,9 +35,9 @@
                         stroke-linecap="round" />
                 </svg>
                 طباعة
-            </button>
+            </a>
 
-            <button type="button" class="btn btn-success gap-2">
+            <a href="{{ route('companies.invoices.download', [$company, $invoice]) }}" class="btn btn-success gap-2">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                     class="w-5 h-5">
                     <path opacity="0.5"
@@ -46,8 +46,8 @@
                     <path d="M12 2L12 15M12 15L9 11.5M12 15L15 11.5" stroke="currentColor" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
-                تحميل
-            </button>
+                تحميل PDF
+            </a>
 
             <a href="{{ route('companies.invoices.index', $company) }}" class="btn btn-secondary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none"
@@ -183,6 +183,78 @@
             </div>
         </div>
     </div>
+
+    <!-- Share Modal -->
+    <div x-data="{ open: false, shareLink: '', loading: false, copied: false }"
+         @open-share-modal.window="open = true"
+         @close-share-modal.window="open = false"
+         x-show="open"
+         style="display: none;"
+         class="fixed inset-0 z-[999] overflow-y-auto">
+        <div class="flex min-h-screen items-center justify-center px-4">
+            <div @click="open = false" class="fixed inset-0 bg-[black]/60"></div>
+            <div class="panel my-8 w-full max-w-lg overflow-hidden rounded-lg border-0 p-0">
+                <div class="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
+                    <h5 class="text-lg font-bold">مشاركة الفاتورة</h5>
+                    <button @click="open = false" type="button" class="text-white-dark hover:text-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-5">
+                    <div class="mb-5">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-info/20 rounded-full flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.4975 18.4851L20.6281 9.09373C21.8764 5.34874 22.5006 3.47624 21.5122 2.48782C20.5237 1.49939 18.6511 2.12356 14.906 3.37189L5.57477 6.48218C3.49295 7.1761 2.45203 7.52305 2.13608 8.28637C2.06182 8.46577 2.01692 8.65596 2.00311 8.84963C1.94433 9.67365 2.72018 10.4495 4.27188 12.0011L4.55451 12.2837C4.80921 12.5384 4.93655 12.6658 5.03282 12.8075C5.22269 13.0871 5.33046 13.4143 5.34393 13.7519C5.35076 13.9232 5.32403 14.1013 5.27057 14.4574C5.07488 15.7612 4.97703 16.4131 5.0923 16.9147C5.32205 17.9146 6.09599 18.6995 7.09257 18.9433C7.59255 19.0656 8.24576 18.977 9.5522 18.7997L9.62363 18.79C9.99191 18.74 10.1761 18.715 10.3529 18.7257C10.6738 18.745 10.9838 18.8496 11.251 19.0285C11.3981 19.1271 11.5295 19.2585 11.7923 19.5213L12.0436 19.7725C13.5539 21.2828 14.309 22.0379 15.1101 21.9985C15.3309 21.9877 15.5479 21.9365 15.7503 21.8474C16.4844 21.5244 16.8221 20.5113 17.4975 18.4851Z" stroke="currentColor" stroke-width="1.5" />
+                                    <path opacity="0.5" d="M6 18L21 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h6 class="font-semibold text-lg">فاتورة #{{ $invoice->invoice_number }}</h6>
+                                <p class="text-gray-500">رابط مشاركة آمن صالح لمدة 24 ساعة</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="share_link">رابط المشاركة</label>
+                        <div class="flex">
+                            <input id="share_link" x-model="shareLink" type="text" class="form-input rounded-none" readonly />
+                            <button @click="copyLink()" type="button" class="btn btn-primary rounded-none">
+                                <span x-show="!copied">نسخ</span>
+                                <span x-show="copied" class="text-green-500">تم النسخ!</span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">انقر على نسخ ثم شارك الرابط عبر واتساب أو تليجرام</p>
+                    </div>
+
+                    <div class="mb-5">
+                        <div class="flex items-center justify-center gap-4">
+                            <button @click="shareViaWhatsApp()" type="button" class="btn btn-success gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                                </svg>
+                                واتساب
+                            </button>
+                            <button @click="shareViaTelegram()" type="button" class="btn btn-info gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                </svg>
+                                تليجرام
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3">
+                        <button type="button" @click="open = false" class="btn btn-outline-secondary">إغلاق</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener("alpine:init", () => {
             Alpine.data('invoicePreview', () => ({
@@ -222,6 +294,67 @@
 
                 print() {
                     window.print();
+                },
+
+                openShareModal() {
+                    this.$dispatch('open-share-modal');
+                    this.generateShareLink();
+                },
+
+                async generateShareLink() {
+                    try {
+                        const response = await fetch('{{ route("companies.invoices.share-link", [$company, $invoice]) }}');
+                        const data = await response.json();
+
+                        if (data.success) {
+                            this.$refs.shareModal.shareLink = data.share_link;
+                        }
+                    } catch (error) {
+                        console.error('Error generating share link:', error);
+                    }
+                }
+            }));
+
+            // Share Modal Functions
+            Alpine.data('shareModal', () => ({
+                async generateShareLink() {
+                    this.loading = true;
+                    try {
+                        const response = await fetch('{{ route("companies.invoices.share-link", [$company, $invoice]) }}');
+                        const data = await response.json();
+
+                        if (data.success) {
+                            this.shareLink = data.share_link;
+                        }
+                    } catch (error) {
+                        console.error('Error generating share link:', error);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                async copyLink() {
+                    try {
+                        await navigator.clipboard.writeText(this.shareLink);
+                        this.copied = true;
+                        setTimeout(() => {
+                            this.copied = false;
+                        }, 2000);
+                    } catch (error) {
+                        console.error('Error copying link:', error);
+                    }
+                },
+
+                shareViaWhatsApp() {
+                    const message = `فاتورة #{{ $invoice->invoice_number }}\n\nرابط الفاتورة:\n${this.shareLink}`;
+                    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                    window.open(url, '_blank');
+                },
+
+                shareViaTelegram() {
+                    const message = `فاتورة #{{ $invoice->invoice_number }}\n\nرابط الفاتورة:\n${this.shareLink}`;
+                    const url = `https://t.me/share/url?url=${encodeURIComponent(this.shareLink)}&text=${encodeURIComponent(message)}`;
+                    window.open(url, '_blank');
                 }
             }));
         });

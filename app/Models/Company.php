@@ -50,4 +50,9 @@ class Company extends Model
     {
         return $this->hasMany(Shipment::class);
     }
+
+    public function beneficiaries()
+    {
+        return $this->hasMany(Beneficiary::class);
+    }
 }
