@@ -22,6 +22,8 @@ class Invoice extends Model
         'invoice_date',
         'beneficiary_company',
         'status',
+        'shipping_status',
+        'last_shipping_notification_sent_at',
     ];
 
     protected $casts = [
@@ -31,6 +33,7 @@ class Invoice extends Model
         'total_amount_iqd' => 'decimal:2',
         'amount' => 'decimal:2',
         'invoice_date' => 'date',
+        'last_shipping_notification_sent_at' => 'datetime',
     ];
 
     /**

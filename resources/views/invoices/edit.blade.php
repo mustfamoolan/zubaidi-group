@@ -11,6 +11,8 @@
 
 <x-layout.company :company="$company">
     <link rel='stylesheet' type='text/css' href='{{ Vite::asset('resources/css/nice-select2.css') }}'>
+
+    <div x-data="{ shippingStatus: '{{ $invoice->shipping_status }}' }">
     <style>
         .nice-select .list {
             max-height: 300px !important;
@@ -146,9 +148,34 @@
                 @enderror
             </div>
 
+            <!-- حالة الشحن -->
             <div class="mb-5">
-                <label for="shipments">الشحنات المرتبطة <span class="text-danger">*</span></label>
-                <select id="shipments" name="shipments[]" class="selectize" multiple placeholder="ابحث واختر الشحنات..." required>
+                <label for="shipping_status" class="text-white-dark">حالة الشحن <span class="text-danger">*</span></label>
+                <div class="flex gap-4 mt-2">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="shipping_status" value="shipped"
+                               x-model="shippingStatus"
+                               {{ $invoice->shipping_status === 'shipped' ? 'checked' : '' }}
+                               class="form-radio text-success" required />
+                        <span class="text-white-dark mr-2">مشحون</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="shipping_status" value="not_shipped"
+                               x-model="shippingStatus"
+                               {{ $invoice->shipping_status === 'not_shipped' ? 'checked' : '' }}
+                               class="form-radio text-warning" required />
+                        <span class="text-white-dark mr-2">غير مشحون</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- الشحنات (تظهر فقط إذا كانت الحالة "مشحون") -->
+            <div class="mb-5" x-show="shippingStatus === 'shipped'">
+                <label for="shipments">الشحنات المرتبطة <span class="text-danger" x-show="shippingStatus === 'shipped'">*</span></label>
+                <select id="shipments" name="shipments[]" class="selectize"
+                        multiple
+                        :required="shippingStatus === 'shipped'"
+                        placeholder="ابحث واختر الشحنات...">
                     @foreach($shipments as $shipment)
                         <option value="{{ $shipment->id }}" @if($invoice->shipments->contains($shipment->id)) selected @endif>
                             {{ $shipment->container_number }} - {{ $shipment->policy_number }} ({{ $shipment->status === 'shipped' ? 'مشحون' : 'غير مشحون' }})
@@ -228,5 +255,6 @@
             }
         });
     </script>
+    </div>
 </x-layout.company>
 

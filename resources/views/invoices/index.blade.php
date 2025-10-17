@@ -88,7 +88,7 @@
     </div>
 
     <!-- Modal إضافة فاتورة -->
-    <div x-data="{ open: false }"
+    <div x-data="{ open: false, shippingStatus: 'shipped' }"
          @open-modal.window="if ($event.detail === 'add-invoice-modal') open = true"
          @close-modal.window="open = false"
          @keydown.escape.window="open = false"
@@ -180,9 +180,32 @@
                             </p>
                         </div>
 
+                        <!-- حالة الشحن -->
                         <div class="mb-5">
-                            <label for="shipments">الشحنات المرتبطة <span class="text-danger">*</span></label>
-                            <select id="shipments" name="shipments[]" class="selectize" multiple placeholder="ابحث واختر الشحنات..." required>
+                            <label for="shipping_status" class="text-white-dark">حالة الشحن <span class="text-danger">*</span></label>
+                            <div class="flex gap-4 mt-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="shipping_status" value="shipped"
+                                           x-model="shippingStatus"
+                                           class="form-radio text-success" required />
+                                    <span class="text-white-dark mr-2">مشحون</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="shipping_status" value="not_shipped"
+                                           x-model="shippingStatus"
+                                           class="form-radio text-warning" required />
+                                    <span class="text-white-dark mr-2">غير مشحون</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- الشحنات (تظهر فقط إذا كانت الحالة "مشحون") -->
+                        <div class="mb-5" x-show="shippingStatus === 'shipped'">
+                            <label for="shipments">الشحنات المرتبطة <span class="text-danger" x-show="shippingStatus === 'shipped'">*</span></label>
+                            <select id="shipments" name="shipments[]" class="selectize"
+                                    multiple
+                                    :required="shippingStatus === 'shipped'"
+                                    placeholder="ابحث واختر الشحنات...">
                                 @foreach($shipments as $shipment)
                                     <option value="{{ $shipment->id }}">
                                         {{ $shipment->container_number }} - {{ $shipment->policy_number }} ({{ $shipment->status === 'shipped' ? 'مشحون' : 'غير مشحون' }})

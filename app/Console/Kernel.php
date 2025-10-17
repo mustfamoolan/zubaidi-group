@@ -23,6 +23,11 @@ class Kernel extends ConsoleKernel
 
         // التحقق من حالة تصريح الدخول (بعد 30 يوم) - يتم تشغيله يومياً عند الساعة 9 صباحاً
         $schedule->command('shipments:check-entry-permit')->dailyAt('09:00');
+
+        // فحص الفواتير غير المشحونة يومياً في الساعة 9 صباحاً
+        $schedule->command('invoices:check-unshipped')
+                 ->dailyAt('09:00')
+                 ->timezone('Asia/Baghdad');
     }
 
     /**

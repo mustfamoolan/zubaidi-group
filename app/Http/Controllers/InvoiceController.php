@@ -49,7 +49,8 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'beneficiary_id' => 'required|exists:beneficiaries,id',
             'beneficiary_company' => 'nullable|string|max:255',
-            'shipments' => 'required|array|min:1',
+            'shipping_status' => 'required|in:shipped,not_shipped',
+            'shipments' => 'required_if:shipping_status,shipped|array|min:1',
             'shipments.*' => 'exists:shipments,id',
         ]);
 
@@ -72,10 +73,11 @@ class InvoiceController extends Controller
             'beneficiary_id' => $request->beneficiary_id,
             'beneficiary_company' => $beneficiaryName,
             'status' => 'paid', // دائماً مدفوعة
+            'shipping_status' => $request->shipping_status,
         ]);
 
-        // ربط الفاتورة بالشحنات
-        if ($request->has('shipments')) {
+        // ربط الفاتورة بالشحنات فقط إذا كانت الحالة "مشحون"
+        if ($request->shipping_status === 'shipped' && $request->has('shipments')) {
             $invoice->shipments()->attach($request->shipments);
         }
 
@@ -127,7 +129,8 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'beneficiary_id' => 'required|exists:beneficiaries,id',
             'beneficiary_company' => 'nullable|string|max:255',
-            'shipments' => 'required|array|min:1',
+            'shipping_status' => 'required|in:shipped,not_shipped',
+            'shipments' => 'required_if:shipping_status,shipped|array|min:1',
             'shipments.*' => 'exists:shipments,id',
         ]);
 
@@ -154,14 +157,20 @@ class InvoiceController extends Controller
             'beneficiary_id' => $request->beneficiary_id,
             'beneficiary_company' => $beneficiaryName,
             'status' => 'paid', // دائماً مدفوعة
+            'shipping_status' => $request->shipping_status,
         ]);
 
         // التعامل مع الحركات المصرفية
         $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, 'paid');
 
         // تحديث ربط الفاتورة بالشحنات
-        if ($request->has('shipments')) {
-            $invoice->shipments()->sync($request->shipments);
+        if ($request->shipping_status === 'shipped') {
+            if ($request->has('shipments')) {
+                $invoice->shipments()->sync($request->shipments);
+            }
+        } else {
+            // إزالة جميع الشحنات إذا تم تغيير الحالة إلى "غير مشحون"
+            $invoice->shipments()->detach();
         }
 
         return redirect()->route('companies.invoices.index', $company)

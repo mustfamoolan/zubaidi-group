@@ -117,6 +117,14 @@
                                 <span class="badge bg-success">مدفوعة</span>
                             </div>
                         </div>
+                        <div class="flex items-center w-full justify-between mb-2">
+                            <div class="text-white-dark">حالة الشحن:</div>
+                            <div>
+                                <span class="badge {{ $invoice->shipping_status === 'shipped' ? 'bg-success' : 'bg-warning' }}">
+                                    {{ $invoice->shipping_status === 'shipped' ? 'مشحون' : 'غير مشحون' }}
+                                </span>
+                            </div>
+                        </div>
                         @if($invoice->shipments->count() > 0)
                         <div class="flex items-center w-full justify-between">
                             <div class="text-white-dark">الشحنات المرتبطة:</div>
