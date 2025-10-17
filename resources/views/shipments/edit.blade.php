@@ -72,12 +72,8 @@
 
                     <div>
                         <label for="container_size">حجم الحاوية (قياسها بالمترية)</label>
-                        <select id="container_size" name="container_size" class="form-select">
-                            <option value="">اختر الحجم</option>
-                            <option value="C" {{ old('container_size', $shipment->container_size) === 'C' ? 'selected' : '' }}>C (20 قدم)</option>
-                            <option value="B" {{ old('container_size', $shipment->container_size) === 'B' ? 'selected' : '' }}>B (40 قدم)</option>
-                            <option value="M" {{ old('container_size', $shipment->container_size) === 'M' ? 'selected' : '' }}>M (45 قدم)</option>
-                        </select>
+                        <input id="container_size" name="container_size" type="text" class="form-input" value="{{ old('container_size', $shipment->container_size) }}" placeholder="مثال: 68.0 MCB" />
+                        <small class="text-white-dark">أدخل حجم الحاوية مع الوحدة، مثال: 68.0 MCB</small>
                     </div>
 
                     <div>

@@ -71,17 +71,7 @@
 
                 <div class="border border-[#e0e6ed] dark:border-[#1b2e4b] rounded p-4">
                     <h6 class="text-[#3b3f5c] dark:text-white-light font-semibold text-sm mb-1">حجم الحاوية</h6>
-                    <p class="text-lg font-bold">
-                        @if($shipment->container_size === 'C')
-                            C (20 قدم)
-                        @elseif($shipment->container_size === 'B')
-                            B (40 قدم)
-                        @elseif($shipment->container_size === 'M')
-                            M (45 قدم)
-                        @else
-                            {{ $shipment->container_size ?? '-' }}
-                        @endif
-                    </p>
+                    <p class="text-lg font-bold">{{ $shipment->container_size ?? '-' }}</p>
                 </div>
 
                 <div class="border border-[#e0e6ed] dark:border-[#1b2e4b] rounded p-4">
