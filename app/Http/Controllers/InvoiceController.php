@@ -86,9 +86,12 @@ class InvoiceController extends Controller
             $bank = \App\Models\Bank::find($request->bank_id);
             if ($bank) {
                 $bank->deductInvoice($invoice);
-                return redirect()->route('companies.invoices.index', $company)
-                    ->with('success', 'تم إنشاء الفاتورة بنجاح وتم خصم المبلغ من المصرف');
             }
+        }
+
+        // إنشاء إشعار فوري للفواتير غير المشحونة
+        if ($request->shipping_status === 'not_shipped') {
+            $this->createUnshippedInvoiceNotification($invoice);
         }
 
         return redirect()->route('companies.invoices.index', $company)
@@ -459,5 +462,31 @@ class InvoiceController extends Controller
             'share_link' => $url,
             'expires_at' => now()->addHours(24)->format('Y-m-d H:i:s')
         ]);
+    }
+
+    /**
+     * إنشاء إشعار فوري للفواتير غير المشحونة
+     */
+    private function createUnshippedInvoiceNotification($invoice)
+    {
+        // إنشاء إشعار لجميع المستخدمين
+        $users = \App\Models\User::all();
+        
+        if ($users->isNotEmpty()) {
+            foreach ($users as $user) {
+                \App\Models\Notification::create([
+                    'user_id' => $user->id,
+                    'notifiable_id' => $invoice->id,
+                    'notifiable_type' => \App\Models\Invoice::class,
+                    'type' => 'unshipped_invoice',
+                    'message' => "تم إنشاء فاتورة جديدة غير مشحونة #{$invoice->invoice_number} بتاريخ {$invoice->invoice_date->format('Y-m-d')}",
+                ]);
+            }
+            
+            // تعيين تاريخ الإشعار الأول
+            $invoice->update([
+                'last_shipping_notification_sent_at' => now(),
+            ]);
+        }
     }
 }

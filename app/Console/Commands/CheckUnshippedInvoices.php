@@ -43,8 +43,8 @@ class CheckUnshippedInvoices extends Command
 
             $this->info("Invoice #{$invoice->invoice_number}: {$daysSinceInvoice} days since invoice date");
 
-            // التحقق إذا مر 15 يوم أو أكثر
-            if ($daysSinceInvoice >= 15) {
+            // التحقق إذا مر 15 يوم أو أكثر، أو إذا كانت فاتورة جديدة (أقل من يوم)
+            if ($daysSinceInvoice >= 15 || $daysSinceInvoice < 1) {
                 // التحقق من آخر إشعار تم إرساله
                 $lastNotificationSent = $invoice->last_shipping_notification_sent_at;
 
@@ -64,17 +64,26 @@ class CheckUnshippedInvoices extends Command
                 }
 
                 if ($shouldSendNotification) {
-                    // إنشاء الإشعار للمستخدم الأول (أو يمكن تعديله لاحقاً)
-                    $user = \App\Models\User::first();
+                    // إنشاء الإشعار لجميع المستخدمين
+                    $users = \App\Models\User::all();
 
-                    if ($user) {
-                        $notification = Notification::create([
-                            'user_id' => $user->id,
-                            'notifiable_id' => $invoice->id,
-                            'notifiable_type' => Invoice::class,
-                            'type' => 'unshipped_invoice',
-                            'message' => "الفاتورة #{$invoice->invoice_number} مازالت غير مشحونة من تاريخ {$invoiceDate->format('Y-m-d')} ({$daysSinceInvoice} يوم)",
-                        ]);
+                    if ($users->isNotEmpty()) {
+                        foreach ($users as $user) {
+                            // رسالة مختلفة للفواتير الجديدة مقابل الفواتير القديمة
+                            if ($daysSinceInvoice < 1) {
+                                $message = "تم إنشاء فاتورة جديدة غير مشحونة #{$invoice->invoice_number} بتاريخ {$invoiceDate->format('Y-m-d')}";
+                            } else {
+                                $message = "الفاتورة #{$invoice->invoice_number} مازالت غير مشحونة من تاريخ {$invoiceDate->format('Y-m-d')} ({$daysSinceInvoice} يوم)";
+                            }
+                            
+                            $notification = Notification::create([
+                                'user_id' => $user->id,
+                                'notifiable_id' => $invoice->id,
+                                'notifiable_type' => Invoice::class,
+                                'type' => 'unshipped_invoice',
+                                'message' => $message,
+                            ]);
+                        }
 
                         // تحديث تاريخ آخر إشعار
                         $invoice->update([
@@ -82,7 +91,7 @@ class CheckUnshippedInvoices extends Command
                         ]);
 
                         $notificationsCreated++;
-                        $this->info("Created notification for invoice #{$invoice->invoice_number} ({$daysSinceInvoice} days old) for user {$user->id}");
+                        $this->info("Created notification for invoice #{$invoice->invoice_number} ({$daysSinceInvoice} days old) for {$users->count()} users");
                     }
                 }
             } else {
