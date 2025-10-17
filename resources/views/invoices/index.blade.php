@@ -1,4 +1,49 @@
 <x-layout.company :company="$company">
+    <link rel='stylesheet' type='text/css' href='{{ Vite::asset('resources/css/nice-select2.css') }}'>
+    <style>
+        .nice-select .list {
+            max-height: 300px !important;
+            overflow-y: auto !important;
+        }
+        .nice-select .list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .nice-select .list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .nice-select .list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .nice-select .list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .nice-select .list .option {
+            padding: 8px 12px !important;
+            font-size: 14px !important;
+        }
+        .nice-select .list .option:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        /* تحسين سكرول modal */
+        .modal-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .modal-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .modal-scroll::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .modal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+
     <div x-data="invoiceList" x-init="checkOpenModal()">
         <script src="/assets/js/simple-datatables.js"></script>
 
@@ -50,9 +95,9 @@
          x-show="open"
          class="fixed inset-0 z-[999] overflow-y-auto"
          style="display: none;">
-        <div class="flex min-h-screen items-center justify-center px-4">
+        <div class="flex min-h-screen items-center justify-center px-4 py-8">
             <div @click="open = false" class="fixed inset-0 bg-[black]/60"></div>
-            <div class="panel my-8 w-full max-w-lg overflow-hidden rounded-lg border-0 p-0">
+            <div class="panel my-8 w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg border-0 p-0">
                 <div class="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
                     <h5 class="text-lg font-bold">إضافة فاتورة جديدة</h5>
                     <button @click="open = false" type="button" class="text-white-dark hover:text-dark">
@@ -61,7 +106,7 @@
                         </svg>
                     </button>
                 </div>
-                <div class="p-5">
+                <div class="p-5 overflow-y-auto max-h-[calc(90vh-120px)] modal-scroll">
                     <form action="{{ route('companies.invoices.store', $company) }}" method="POST">
                         @csrf
                         <div class="mb-5">
@@ -89,11 +134,13 @@
                         </div>
 
                         <div class="mb-5">
-                            <label for="bank_commission">عمولة المصرف (دينار عراقي)</label>
+                            <label for="bank_commission_percent">عمولة المصرف (نسبة مئوية)</label>
                             <div class="flex">
-                                <input id="bank_commission" name="bank_commission" type="number" step="0.01" placeholder="0.00" class="form-input rounded-none" value="0" oninput="calculateTotalAmount()" />
-                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار</div>
+                                <input id="bank_commission_percent" name="bank_commission_percent" type="number" step="0.01" min="0" max="100" placeholder="0.00" class="form-input rounded-none" value="0" oninput="calculateTotalAmount()" />
+                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">%</div>
                             </div>
+                            <!-- حقل مخفي لإرسال المبلغ المحسوب -->
+                            <input type="hidden" id="bank_commission" name="bank_commission" value="0" />
                         </div>
 
                         <div class="mb-5">
@@ -134,11 +181,18 @@
                         </div>
 
                         <div class="mb-5">
-                            <label for="status">الحالة</label>
-                            <select id="status" name="status" class="form-select" required>
-                                <option value="unpaid">غير مدفوعة</option>
-                                <option value="paid">مدفوعة</option>
+                            <label for="shipments">الشحنات المرتبطة <span class="text-danger">*</span></label>
+                            <select id="shipments" name="shipments[]" class="selectize" multiple placeholder="ابحث واختر الشحنات..." required>
+                                @foreach($shipments as $shipment)
+                                    <option value="{{ $shipment->id }}">
+                                        {{ $shipment->container_number }} - {{ $shipment->policy_number }} ({{ $shipment->status === 'shipped' ? 'مشحون' : 'غير مشحون' }})
+                                    </option>
+                                @endforeach
                             </select>
+                            <small class="text-white-dark">اكتب للبحث عن الشحنات، يمكنك اختيار عدة شحنات</small>
+                            @error('shipments')
+                                <span class="text-danger text-xs">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="flex justify-end items-center mt-8">
@@ -156,9 +210,22 @@
         function calculateTotalAmount() {
             const amountUsd = parseFloat(document.getElementById('amount_usd')?.value || 0);
             const exchangeRate = parseFloat(document.getElementById('exchange_rate')?.value || 0);
-            const bankCommission = parseFloat(document.getElementById('bank_commission')?.value || 0);
+            const commissionPercent = parseFloat(document.getElementById('bank_commission_percent')?.value || 0);
 
-            const totalAmount = (amountUsd * exchangeRate) + bankCommission;
+            // حساب المبلغ بالدينار
+            const amountIqd = amountUsd * exchangeRate;
+
+            // حساب عمولة المصرف من النسبة المئوية
+            const bankCommission = (amountIqd * commissionPercent) / 100;
+
+            // حساب المبلغ الإجمالي
+            const totalAmount = amountIqd + bankCommission;
+
+            // تحديث الحقول
+            const commissionInput = document.getElementById('bank_commission');
+            if (commissionInput) {
+                commissionInput.value = bankCommission.toFixed(2);
+            }
 
             const totalInput = document.getElementById('total_amount_iqd');
             if (totalInput) {
@@ -407,5 +474,28 @@
                 },
             }))
         })
+
+        // تهيئة NiceSelect للشحنات مع تحسينات
+        document.addEventListener("DOMContentLoaded", function(e) {
+            // التحقق من وجود NiceSelect
+            if (typeof NiceSelect !== 'undefined') {
+                var els = document.querySelectorAll(".selectize");
+                els.forEach(function(select) {
+                    NiceSelect.bind(select, {
+                        searchable: true,
+                        placeholder: 'ابحث واختر الشحنات...',
+                        searchtext: 'ابحث...',
+                        selectedtext: 'تم اختيار',
+                        maxHeight: '300px',
+                        searchable: true,
+                        searchtext: 'ابحث في الشحنات...',
+                        selectedtext: 'تم اختيار',
+                        maxHeight: '300px'
+                    });
+                });
+            } else {
+                console.error('NiceSelect library is not loaded');
+            }
+        });
     </script>
 </x-layout.company>

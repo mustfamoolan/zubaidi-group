@@ -114,11 +114,7 @@
                         <div class="flex items-center w-full justify-between mb-2">
                             <div class="text-white-dark">الحالة:</div>
                             <div>
-                                @if($invoice->status === 'paid')
-                                    <span class="badge bg-success">مدفوعة</span>
-                                @else
-                                    <span class="badge bg-warning">غير مدفوعة</span>
-                                @endif
+                                <span class="badge bg-success">مدفوعة</span>
                             </div>
                         </div>
                         @if($invoice->shipments->count() > 0)
@@ -263,7 +259,7 @@
                     {
                         id: {{ $index + 1 }},
                         container_number: '{{ $shipment->container_number }}',
-                        status: '{{ $shipment->status === "shipped" ? "مشحون" : "غير مشحون" }}',
+                        status: '<span class="badge badge-outline-{{ $shipment->status === "shipped" ? "success" : "warning" }}">{{ $shipment->status === "shipped" ? "مشحون" : "غير مشحون" }}</span>',
                         weight: '{{ $shipment->weight }} كغ',
                         carton_count: '{{ $shipment->carton_count }} كرتون',
                     },

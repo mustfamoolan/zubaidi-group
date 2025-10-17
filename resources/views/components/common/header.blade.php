@@ -73,41 +73,174 @@
             </div>
             <div x-data="header"
                 class="sm:flex-1 ltr:sm:ml-0 ltr:ml-auto sm:rtl:mr-0 rtl:mr-auto flex items-center space-x-1.5 lg:space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
-                <div class="sm:ltr:mr-auto sm:rtl:ml-auto" x-data="{ search: false }" @click.outside="search = false">
-                    <form
-                        class="sm:relative absolute inset-x-0 sm:top-0 top-1/2 sm:translate-y-0 -translate-y-1/2 sm:mx-0 mx-4 z-10 sm:block hidden"
-                        :class="{ '!block': search }" @submit.prevent="search = false">
+                <div class="sm:ltr:mr-auto sm:rtl:ml-auto" x-data="smartSearch()">
+                    <form class="sm:relative absolute inset-x-0 sm:top-0 top-1/2 sm:translate-y-0 -translate-y-1/2 sm:mx-0 mx-4 z-10 sm:block hidden"
+                          :class="{ '!block': searchOpen }" @submit.prevent="navigateToFirst()">
                         <div class="relative">
                             <input type="text"
-                                class="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-4 rtl:sm:pl-4 ltr:pr-9 rtl:pl-9 peer sm:bg-transparent bg-gray-100 placeholder:tracking-widest"
-                                placeholder="Search..." />
+                                   x-model="searchQuery"
+                                   @input.debounce.300ms="search()"
+                                   @focus="searchOpen = true"
+                                   @keydown.escape="closeSearch()"
+                                   @keydown.down.prevent="navigateDown()"
+                                   @keydown.up.prevent="navigateUp()"
+                                   @keydown.enter.prevent="navigateToSelected()"
+                                   class="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-4 rtl:sm:pl-4 ltr:pr-9 rtl:pl-9 peer sm:bg-transparent bg-gray-100 placeholder:tracking-widest"
+                                   placeholder="ابحث عن فاتورة، شحنة، مصرف..." />
                             <button type="button"
-                                class="absolute w-9 h-9 inset-0 ltr:right-auto rtl:left-auto appearance-none peer-focus:text-primary">
-                                <svg class="mx-auto" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor"
-                                        stroke-width="1.5" opacity="0.5" />
-                                    <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5"
-                                        stroke-linecap="round" />
+                                    class="absolute w-9 h-9 inset-0 ltr:right-auto rtl:left-auto appearance-none peer-focus:text-primary">
+                                <svg class="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
+                                    <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                                 </svg>
                             </button>
                             <button type="button"
-                                class="hover:opacity-80 sm:hidden block absolute top-1/2 -translate-y-1/2 ltr:right-2 rtl:left-2"
-                                @click="search = false">
-                                </svg>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <circle opacity="0.5" cx="12" cy="12" r="10"
-                                        stroke="currentColor" stroke-width="1.5" />
-                                    <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor"
-                                        stroke-width="1.5" stroke-linecap="round" />
+                                    x-show="searchQuery"
+                                    @click="clearSearch()"
+                                    class="absolute top-1/2 -translate-y-1/2 ltr:right-2 rtl:left-2 hover:opacity-80">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
+                                    <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                                 </svg>
                             </button>
                         </div>
+
+                        <!-- نتائج البحث -->
+                        <div x-show="searchOpen && hasResults()"
+                             @click.outside="closeSearch()"
+                             class="absolute top-full mt-2 w-full max-w-md bg-white dark:bg-[#1b2e4b] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto z-50">
+
+                            <template x-if="searching">
+                                <div class="p-4 text-center">
+                                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                                </div>
+                            </template>
+
+                            <template x-if="!searching">
+                                <div>
+                                    <!-- الفواتير -->
+                                    <template x-if="results.invoices && results.invoices.length > 0">
+                                        <div class="p-2">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 py-2">الفواتير</div>
+                                            <template x-for="(item, index) in results.invoices" :key="item.id">
+                                                <a :href="item.url"
+                                                   :class="{'bg-primary/10': selectedIndex === getItemIndex('invoices', index)}"
+                                                   class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                                    <div class="w-8 h-8 rounded-full bg-success/20 text-success flex items-center justify-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M9 7H5C3.89543 7 3 7.89543 3 9V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V9C21 7.89543 20.1046 7 19 7H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-semibold text-sm" x-text="item.title"></div>
+                                                        <div class="text-xs text-gray-500" x-text="item.subtitle"></div>
+                                                    </div>
+                                                </a>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- الشحنات -->
+                                    <template x-if="results.shipments && results.shipments.length > 0">
+                                        <div class="p-2 border-t border-gray-200 dark:border-gray-700">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 py-2">الشحنات</div>
+                                            <template x-for="(item, index) in results.shipments" :key="item.id">
+                                                <a :href="item.url"
+                                                   :class="{'bg-primary/10': selectedIndex === getItemIndex('shipments', index)}"
+                                                   class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                                    <div class="w-8 h-8 rounded-full bg-info/20 text-info flex items-center justify-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-semibold text-sm" x-text="item.title"></div>
+                                                        <div class="text-xs text-gray-500" x-text="item.subtitle"></div>
+                                                    </div>
+                                                </a>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- المصارف -->
+                                    <template x-if="results.banks && results.banks.length > 0">
+                                        <div class="p-2 border-t border-gray-200 dark:border-gray-700">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 py-2">المصارف</div>
+                                            <template x-for="(item, index) in results.banks" :key="item.id">
+                                                <a :href="item.url"
+                                                   :class="{'bg-primary/10': selectedIndex === getItemIndex('banks', index)}"
+                                                   class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                                    <div class="w-8 h-8 rounded-full bg-warning/20 text-warning flex items-center justify-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M3 21H21M5 21V7L12 3L19 7V21M9 9H10M14 9H15M9 13H10M14 13H15M9 17H10M14 17H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-semibold text-sm" x-text="item.title"></div>
+                                                        <div class="text-xs text-gray-500" x-text="item.subtitle"></div>
+                                                    </div>
+                                                </a>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- المستفيدين -->
+                                    <template x-if="results.beneficiaries && results.beneficiaries.length > 0">
+                                        <div class="p-2 border-t border-gray-200 dark:border-gray-700">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 py-2">المستفيدين</div>
+                                            <template x-for="(item, index) in results.beneficiaries" :key="item.id">
+                                                <a :href="item.url"
+                                                   :class="{'bg-primary/10': selectedIndex === getItemIndex('beneficiaries', index)}"
+                                                   class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                                    <div class="w-8 h-8 rounded-full bg-secondary/20 text-secondary flex items-center justify-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+                                                            <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-semibold text-sm" x-text="item.title"></div>
+                                                        <div class="text-xs text-gray-500" x-text="item.subtitle"></div>
+                                                    </div>
+                                                </a>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- الصفحات -->
+                                    <template x-if="results.pages && results.pages.length > 0">
+                                        <div class="p-2 border-t border-gray-200 dark:border-gray-700">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 py-2">الصفحات</div>
+                                            <template x-for="(item, index) in results.pages" :key="index">
+                                                <a :href="item.url"
+                                                   :class="{'bg-primary/10': selectedIndex === getItemIndex('pages', index)}"
+                                                   class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                                    <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M9 4H7C5.89543 4 5 4.89543 5 6V18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V6C19 4.89543 18.1046 4 17 4H15" stroke="currentColor" stroke-width="1.5"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="font-semibold text-sm" x-text="item.title"></div>
+                                                    </div>
+                                                </a>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- لا توجد نتائج -->
+                                    <template x-if="!hasResults() && searchQuery.length >= 2 && !searching">
+                                        <div class="p-4 text-center text-gray-500">
+                                            لا توجد نتائج للبحث عن "<span x-text="searchQuery"></span>"
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
                     </form>
                     <button type="button"
-                        class="search_btn sm:hidden p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
-                        @click="search = ! search">
+                            class="search_btn sm:hidden p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
+                            @click="searchOpen = ! searchOpen">
                         <svg class="w-4.5 h-4.5 mx-auto dark:text-[#d0d2d6]" width="20" height="20"
                             viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor"
@@ -423,4 +556,113 @@
 
         }));
     });
+
+    // Smart Search Function
+    function smartSearch() {
+        return {
+            searchQuery: '',
+            searchOpen: false,
+            searching: false,
+            selectedIndex: 0,
+            results: {
+                invoices: [],
+                shipments: [],
+                banks: [],
+                beneficiaries: [],
+                pages: []
+            },
+
+            async search() {
+                if (this.searchQuery.length < 2) {
+                    this.results = {
+                        invoices: [],
+                        shipments: [],
+                        banks: [],
+                        beneficiaries: [],
+                        pages: []
+                    };
+                    return;
+                }
+
+                this.searching = true;
+                try {
+                    const response = await fetch(`/search?q=${encodeURIComponent(this.searchQuery)}`);
+                    this.results = await response.json();
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+                this.searching = false;
+                this.selectedIndex = 0;
+            },
+
+            hasResults() {
+                return Object.values(this.results).some(arr => arr && arr.length > 0);
+            },
+
+            closeSearch() {
+                this.searchOpen = false;
+            },
+
+            clearSearch() {
+                this.searchQuery = '';
+                this.results = {
+                    invoices: [],
+                    shipments: [],
+                    banks: [],
+                    beneficiaries: [],
+                    pages: []
+                };
+            },
+
+            getAllItems() {
+                return [
+                    ...(this.results.invoices || []),
+                    ...(this.results.shipments || []),
+                    ...(this.results.banks || []),
+                    ...(this.results.beneficiaries || []),
+                    ...(this.results.pages || [])
+                ];
+            },
+
+            getItemIndex(type, index) {
+                let currentIndex = 0;
+                const types = ['invoices', 'shipments', 'banks', 'beneficiaries', 'pages'];
+
+                for (let t of types) {
+                    if (t === type) {
+                        return currentIndex + index;
+                    }
+                    currentIndex += (this.results[t] || []).length;
+                }
+                return -1;
+            },
+
+            navigateDown() {
+                const items = this.getAllItems();
+                if (this.selectedIndex < items.length - 1) {
+                    this.selectedIndex++;
+                }
+            },
+
+            navigateUp() {
+                if (this.selectedIndex > 0) {
+                    this.selectedIndex--;
+                }
+            },
+
+            navigateToSelected() {
+                const items = this.getAllItems();
+                if (items[this.selectedIndex]) {
+                    window.location.href = items[this.selectedIndex].url;
+                }
+            },
+
+            navigateToFirst() {
+                const items = this.getAllItems();
+                if (items.length > 0) {
+                    window.location.href = items[0].url;
+                }
+            }
+        };
+    }
 </script>

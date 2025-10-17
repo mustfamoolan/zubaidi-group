@@ -115,6 +115,7 @@
     <script defer src="/assets/js/alpine-ui.min.js"></script>
     <script defer src="/assets/js/alpine-focus.min.js"></script>
     <script defer src="/assets/js/alpine.min.js"></script>
+    <script src="/assets/js/nice-select2.js"></script>
     <script src="/assets/js/custom.js"></script>
 </body>
 

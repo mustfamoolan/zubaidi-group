@@ -20,7 +20,8 @@ class InvoiceController extends Controller
         $invoices = $company->invoices()->with(['bank', 'shipments', 'beneficiary'])->orderBy('invoice_date', 'desc')->get();
         $banks = $company->banks;
         $beneficiaries = $company->beneficiaries()->orderBy('name')->get();
-        return view('invoices.index', compact('company', 'invoices', 'banks', 'beneficiaries'));
+        $shipments = $company->shipments()->orderBy('container_number')->get();
+        return view('invoices.index', compact('company', 'invoices', 'banks', 'beneficiaries', 'shipments'));
     }
 
     /**
@@ -48,8 +49,7 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'beneficiary_id' => 'required|exists:beneficiaries,id',
             'beneficiary_company' => 'nullable|string|max:255',
-            'status' => 'required|in:paid,unpaid',
-            'shipments' => 'nullable|array',
+            'shipments' => 'required|array|min:1',
             'shipments.*' => 'exists:shipments,id',
         ]);
 
@@ -71,7 +71,7 @@ class InvoiceController extends Controller
             'invoice_date' => $request->invoice_date,
             'beneficiary_id' => $request->beneficiary_id,
             'beneficiary_company' => $beneficiaryName,
-            'status' => $request->status,
+            'status' => 'paid', // دائماً مدفوعة
         ]);
 
         // ربط الفاتورة بالشحنات
@@ -127,8 +127,7 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'beneficiary_id' => 'required|exists:beneficiaries,id',
             'beneficiary_company' => 'nullable|string|max:255',
-            'status' => 'required|in:paid,unpaid',
-            'shipments' => 'nullable|array',
+            'shipments' => 'required|array|min:1',
             'shipments.*' => 'exists:shipments,id',
         ]);
 
@@ -154,11 +153,11 @@ class InvoiceController extends Controller
             'invoice_date' => $request->invoice_date,
             'beneficiary_id' => $request->beneficiary_id,
             'beneficiary_company' => $beneficiaryName,
-            'status' => $request->status,
+            'status' => 'paid', // دائماً مدفوعة
         ]);
 
         // التعامل مع الحركات المصرفية
-        $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, $request->status);
+        $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, 'paid');
 
         // تحديث ربط الفاتورة بالشحنات
         if ($request->has('shipments')) {

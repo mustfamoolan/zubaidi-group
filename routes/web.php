@@ -11,6 +11,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BeneficiaryController;
+use App\Http\Controllers\SearchController;
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -73,6 +74,9 @@ Route::middleware('auth')->group(function () {
 
     // Permissions Management
     Route::resource('permissions', PermissionController::class);
+
+    // Global Search
+    Route::get('/search', [SearchController::class, 'globalSearch'])->name('search.global');
 });
 
 // Original template routes (keeping for design reference)
