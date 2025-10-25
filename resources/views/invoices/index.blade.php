@@ -268,7 +268,7 @@
                         bank: '{{ $invoice->bank->name ?? "غير محدد" }}',
                         date: '{{ $invoice->invoice_date->format("d M Y") }}',
                         amount: '{{ number_format($invoice->total_amount_iqd ?? $invoice->amount, 2) }}',
-                        status: '{{ $invoice->status === "paid" ? "مدفوعة" : "غير مدفوعة" }}',
+                        status: '{{ $invoice->shipping_status === "shipped" ? "مشحونة" : "غير مشحونة" }}',
                         action: {{ $invoice->id }},
                     },
                     @endforeach
@@ -348,7 +348,7 @@
                                 select: 6,
                                 render: function(data, cell, row) {
                                     let statusText = data;
-                                    let styleClass = statusText == 'مدفوعة' ? 'badge-outline-success' : 'badge-outline-danger';
+                                    let styleClass = statusText == 'مشحونة' ? 'badge-outline-success' : 'badge-outline-warning';
                                     return '<span class="badge ' + styleClass + '">' + statusText + '</span>';
                                 },
                             },
