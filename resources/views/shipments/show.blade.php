@@ -1,5 +1,5 @@
 <x-layout.company :company="$company">
-    <div class="space-y-6">
+    <div class="space-y-6" x-data>
         <!-- الأزرار العلوية -->
         <div class="flex items-center justify-between flex-wrap gap-4">
             <h2 class="text-xl font-semibold">تفاصيل الشحنة: {{ $shipment->container_number }}</h2>
@@ -179,13 +179,13 @@
         <div class="panel">
             <div class="mb-5 flex items-center justify-between">
                 <h5 class="font-semibold text-lg dark:text-white-light">الفواتير المرتبطة ({{ $shipment->invoices->count() }})</h5>
-                <button type="button" 
+                <button type="button"
                         class="btn btn-primary btn-sm"
                         @click="$dispatch('open-modal', 'attach-invoice-modal')">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ltr:mr-1 rtl:ml-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    ربط بفاتورة أخرى
+                    {{ $shipment->invoices->count() > 0 ? 'ربط بفاتورة أخرى' : 'ربط بفاتورة' }}
                 </button>
             </div>
 
@@ -231,15 +231,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto mb-3 opacity-50" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
                     </svg>
-                    <p class="mb-4">لا توجد فواتير مرتبطة بهذه الشحنة</p>
-                    <button type="button" 
-                            class="btn btn-primary"
-                            @click="$dispatch('open-modal', 'attach-invoice-modal')">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                        ربط بفاتورة
-                    </button>
+                    <p>لا توجد فواتير مرتبطة بهذه الشحنة</p>
                 </div>
             @endif
         </div>
@@ -421,11 +413,9 @@
                             <select name="invoice_id" class="form-select" required>
                                 <option value="">-- اختر الفاتورة --</option>
                                 @foreach($company->invoices as $invoice)
-                                    @if(!$shipment->invoices->contains($invoice->id))
-                                        <option value="{{ $invoice->id }}">
-                                            #{{ $invoice->invoice_number }} - {{ $invoice->beneficiary_company }} - {{ number_format($invoice->amount_usd, 2) }} USD
-                                        </option>
-                                    @endif
+                                    <option value="{{ $invoice->id }}">
+                                        #{{ $invoice->invoice_number }} - {{ $invoice->beneficiary_company }} - {{ number_format($invoice->amount_usd, 2) }} USD
+                                    </option>
                                 @endforeach
                             </select>
                             @error('invoice_id')
@@ -433,17 +423,17 @@
                             @enderror
                         </div>
 
-                        @if($company->invoices->whereNotIn('id', $shipment->invoices->pluck('id'))->count() == 0)
+                        @if($company->invoices->count() == 0)
                             <div class="text-center py-4 text-gray-500">
                                 <p>لا توجد فواتير متاحة للربط</p>
-                                <p class="text-sm">جميع الفواتير مرتبطة بهذه الشحنة بالفعل</p>
+                                <p class="text-sm">جميع الفواتير مرتبطة بشحنات أخرى بالفعل</p>
                             </div>
                         @endif
                     </div>
 
                     <div class="flex justify-end items-center mt-6 gap-2">
                         <button @click="open = false" type="button" class="btn btn-outline-secondary">إلغاء</button>
-                        @if($company->invoices->whereNotIn('id', $shipment->invoices->pluck('id'))->count() > 0)
+                        @if($company->invoices->count() > 0)
                             <button type="submit" class="btn btn-primary">ربط الفاتورة</button>
                         @endif
                     </div>

@@ -71,7 +71,12 @@ class ShipmentController extends Controller
     public function show(Company $company, Shipment $shipment)
     {
         $shipment->load('invoices');
-        $company->load('invoices');
+
+        // جلب الفواتير التي ليست مرتبطة بأي شحنة
+        $company->load(['invoices' => function($query) {
+            $query->whereDoesntHave('shipments');
+        }]);
+
         return view('shipments.show', compact('company', 'shipment'));
     }
 
