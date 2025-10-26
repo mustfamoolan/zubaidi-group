@@ -34,10 +34,10 @@ Route::middleware('auth')->group(function () {
     Route::get('companies/{company}/banks/{bank}/print-statement', [BankController::class, 'printStatement'])->name('companies.banks.print-statement');
 
     // Invoices Management
+    Route::get('companies/{company}/invoices/print-all', [InvoiceController::class, 'printAll'])->name('companies.invoices.print-all');
     Route::resource('companies.invoices', InvoiceController::class);
     Route::post('companies/{company}/invoices/{invoice}/pay', [InvoiceController::class, 'processPayment'])->name('companies.invoices.pay');
     Route::post('companies/{company}/invoices/{invoice}/attach-shipment', [InvoiceController::class, 'attachShipment'])->name('companies.invoices.attach-shipment');
-    Route::get('companies/{company}/invoices/print-all', [InvoiceController::class, 'printAll'])->name('companies.invoices.print-all');
 
     // Invoice PDF Routes
     Route::get('companies/{company}/invoices/{invoice}/pdf', [InvoiceController::class, 'viewPdf'])->name('companies.invoices.pdf');
@@ -45,12 +45,12 @@ Route::middleware('auth')->group(function () {
     Route::get('companies/{company}/invoices/{invoice}/share-link', [InvoiceController::class, 'getShareLink'])->name('companies.invoices.share-link');
 
     // Shipments Management
+    Route::get('companies/{company}/shipments/print-all', [ShipmentController::class, 'printAll'])->name('companies.shipments.print-all');
     Route::resource('companies.shipments', ShipmentController::class);
     Route::patch('companies/{company}/shipments/{shipment}/update-received-status', [ShipmentController::class, 'updateReceivedStatus'])->name('companies.shipments.update-received-status');
     Route::patch('companies/{company}/shipments/{shipment}/update-entry-status', [ShipmentController::class, 'updateEntryStatus'])->name('companies.shipments.update-entry-status');
     Route::patch('companies/{company}/shipments/{shipment}/update-entry-permit-status', [ShipmentController::class, 'updateEntryPermitStatus'])->name('companies.shipments.update-entry-permit-status');
     Route::post('companies/{company}/shipments/{shipment}/attach-invoice', [ShipmentController::class, 'attachInvoice'])->name('companies.shipments.attach-invoice');
-    Route::get('companies/{company}/shipments/print-all', [ShipmentController::class, 'printAll'])->name('companies.shipments.print-all');
 
     // Beneficiaries Routes
     Route::resource('companies.beneficiaries', BeneficiaryController::class);

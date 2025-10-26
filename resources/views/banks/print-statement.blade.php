@@ -10,7 +10,7 @@
             body { margin: 0; }
             .page-break { page-break-before: always; }
         }
-        
+
         body {
             font-family: 'Arial', sans-serif;
             direction: rtl;
@@ -19,32 +19,32 @@
             padding: 20px;
             background: white;
         }
-        
+
         .header {
             text-align: center;
             margin-bottom: 30px;
             border-bottom: 2px solid #333;
             padding-bottom: 20px;
         }
-        
+
         .company-name {
             font-size: 24px;
             font-weight: bold;
             color: #333;
             margin-bottom: 10px;
         }
-        
+
         .report-title {
             font-size: 20px;
             color: #666;
             margin-bottom: 5px;
         }
-        
+
         .report-date {
             font-size: 14px;
             color: #888;
         }
-        
+
         .bank-info {
             background: #f8f9fa;
             padding: 15px;
@@ -54,22 +54,22 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
-        
+
         .info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .info-label {
             font-weight: bold;
             color: #333;
         }
-        
+
         .info-value {
             color: #666;
         }
-        
+
         .balance-summary {
             background: #e3f2fd;
             padding: 15px;
@@ -79,78 +79,78 @@
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
         }
-        
+
         .balance-item {
             text-align: center;
         }
-        
+
         .balance-label {
             font-size: 12px;
             color: #666;
             margin-bottom: 5px;
         }
-        
+
         .balance-value {
             font-size: 18px;
             font-weight: bold;
             color: #1976d2;
         }
-        
+
         .transactions-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        
+
         .transactions-table th,
         .transactions-table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
         }
-        
+
         .transactions-table th {
             background-color: #f5f5f5;
             font-weight: bold;
             color: #333;
         }
-        
+
         .transactions-table tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        
+
         .transaction-type {
             padding: 4px 8px;
             border-radius: 3px;
             font-size: 12px;
             font-weight: bold;
         }
-        
+
         .type-deposit {
             background-color: #d4edda;
             color: #155724;
         }
-        
+
         .type-withdrawal {
             background-color: #f8d7da;
             color: #721c24;
         }
-        
+
         .type-invoice {
             background-color: #fff3cd;
             color: #856404;
         }
-        
+
         .amount-positive {
             color: #28a745;
             font-weight: bold;
         }
-        
+
         .amount-negative {
             color: #dc3545;
             font-weight: bold;
         }
-        
+
         .footer {
             margin-top: 30px;
             text-align: center;
@@ -159,7 +159,7 @@
             border-top: 1px solid #ddd;
             padding-top: 15px;
         }
-        
+
         .print-button {
             background: #007bff;
             color: white;
@@ -170,7 +170,7 @@
             font-size: 14px;
             margin-bottom: 20px;
         }
-        
+
         .print-button:hover {
             background: #0056b3;
         }
@@ -178,13 +178,13 @@
 </head>
 <body>
     <button class="print-button no-print" onclick="window.print()">🖨️ طباعة الكشف</button>
-    
+
     <div class="header">
         <div class="company-name">{{ $company->name }}</div>
         <div class="report-title">كشف حساب المصرف</div>
         <div class="report-date">تاريخ الطباعة: {{ now()->format('Y-m-d H:i') }}</div>
     </div>
-    
+
     <div class="bank-info">
         <div class="info-item">
             <span class="info-label">اسم المصرف:</span>
@@ -203,7 +203,7 @@
             <span class="info-value">{{ number_format($bank->current_balance, 2) }} {{ $bank->currency }}</span>
         </div>
     </div>
-    
+
     <div class="balance-summary">
         <div class="balance-item">
             <div class="balance-label">إجمالي الإيداعات</div>
@@ -222,9 +222,9 @@
             <div class="balance-value">{{ $bank->transactions->count() }}</div>
         </div>
     </div>
-    
+
     <h3 style="margin-top: 30px; margin-bottom: 15px; color: #333;">سجل الحركات</h3>
-    
+
     <table class="transactions-table">
         <thead>
             <tr>
@@ -241,7 +241,7 @@
                 $runningBalance = $bank->opening_balance;
                 $transactionNumber = 1;
             @endphp
-            
+
             @forelse($bank->transactions as $transaction)
                 @php
                     if ($transaction->type === 'deposit') {
@@ -280,7 +280,7 @@
             @endforelse
         </tbody>
     </table>
-    
+
     <div class="footer">
         <p>تم إنشاء هذا الكشف تلقائياً من نظام إدارة الشركات</p>
         <p>تاريخ الطباعة: {{ now()->format('Y-m-d H:i:s') }}</p>
