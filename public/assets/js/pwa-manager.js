@@ -8,7 +8,7 @@ class PWAManager {
     init() {
         // Register service worker
         this.registerServiceWorker();
-        
+
         // Listen for beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             console.log('PWA install prompt available');
@@ -28,6 +28,9 @@ class PWAManager {
         // Check if app is already installed
         this.checkIfInstalled();
         
+        // Check PWA requirements
+        this.checkPWARequirements();
+        
         // Always show install button for testing
         this.showInstallButton();
     }
@@ -35,21 +38,31 @@ class PWAManager {
     async registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             try {
-                const registration = await navigator.serviceWorker.register('/sw.js');
+                const registration = await navigator.serviceWorker.register('/sw.js', {
+                    scope: '/'
+                });
                 console.log('Service Worker registered successfully:', registration);
-
+                
                 // Check for updates
                 registration.addEventListener('updatefound', () => {
                     const newWorker = registration.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            this.showUpdateAvailable();
-                        }
-                    });
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                this.showUpdateAvailable();
+                            }
+                        });
+                    }
                 });
+                
+                // Force update check
+                await registration.update();
+                
             } catch (error) {
                 console.log('Service Worker registration failed:', error);
             }
+        } else {
+            console.log('Service Worker not supported');
         }
     }
 
@@ -168,11 +181,56 @@ class PWAManager {
             isInstalled: this.isInstalled,
             isStandalone: window.matchMedia('(display-mode: standalone)').matches,
             hasServiceWorker: 'serviceWorker' in navigator,
-            canInstall: !!this.deferredPrompt
+            canInstall: !!this.deferredPrompt,
+            userAgent: navigator.userAgent,
+            isHTTPS: location.protocol === 'https:' || location.hostname === 'localhost'
         };
-
+        
         console.log('PWA Status:', info);
         return info;
+    }
+
+    // Method to check PWA requirements
+    checkPWARequirements() {
+        const requirements = {
+            https: location.protocol === 'https:' || location.hostname === 'localhost',
+            serviceWorker: 'serviceWorker' in navigator,
+            manifest: document.querySelector('link[rel="manifest"]') !== null,
+            icons: document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').length > 0
+        };
+        
+        const allMet = Object.values(requirements).every(req => req);
+        
+        console.log('PWA Requirements:', requirements, 'All met:', allMet);
+        
+        if (!allMet) {
+            this.showRequirementsNotMet(requirements);
+        }
+        
+        return { requirements, allMet };
+    }
+
+    showRequirementsNotMet(requirements) {
+        const missing = Object.entries(requirements)
+            .filter(([key, value]) => !value)
+            .map(([key]) => key);
+            
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'متطلبات PWA غير مكتملة',
+                html: `
+                    <div class="text-right">
+                        <p>المتطلبات المفقودة:</p>
+                        <ul>
+                            ${missing.map(req => `<li>${req}</li>`).join('')}
+                        </ul>
+                        <p>يرجى التأكد من أن الموقع يعمل على HTTPS وأن جميع الملفات متوفرة.</p>
+                    </div>
+                `,
+                icon: 'warning',
+                confirmButtonText: 'حسناً'
+            });
+        }
     }
 }
 

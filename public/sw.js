@@ -1,14 +1,10 @@
-const CACHE_NAME = 'zubaidi-group-v1.0.0';
+const CACHE_NAME = 'zubaidi-group-v1.0.1';
 const urlsToCache = [
   '/',
   '/login',
   '/companies',
-  '/assets/css/app.css',
-  '/assets/js/alpine.min.js',
-  '/assets/js/custom.js',
-  '/assets/images/logo.png',
-  '/assets/images/user-profile.jpeg',
-  '/manifest.json'
+  '/manifest.json',
+  '/sw.js'
 ];
 
 // Install event - cache resources
@@ -17,12 +13,23 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(urlsToCache.map(url => {
+          try {
+            return new Request(url, {mode: 'no-cors'});
+          } catch (e) {
+            console.log('Failed to cache:', url);
+            return null;
+          }
+        }).filter(Boolean));
       })
       .catch((error) => {
         console.log('Cache install failed:', error);
+        // Don't fail the installation if caching fails
+        return Promise.resolve();
       })
   );
+  // Skip waiting to activate immediately
+  self.skipWaiting();
 });
 
 // Fetch event - serve from cache when offline
@@ -75,6 +82,9 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      // Take control of all clients immediately
+      return self.clients.claim();
     })
   );
 });
