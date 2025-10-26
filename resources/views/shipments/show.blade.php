@@ -179,6 +179,14 @@
         <div class="panel">
             <div class="mb-5 flex items-center justify-between">
                 <h5 class="font-semibold text-lg dark:text-white-light">الفواتير المرتبطة ({{ $shipment->invoices->count() }})</h5>
+                <button type="button" 
+                        class="btn btn-primary btn-sm"
+                        @click="$dispatch('open-modal', 'attach-invoice-modal')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ltr:mr-1 rtl:ml-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    ربط بفاتورة أخرى
+                </button>
             </div>
 
             @if($shipment->invoices->count() > 0)
@@ -223,7 +231,15 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto mb-3 opacity-50" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
                     </svg>
-                    <p>لا توجد فواتير مرتبطة بهذه الشحنة</p>
+                    <p class="mb-4">لا توجد فواتير مرتبطة بهذه الشحنة</p>
+                    <button type="button" 
+                            class="btn btn-primary"
+                            @click="$dispatch('open-modal', 'attach-invoice-modal')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        ربط بفاتورة
+                    </button>
                 </div>
             @endif
         </div>
@@ -369,6 +385,69 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ربط الفاتورة -->
+    <div x-data="{ open: false }"
+         @open-modal.window="if ($event.detail === 'attach-invoice-modal') open = true"
+         x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[999] overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-black bg-opacity-50" @click="open = false"></div>
+            <div class="relative bg-white dark:bg-[#1b2e4b] rounded-lg shadow-lg max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">ربط الشحنة بفاتورة</h3>
+                    <button @click="open = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form action="{{ route('companies.shipments.attach-invoice', [$company, $shipment]) }}" method="POST">
+                    @csrf
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">اختر الفاتورة</label>
+                            <select name="invoice_id" class="form-select" required>
+                                <option value="">-- اختر الفاتورة --</option>
+                                @foreach($company->invoices as $invoice)
+                                    @if(!$shipment->invoices->contains($invoice->id))
+                                        <option value="{{ $invoice->id }}">
+                                            #{{ $invoice->invoice_number }} - {{ $invoice->beneficiary_company }} - {{ number_format($invoice->amount_usd, 2) }} USD
+                                        </option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            @error('invoice_id')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        @if($company->invoices->whereNotIn('id', $shipment->invoices->pluck('id'))->count() == 0)
+                            <div class="text-center py-4 text-gray-500">
+                                <p>لا توجد فواتير متاحة للربط</p>
+                                <p class="text-sm">جميع الفواتير مرتبطة بهذه الشحنة بالفعل</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="flex justify-end items-center mt-6 gap-2">
+                        <button @click="open = false" type="button" class="btn btn-outline-secondary">إلغاء</button>
+                        @if($company->invoices->whereNotIn('id', $shipment->invoices->pluck('id'))->count() > 0)
+                            <button type="submit" class="btn btn-primary">ربط الفاتورة</button>
+                        @endif
+                    </div>
+                </form>
             </div>
         </div>
     </div>

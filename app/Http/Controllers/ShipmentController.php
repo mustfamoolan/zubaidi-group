@@ -71,6 +71,7 @@ class ShipmentController extends Controller
     public function show(Company $company, Shipment $shipment)
     {
         $shipment->load('invoices');
+        $company->load('invoices');
         return view('shipments.show', compact('company', 'shipment'));
     }
 
