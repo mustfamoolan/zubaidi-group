@@ -1,5 +1,6 @@
 <x-layout.company :company="$company">
     <link rel='stylesheet' type='text/css' href='{{ Vite::asset('resources/css/nice-select2.css') }}'>
+    <script src="{{ asset('assets/js/number-formatter.js') }}"></script>
     <style>
         .nice-select .list {
             max-height: 300px !important;
@@ -120,7 +121,7 @@
                         <div class="mb-5">
                             <label for="amount_usd">المبلغ (بالدولار)</label>
                             <div class="flex">
-                                <input id="amount_usd" name="amount_usd" type="number" step="0.01" placeholder="100.00" class="form-input rounded-none" required oninput="calculateTotalAmount()" />
+                                <input id="amount_usd" name="amount_usd" type="text" step="0.01" placeholder="100.00" class="form-input rounded-none number-input" required oninput="calculateTotalAmount()" />
                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">USD</div>
                             </div>
                         </div>
@@ -128,7 +129,7 @@
                         <div class="mb-5">
                             <label for="exchange_rate">سعر الصرف</label>
                             <div class="flex">
-                                <input id="exchange_rate" name="exchange_rate" type="number" step="0.01" placeholder="1500.00" class="form-input rounded-none" required oninput="calculateTotalAmount()" />
+                                <input id="exchange_rate" name="exchange_rate" type="text" step="0.01" placeholder="1500.00" class="form-input rounded-none number-input" required oninput="calculateTotalAmount()" />
                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار/دولار</div>
                             </div>
                         </div>
@@ -136,7 +137,7 @@
                         <div class="mb-5">
                             <label for="bank_commission_percent">عمولة المصرف (نسبة مئوية)</label>
                             <div class="flex">
-                                <input id="bank_commission_percent" name="bank_commission_percent" type="number" step="0.01" min="0" max="100" placeholder="0.00" class="form-input rounded-none" value="0" oninput="calculateTotalAmount()" />
+                                <input id="bank_commission_percent" name="bank_commission_percent" type="text" step="0.01" min="0" max="100" placeholder="0.00" class="form-input rounded-none number-input" value="0" oninput="calculateTotalAmount()" />
                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">%</div>
                             </div>
                             <!-- حقل مخفي لإرسال المبلغ المحسوب -->
@@ -146,7 +147,7 @@
                         <div class="mb-5">
                             <label for="total_amount_iqd">المبلغ الإجمالي (دينار عراقي)</label>
                             <div class="flex">
-                                <input id="total_amount_iqd" name="total_amount_iqd" type="number" step="0.01" placeholder="0.00" class="form-input rounded-none bg-gray-100" readonly />
+                                <input id="total_amount_iqd" name="total_amount_iqd" type="text" step="0.01" placeholder="0.00" class="form-input rounded-none bg-gray-100 number-input" readonly />
                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار</div>
                             </div>
                             <small class="text-gray-500">يتم حسابه تلقائياً: (المبلغ بالدولار × سعر الصرف) + عمولة المصرف</small>
@@ -231,9 +232,9 @@
     <script>
         // دالة حساب المبلغ الإجمالي
         function calculateTotalAmount() {
-            const amountUsd = parseFloat(document.getElementById('amount_usd')?.value || 0);
-            const exchangeRate = parseFloat(document.getElementById('exchange_rate')?.value || 0);
-            const commissionPercent = parseFloat(document.getElementById('bank_commission_percent')?.value || 0);
+            const amountUsd = NumberFormatter.getNumericValue(document.getElementById('amount_usd'));
+            const exchangeRate = NumberFormatter.getNumericValue(document.getElementById('exchange_rate'));
+            const commissionPercent = NumberFormatter.getNumericValue(document.getElementById('bank_commission_percent'));
 
             // حساب المبلغ بالدينار
             const amountIqd = amountUsd * exchangeRate;
@@ -252,7 +253,7 @@
 
             const totalInput = document.getElementById('total_amount_iqd');
             if (totalInput) {
-                totalInput.value = totalAmount.toFixed(2);
+                totalInput.value = NumberFormatter.addThousandSeparator(totalAmount.toFixed(2));
             }
         }
 

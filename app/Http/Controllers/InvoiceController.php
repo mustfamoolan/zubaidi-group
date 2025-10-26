@@ -471,7 +471,7 @@ class InvoiceController extends Controller
     {
         // إنشاء إشعار لجميع المستخدمين
         $users = \App\Models\User::all();
-        
+
         if ($users->isNotEmpty()) {
             foreach ($users as $user) {
                 \App\Models\Notification::create([
@@ -482,7 +482,7 @@ class InvoiceController extends Controller
                     'message' => "تم إنشاء فاتورة جديدة غير مشحونة #{$invoice->invoice_number} بتاريخ {$invoice->invoice_date->format('Y-m-d')}",
                 ]);
             }
-            
+
             // تعيين تاريخ الإشعار الأول
             $invoice->update([
                 'last_shipping_notification_sent_at' => now(),

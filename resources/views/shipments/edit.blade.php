@@ -1,4 +1,5 @@
 <x-layout.company :company="$company">
+    <script src="{{ asset('assets/js/number-formatter.js') }}"></script>
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse mb-5">
             <li>
@@ -67,7 +68,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
                     <div>
                         <label for="weight">الوزن (كغ)</label>
-                        <input id="weight" name="weight" type="number" step="0.01" class="form-input" value="{{ old('weight', $shipment->weight) }}" placeholder="0.00" />
+                        <input id="weight" name="weight" type="text" step="0.01" class="form-input number-input" value="{{ old('weight', $shipment->weight) }}" placeholder="0.00" />
                     </div>
 
                     <div>
@@ -78,7 +79,7 @@
 
                     <div>
                         <label for="carton_count">عدد الكراتين</label>
-                        <input id="carton_count" name="carton_count" type="number" class="form-input" value="{{ old('carton_count', $shipment->carton_count) }}" placeholder="0" />
+                        <input id="carton_count" name="carton_count" type="text" class="form-input number-input" value="{{ old('carton_count', $shipment->carton_count) }}" placeholder="0" />
                     </div>
                 </div>
 

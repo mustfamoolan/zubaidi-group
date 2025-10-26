@@ -75,7 +75,7 @@ class CheckUnshippedInvoices extends Command
                             } else {
                                 $message = "الفاتورة #{$invoice->invoice_number} مازالت غير مشحونة من تاريخ {$invoiceDate->format('Y-m-d')} ({$daysSinceInvoice} يوم)";
                             }
-                            
+
                             $notification = Notification::create([
                                 'user_id' => $user->id,
                                 'notifiable_id' => $invoice->id,

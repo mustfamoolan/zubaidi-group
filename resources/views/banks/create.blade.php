@@ -1,4 +1,5 @@
 <x-layout.company :company="$company">
+    <script src="{{ asset('assets/js/number-formatter.js') }}"></script>
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
@@ -36,7 +37,7 @@
                     </div>
                     <div>
                         <label for="opening_balance">المبلغ الافتتاحي</label>
-                        <input id="opening_balance" type="number" step="0.01" name="opening_balance" class="form-input" value="{{ old('opening_balance', 0) }}" required />
+                        <input id="opening_balance" type="text" step="0.01" name="opening_balance" class="form-input number-input" value="{{ old('opening_balance', 0) }}" required />
                     </div>
                     <div>
                         <label for="currency">العملة</label>

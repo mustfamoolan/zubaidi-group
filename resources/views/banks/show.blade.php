@@ -1,4 +1,5 @@
 <x-layout.company :company="$company">
+    <script src="{{ asset('assets/js/number-formatter.js') }}"></script>
     <div class="space-y-6">
         <!-- معلومات المصرف -->
         <div class="panel">
@@ -134,7 +135,7 @@
                         <div class="mb-5">
                             <label for="deposit_amount">المبلغ</label>
                             <div class="flex">
-                                <input id="deposit_amount" name="amount" type="number" step="0.01" placeholder="0.00" class="form-input rounded-none" required />
+                                <input id="deposit_amount" name="amount" type="text" step="0.01" placeholder="0.00" class="form-input rounded-none number-input" required />
                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">{{ $bank->currency }}</div>
                             </div>
                         </div>
@@ -184,7 +185,7 @@
                         <div class="mb-5">
                             <label for="withdraw_amount">المبلغ</label>
                             <div class="flex">
-                                <input id="withdraw_amount" name="amount" type="number" step="0.01" placeholder="0.00" class="form-input rounded-none" max="{{ $bank->current_balance }}" required />
+                                <input id="withdraw_amount" name="amount" type="text" step="0.01" placeholder="0.00" class="form-input rounded-none number-input" max="{{ $bank->current_balance }}" required />
                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">{{ $bank->currency }}</div>
                             </div>
                             <small class="text-white-dark">الرصيد المتاح: {{ number_format($bank->current_balance, 2) }} {{ $bank->currency }}</small>
