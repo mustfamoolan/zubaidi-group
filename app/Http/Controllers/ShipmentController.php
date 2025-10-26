@@ -238,11 +238,10 @@ class ShipmentController extends Controller
             ->orderBy('shipping_date', 'desc')
             ->get();
 
-        $totalWeight = $shipments->sum('weight');
         $shippedCount = $shipments->where('status', 'shipped')->count();
         $notShippedCount = $shipments->where('status', 'not_shipped')->count();
 
-        return view('shipments.print-all', compact('company', 'shipments', 'totalWeight', 'shippedCount', 'notShippedCount'));
+        return view('shipments.print-all', compact('company', 'shipments', 'shippedCount', 'notShippedCount'));
     }
 }
 

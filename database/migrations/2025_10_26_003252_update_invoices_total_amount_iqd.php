@@ -14,10 +14,10 @@ return new class extends Migration
     {
         // حساب total_amount_iqd للفواتير الموجودة
         DB::statement("
-            UPDATE invoices 
-            SET total_amount_iqd = (amount_usd * exchange_rate) + bank_commission 
-            WHERE amount_usd IS NOT NULL 
-            AND exchange_rate IS NOT NULL 
+            UPDATE invoices
+            SET total_amount_iqd = (amount_usd * exchange_rate) + bank_commission
+            WHERE amount_usd IS NOT NULL
+            AND exchange_rate IS NOT NULL
             AND bank_commission IS NOT NULL
         ");
     }

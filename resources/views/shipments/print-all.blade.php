@@ -172,10 +172,6 @@
             <div class="summary-value">{{ $shipments->count() }}</div>
         </div>
         <div class="summary-item">
-            <div class="summary-label">إجمالي الوزن</div>
-            <div class="summary-value">{{ number_format($totalWeight, 2) }} كغ</div>
-        </div>
-        <div class="summary-item">
             <div class="summary-label">الشحنات المشحونة</div>
             <div class="summary-value">{{ $shippedCount }}</div>
         </div>
