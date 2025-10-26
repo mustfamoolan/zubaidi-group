@@ -70,6 +70,14 @@
                             </svg>
                             حذف
                         </button>
+                        <a href="{{ route('companies.invoices.print-all', $company) }}" class="btn btn-success gap-2" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-5 h-5">
+                                <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                            </svg>
+                            طباعة جميع الفواتير
+                        </a>
                         <button type="button" class="btn btn-primary gap-2" @click="$dispatch('open-modal', 'add-invoice-modal')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"

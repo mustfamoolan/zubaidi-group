@@ -155,5 +155,17 @@ class BankController extends Controller
         return redirect()->route('companies.banks.show', [$company, $bank])
             ->with('success', 'تم تسجيل عملية السحب بنجاح');
     }
+
+    /**
+     * طباعة كشف حساب المصرف
+     */
+    public function printStatement(Company $company, Bank $bank)
+    {
+        $bank->load(['transactions' => function($query) {
+            $query->orderBy('date', 'asc')->orderBy('created_at', 'asc');
+        }]);
+
+        return view('banks.print-statement', compact('company', 'bank'));
+    }
 }
 

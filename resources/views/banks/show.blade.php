@@ -11,6 +11,12 @@
                     </svg>
                     تعديل
                 </a>
+                <a href="{{ route('companies.banks.print-statement', [$company, $bank]) }}" class="btn btn-success" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                    </svg>
+                    طباعة الكشف
+                </a>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">

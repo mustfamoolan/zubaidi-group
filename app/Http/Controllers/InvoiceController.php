@@ -489,4 +489,20 @@ class InvoiceController extends Controller
             ]);
         }
     }
+
+    /**
+     * طباعة جميع الفواتير
+     */
+    public function printAll(Company $company)
+    {
+        $invoices = $company->invoices()
+            ->with(['bank', 'beneficiary', 'shipments'])
+            ->orderBy('invoice_date', 'desc')
+            ->get();
+
+        $totalAmountUsd = $invoices->sum('amount_usd');
+        $totalAmountIqd = $invoices->sum('final_amount');
+
+        return view('invoices.print-all', compact('company', 'invoices', 'totalAmountUsd', 'totalAmountIqd'));
+    }
 }

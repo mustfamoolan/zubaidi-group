@@ -228,5 +228,21 @@ class ShipmentController extends Controller
         return redirect()->route('companies.shipments.show', [$company, $shipment])
             ->with('success', 'تم ربط الفاتورة بالشحنة بنجاح');
     }
+
+    /**
+     * طباعة جميع الشحنات
+     */
+    public function printAll(Company $company)
+    {
+        $shipments = $company->shipments()
+            ->orderBy('shipping_date', 'desc')
+            ->get();
+
+        $totalWeight = $shipments->sum('weight');
+        $shippedCount = $shipments->where('status', 'shipped')->count();
+        $notShippedCount = $shipments->where('status', 'not_shipped')->count();
+
+        return view('shipments.print-all', compact('company', 'shipments', 'totalWeight', 'shippedCount', 'notShippedCount'));
+    }
 }
 
