@@ -501,7 +501,7 @@ class InvoiceController extends Controller
             ->get();
 
         $totalAmountUsd = $invoices->sum('amount_usd');
-        $totalAmountIqd = $invoices->sum('final_amount');
+        $totalAmountIqd = $invoices->sum('total_amount_iqd');
 
         return view('invoices.print-all', compact('company', 'invoices', 'totalAmountUsd', 'totalAmountIqd'));
     }

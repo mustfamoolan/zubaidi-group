@@ -204,7 +204,7 @@
                     <td>{{ $invoice->invoice_date->format('Y-m-d') }}</td>
                     <td class="amount-usd">{{ number_format($invoice->amount_usd, 2) }}</td>
                     <td>{{ number_format($invoice->exchange_rate, 2) }}</td>
-                    <td class="amount-iqd">{{ number_format($invoice->final_amount, 2) }}</td>
+                    <td class="amount-iqd">{{ number_format($invoice->total_amount_iqd ?? 0, 2) }}</td>
                     <td>
                         @if($invoice->shipping_status === 'shipped')
                             <span class="status-shipped">مشحونة</span>
