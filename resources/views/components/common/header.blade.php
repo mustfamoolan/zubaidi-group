@@ -477,7 +477,7 @@
                                 </svg>
                                 الإشعارات</a>
                         </li>
-                        <li id="pwa-install-button" style="display: none;" class="border-t border-white-light dark:border-white-light/10">
+                        <li id="pwa-install-button" class="border-t border-white-light dark:border-white-light/10">
                             <button type="button" class="text-primary !py-3 w-full text-right" @click="toggle">
                                 <svg class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" width="18" height="18"
                                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

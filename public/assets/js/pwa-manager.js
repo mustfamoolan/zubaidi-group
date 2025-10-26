@@ -27,6 +27,9 @@ class PWAManager {
 
         // Check if app is already installed
         this.checkIfInstalled();
+        
+        // Always show install button for testing
+        this.showInstallButton();
     }
 
     async registerServiceWorker() {
@@ -34,7 +37,7 @@ class PWAManager {
             try {
                 const registration = await navigator.serviceWorker.register('/sw.js');
                 console.log('Service Worker registered successfully:', registration);
-                
+
                 // Check for updates
                 registration.addEventListener('updatefound', () => {
                     const newWorker = registration.installing;
@@ -52,7 +55,7 @@ class PWAManager {
 
     checkIfInstalled() {
         // Check if running in standalone mode
-        if (window.matchMedia('(display-mode: standalone)').matches || 
+        if (window.matchMedia('(display-mode: standalone)').matches ||
             window.navigator.standalone === true) {
             this.isInstalled = true;
             this.hideInstallButton();
@@ -75,25 +78,26 @@ class PWAManager {
     }
 
     async installApp() {
-        if (!this.deferredPrompt) {
-            return;
-        }
+        if (this.deferredPrompt) {
+            // Show the install prompt
+            this.deferredPrompt.prompt();
 
-        // Show the install prompt
-        this.deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await this.deferredPrompt.userChoice;
 
-        // Wait for the user to respond to the prompt
-        const { outcome } = await this.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+                this.showInstallSuccessMessage();
+            } else {
+                console.log('User dismissed the install prompt');
+            }
 
-        if (outcome === 'accepted') {
-            console.log('User accepted the install prompt');
+            // Clear the deferredPrompt
+            this.deferredPrompt = null;
         } else {
-            console.log('User dismissed the install prompt');
+            // Fallback for browsers that don't support beforeinstallprompt
+            this.showInstallInstructions();
         }
-
-        // Clear the deferredPrompt
-        this.deferredPrompt = null;
-        this.hideInstallButton();
     }
 
     showInstallSuccessMessage() {
@@ -105,6 +109,28 @@ class PWAManager {
                 icon: 'success',
                 confirmButtonText: 'حسناً',
                 timer: 3000
+            });
+        }
+    }
+
+    showInstallInstructions() {
+        // Show installation instructions
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'تثبيت التطبيق',
+                html: `
+                    <div class="text-right">
+                        <p><strong>للتثبيت على الموبايل:</strong></p>
+                        <p>• اضغط على "إضافة إلى الشاشة الرئيسية" في المتصفح</p>
+                        <p>• أو اضغط على زر التثبيت في شريط العنوان</p>
+                        <br>
+                        <p><strong>للتثبيت على الكمبيوتر:</strong></p>
+                        <p>• اضغط على أيقونة التثبيت في شريط العنوان</p>
+                        <p>• أو استخدم قائمة المتصفح: المزيد > تثبيت التطبيق</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'حسناً'
             });
         }
     }
@@ -144,7 +170,7 @@ class PWAManager {
             hasServiceWorker: 'serviceWorker' in navigator,
             canInstall: !!this.deferredPrompt
         };
-        
+
         console.log('PWA Status:', info);
         return info;
     }
