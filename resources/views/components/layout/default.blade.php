@@ -1,13 +1,40 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset='utf-8' />
     <meta http-equiv='X-UA-Compatible' content='IE=edge' />
-    <title>{{ $title ?? 'VRISTO - Multipurpose Tailwind Dashboard Template' }}</title>
+    <title>{{ $title ?? 'مجموعة الزبيدي - نظام إدارة الفواتير والشحنات' }}</title>
 
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />
+    <meta name="description" content="نظام إدارة شامل للفواتير والشحنات والمصارف - مجموعة الزبيدي" />
+    <meta name="keywords" content="فواتير, شحنات, مصارف, إدارة, مجموعة الزبيدي" />
+    <meta name="author" content="مجموعة الزبيدي" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="مجموعة الزبيدي" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon and Icons -->
     <link rel="icon" type="image/svg" href="/assets/images/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/images/pwa/icon-192x192.svg" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/pwa/icon-152x152.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/pwa/icon-192x192.svg" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/pwa/icon-192x192.svg" />
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileImage" content="/assets/images/pwa/icon-144x144.svg" />
+    <meta name="msapplication-square70x70logo" content="/assets/images/pwa/icon-72x72.svg" />
+    <meta name="msapplication-square150x150logo" content="/assets/images/pwa/icon-144x144.svg" />
+    <meta name="msapplication-wide310x150logo" content="/assets/images/pwa/icon-192x192.svg" />
+    <meta name="msapplication-square310x310logo" content="/assets/images/pwa/icon-512x512.svg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,6 +45,7 @@
     <script defer src="/assets/js/popper.min.js"></script>
     <script defer src="/assets/js/tippy-bundle.umd.min.js"></script>
     <script defer src="/assets/js/sweetalert.min.js"></script>
+    <script src="/assets/js/pwa-manager.js"></script>
     @vite(['resources/css/app.css'])
 </head>
 

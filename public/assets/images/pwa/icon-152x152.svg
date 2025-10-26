@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#3b82f6"/>
+  
+  <!-- Main Icon - Building/Company -->
+  <g transform="translate(128, 96)">
+    <!-- Building Base -->
+    <rect x="0" y="160" width="256" height="160" fill="#ffffff" rx="8"/>
+    
+    <!-- Windows -->
+    <rect x="32" y="200" width="40" height="40" fill="#3b82f6" rx="4"/>
+    <rect x="96" y="200" width="40" height="40" fill="#3b82f6" rx="4"/>
+    <rect x="160" y="200" width="40" height="40" fill="#3b82f6" rx="4"/>
+    <rect x="224" y="200" width="40" height="40" fill="#3b82f6" rx="4"/>
+    
+    <rect x="32" y="260" width="40" height="40" fill="#3b82f6" rx="4"/>
+    <rect x="96" y="260" width="40" height="40" fill="#3b82f6" rx="4"/>
+    <rect x="160" y="260" width="40" height="40" fill="#3b82f6" rx="4"/>
+    <rect x="224" y="260" width="40" height="40" fill="#3b82f6" rx="4"/>
+    
+    <!-- Roof -->
+    <path d="M0 160 L128 80 L256 160 Z" fill="#ffffff"/>
+    
+    <!-- Door -->
+    <rect x="112" y="240" width="32" height="80" fill="#3b82f6" rx="4"/>
+  </g>
+  
+  <!-- Arabic Text -->
+  <text x="256" y="420" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#ffffff">الزبيدي</text>
+</svg>
