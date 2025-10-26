@@ -80,6 +80,7 @@
                             <tr>
                                 <th>رقم الحاوية</th>
                                 <th>رقم البوليصة</th>
+                                <th>رقم الفاتورة</th>
                                 <th>تاريخ الشحن</th>
                                 <th>الحالة الحالية</th>
                                 <th class="text-center">تحديث الحالة</th>
@@ -94,6 +95,15 @@
                                         </a>
                                     </td>
                                     <td>{{ $shipment->policy_number }}</td>
+                                    <td>
+                                        @if($shipment->invoices->count() > 0)
+                                            @foreach($shipment->invoices as $invoice)
+                                                <span class="badge badge-outline-info mr-1">{{ $invoice->invoice_number }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-muted">لا توجد فاتورة</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $shipment->shipping_date->format('d M Y') }}</td>
                                     <td>
                                         <span class="badge {{ $shipment->status === 'shipped' ? 'badge-outline-success' : 'badge-outline-warning' }}">
@@ -119,7 +129,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-8">لا توجد شحنات</td>
+                                    <td colspan="6" class="text-center py-8">لا توجد شحنات</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -135,6 +145,7 @@
                             <tr>
                                 <th>رقم الحاوية</th>
                                 <th>رقم البوليصة</th>
+                                <th>رقم الفاتورة</th>
                                 <th>تاريخ الشحن</th>
                                 <th>الحالة الحالية</th>
                                 <th>آخر تحديث</th>
@@ -150,6 +161,15 @@
                                         </a>
                                     </td>
                                     <td>{{ $shipment->policy_number }}</td>
+                                    <td>
+                                        @if($shipment->invoices->count() > 0)
+                                            @foreach($shipment->invoices as $invoice)
+                                                <span class="badge badge-outline-info mr-1">{{ $invoice->invoice_number }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-muted">لا توجد فاتورة</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $shipment->shipping_date->format('d M Y') }}</td>
                                     <td>
                                         <span class="badge {{ $shipment->received_status === 'received' ? 'badge-outline-success' : 'badge-outline-danger' }}">
@@ -198,6 +218,7 @@
                             <tr>
                                 <th>رقم الحاوية</th>
                                 <th>رقم البوليصة</th>
+                                <th>رقم الفاتورة</th>
                                 <th>تاريخ الشحن</th>
                                 <th>الحالة الحالية</th>
                                 <th>آخر تحديث</th>
@@ -213,6 +234,15 @@
                                         </a>
                                     </td>
                                     <td>{{ $shipment->policy_number }}</td>
+                                    <td>
+                                        @if($shipment->invoices->count() > 0)
+                                            @foreach($shipment->invoices as $invoice)
+                                                <span class="badge badge-outline-info mr-1">{{ $invoice->invoice_number }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-muted">لا توجد فاتورة</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $shipment->shipping_date->format('d M Y') }}</td>
                                     <td>
                                         <span class="badge {{ $shipment->entry_status === 'entered' ? 'badge-outline-success' : 'badge-outline-danger' }}">
@@ -261,6 +291,7 @@
                             <tr>
                                 <th>رقم الحاوية</th>
                                 <th>رقم البوليصة</th>
+                                <th>رقم الفاتورة</th>
                                 <th>تاريخ الشحن</th>
                                 <th>الحالة الحالية</th>
                                 <th>آخر تحديث</th>
@@ -276,6 +307,15 @@
                                         </a>
                                     </td>
                                     <td>{{ $shipment->policy_number }}</td>
+                                    <td>
+                                        @if($shipment->invoices->count() > 0)
+                                            @foreach($shipment->invoices as $invoice)
+                                                <span class="badge badge-outline-info mr-1">{{ $invoice->invoice_number }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-muted">لا توجد فاتورة</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $shipment->shipping_date->format('d M Y') }}</td>
                                     <td>
                                         <span class="badge {{ $shipment->entry_permit_status === 'received' ? 'badge-outline-success' : 'badge-outline-warning' }}">

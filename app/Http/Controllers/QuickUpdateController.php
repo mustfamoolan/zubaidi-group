@@ -15,6 +15,7 @@ class QuickUpdateController extends Controller
     public function index(Company $company)
     {
         $shipments = $company->shipments()
+            ->with('invoices')
             ->orderBy('shipping_date', 'desc')
             ->get();
 
