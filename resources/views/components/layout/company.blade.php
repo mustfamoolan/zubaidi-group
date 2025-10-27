@@ -117,6 +117,7 @@
     <script defer src="/assets/js/alpine.min.js"></script>
     <script src="/assets/js/nice-select2.js"></script>
     <script src="/assets/js/custom.js"></script>
+    <script src="/assets/js/pwa-manager.js"></script>
 </body>
 
 </html>

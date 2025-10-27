@@ -477,28 +477,6 @@
                                 </svg>
                                 الإشعارات</a>
                         </li>
-                        <li id="pwa-install-button" class="border-t border-white-light dark:border-white-light/10">
-                            <button type="button" class="text-primary !py-3 w-full text-right" @click="toggle">
-                                <svg class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" width="18" height="18"
-                                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" 
-                                            fill="currentColor" />
-                                    <path d="M19 15L20.09 19.26L24 20L20.09 20.74L19 25L17.91 20.74L14 20L17.91 19.26L19 15Z" 
-                                            fill="currentColor" />
-                                </svg>
-                                تثبيت التطبيق
-                            </button>
-                        </li>
-                        <li class="border-t border-white-light dark:border-white-light/10">
-                            <button type="button" class="text-info !py-3 w-full text-right" @click="toggle" onclick="window.pwaManager.showPWAInfo(); window.pwaManager.checkPWARequirements();">
-                                <svg class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" width="18" height="18"
-                                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" 
-                                            fill="currentColor" />
-                                </svg>
-                                تشخيص PWA
-                            </button>
-                        </li>
                         <li class="border-t border-white-light dark:border-white-light/10">
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf

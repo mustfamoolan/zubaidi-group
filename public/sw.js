@@ -1,31 +1,22 @@
-const CACHE_NAME = 'zubaidi-group-v1.0.1';
+const CACHE_NAME = 'zubaidi-group-v1.0.2';
 const urlsToCache = [
   '/',
   '/login',
   '/companies',
-  '/manifest.json',
-  '/sw.js'
+  '/manifest.json'
 ];
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
+  console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache.map(url => {
-          try {
-            return new Request(url, {mode: 'no-cors'});
-          } catch (e) {
-            console.log('Failed to cache:', url);
-            return null;
-          }
-        }).filter(Boolean));
+        return cache.addAll(urlsToCache);
       })
       .catch((error) => {
         console.log('Cache install failed:', error);
-        // Don't fail the installation if caching fails
-        return Promise.resolve();
       })
   );
   // Skip waiting to activate immediately
@@ -72,6 +63,7 @@ self.addEventListener('fetch', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -89,62 +81,4 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Background sync for offline actions
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'background-sync') {
-    event.waitUntil(doBackgroundSync());
-  }
-});
-
-function doBackgroundSync() {
-  // Handle offline form submissions, etc.
-  return Promise.resolve();
-}
-
-// Push notifications
-self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data ? event.data.text() : 'إشعار جديد من مجموعة الزبيدي',
-    icon: '/assets/images/pwa/icon-192x192.svg',
-    badge: '/assets/images/pwa/icon-72x72.svg',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
-    actions: [
-      {
-        action: 'explore',
-        title: 'عرض',
-        icon: '/assets/images/pwa/action-view.png'
-      },
-      {
-        action: 'close',
-        title: 'إغلاق',
-        icon: '/assets/images/pwa/action-close.png'
-      }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification('مجموعة الزبيدي', options)
-  );
-});
-
-// Notification click
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/companies')
-    );
-  } else if (event.action === 'close') {
-    // Just close the notification
-  } else {
-    // Default action - open the app
-    event.waitUntil(
-      clients.openWindow('/')
-    );
-  }
-});
+console.log('Service Worker loaded successfully');

@@ -45,7 +45,6 @@
     <script defer src="/assets/js/popper.min.js"></script>
     <script defer src="/assets/js/tippy-bundle.umd.min.js"></script>
     <script defer src="/assets/js/sweetalert.min.js"></script>
-    <script src="/assets/js/pwa-manager.js"></script>
     @vite(['resources/css/app.css'])
 </head>
 
@@ -141,6 +140,7 @@
     <script defer src="/assets/js/alpine-focus.min.js"></script>
     <script defer src="/assets/js/alpine.min.js"></script>
     <script src="/assets/js/custom.js"></script>
+    <script src="/assets/js/pwa-manager.js"></script>
 </body>
 
 </html>

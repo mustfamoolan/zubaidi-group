@@ -192,6 +192,22 @@
                     <div class="h-px w-full border-b border-[#e0e6ed] dark:border-[#1b2e4b] my-4"></div>
                 </li>
 
+                <!-- تثبيت التطبيق -->
+                <li class="menu nav-item">
+                    <button type="button" class="nav-link group w-full text-right" onclick="if(typeof window.installPWA === 'function') { window.installPWA(); } else { console.log('PWA function not loaded yet'); }">
+                        <div class="flex items-center">
+                            <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"
+                                    fill="currentColor" />
+                                <path d="M19 15L20.09 19.26L24 20L20.09 20.74L19 25L17.91 20.74L14 20L17.91 19.26L19 15Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">تثبيت التطبيق</span>
+                        </div>
+                    </button>
+                </li>
+
                 <!-- الإشعارات -->
                 <li class="menu nav-item">
                     <a href="{{ route('notifications.index') }}" class="nav-link group">

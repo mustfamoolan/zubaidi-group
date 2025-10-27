@@ -9,10 +9,9 @@
     }
 @endphp
 
+<x-layout.company :company="$company" title="تعديل الفاتورة">
     <script src="{{ asset('assets/js/number-formatter.js') }}"></script>
     <link rel='stylesheet' type='text/css' href='{{ Vite::asset('resources/css/nice-select2.css') }}'>
-
-    <div x-data="{ shippingStatus: '{{ $invoice->shipping_status }}' }">
     <style>
         .nice-select .list {
             max-height: 300px !important;
@@ -41,7 +40,7 @@
         }
     </style>
 
-    <div class="panel">
+    <div class="panel" x-data="{ shippingStatus: '{{ $invoice->shipping_status }}' }">
         <div class="flex items-center justify-between mb-5">
             <h5 class="font-semibold text-lg dark:text-white-light">تعديل الفاتورة #{{ $invoice->invoice_number }}</h5>
         </div>
@@ -255,6 +254,5 @@
             }
         });
     </script>
-    </div>
 </x-layout.company>
 

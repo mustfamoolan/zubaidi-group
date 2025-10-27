@@ -35,9 +35,18 @@ class QuickUpdateController extends Controller
             'status' => $request->status,
         ]);
 
+        // تحديث حالة الفواتير المرتبطة بالشحنة
+        $newInvoiceStatus = $request->status === 'shipped' ? 'shipped' : 'not_shipped';
+
+        foreach ($shipment->invoices as $invoice) {
+            $invoice->update([
+                'shipping_status' => $newInvoiceStatus,
+            ]);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديث حالة الشحن بنجاح',
+            'message' => 'تم تحديث حالة الشحن والفواتير المرتبطة بنجاح',
         ]);
     }
 
