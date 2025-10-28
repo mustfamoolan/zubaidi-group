@@ -59,6 +59,15 @@ class ShipmentController extends Controller
         // ربط الشحنة بالفواتير
         if ($request->has('invoices')) {
             $shipment->invoices()->attach($request->invoices);
+            
+            // تحديث حالة الفواتير المرتبطة
+            $newInvoiceStatus = $request->status === 'shipped' ? 'shipped' : 'not_shipped';
+            
+            foreach ($shipment->invoices as $invoice) {
+                $invoice->update([
+                    'shipping_status' => $newInvoiceStatus,
+                ]);
+            }
         }
 
         return redirect()->route('companies.shipments.index', $company)
@@ -129,11 +138,23 @@ class ShipmentController extends Controller
         }
 
         // تحديث الحالات مع الإشعارات
+        $oldStatus = $shipment->status;
         $oldReceivedStatus = $shipment->received_status;
         $oldEntryStatus = $shipment->entry_status;
         $oldEntryPermitStatus = $shipment->entry_permit_status;
 
         $shipment->update($data);
+
+        // تحديث حالة الفواتير المرتبطة إذا تغيرت حالة الشحن
+        if ($request->has('status') && $request->status !== $oldStatus) {
+            $newInvoiceStatus = $request->status === 'shipped' ? 'shipped' : 'not_shipped';
+            
+            foreach ($shipment->invoices as $invoice) {
+                $invoice->update([
+                    'shipping_status' => $newInvoiceStatus,
+                ]);
+            }
+        }
 
         // إنشاء إشعارات إذا تم تغيير الحالات
         if ($request->has('received_status') && $request->received_status !== $oldReceivedStatus) {
@@ -230,6 +251,15 @@ class ShipmentController extends Controller
         ]);
 
         $shipment->invoices()->attach($request->invoice_id);
+
+        // تحديث حالة الفاتورة المرتبطة لتتطابق مع حالة الشحنة
+        $invoice = Invoice::find($request->invoice_id);
+        if ($invoice) {
+            $newInvoiceStatus = $shipment->status === 'shipped' ? 'shipped' : 'not_shipped';
+            $invoice->update([
+                'shipping_status' => $newInvoiceStatus,
+            ]);
+        }
 
         return redirect()->route('companies.shipments.show', [$company, $shipment])
             ->with('success', 'تم ربط الفاتورة بالشحنة بنجاح');
