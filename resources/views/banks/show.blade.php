@@ -84,7 +84,7 @@
                             @endphp
                             <tr>
                                 <td>{{ $bank->transactions->count() - $loop->index }}</td>
-                                <td>{{ $transaction->created_at->format('d M Y') }}</td>
+                                <td>{{ $transaction->created_at->format('Y/n/j') }}</td>
                                 <td>
                                     @if($transaction->type === 'deposit')
                                         <span class="badge bg-success">إيداع</span>
