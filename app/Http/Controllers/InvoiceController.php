@@ -163,8 +163,8 @@ class InvoiceController extends Controller
             'shipping_status' => $request->shipping_status,
         ]);
 
-        // التعامل مع الحركات المصرفية
-        $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, 'paid');
+        // التعامل مع الحركات المصرفية وإرجاع رسالة تفصيلية
+        $bankMessage = $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, 'paid');
 
         // تحديث ربط الفاتورة بالشحنات
         if ($request->shipping_status === 'shipped') {
@@ -176,8 +176,13 @@ class InvoiceController extends Controller
             $invoice->shipments()->detach();
         }
 
+        $successMessage = 'تم تحديث الفاتورة بنجاح';
+        if ($bankMessage) {
+            $successMessage .= ' - ' . $bankMessage;
+        }
+
         return redirect()->route('companies.invoices.index', $company)
-            ->with('success', 'تم تحديث الفاتورة بنجاح وتم تحديث حركة المصرف');
+            ->with('success', $successMessage);
     }
 
     /**
@@ -185,21 +190,73 @@ class InvoiceController extends Controller
      */
     private function handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $newBankId, $newAmount, $newStatus)
     {
-        // إذا كانت الفاتورة مدفوعة سابقاً، نرجع المبلغ
+        // حالة تعديل داخل نفس المصرف مع بقاء الحالة مدفوعة: سجل فرق المبلغ فقط
+        if ($oldBankId && $newBankId && $oldBankId === $newBankId && $oldStatus === 'paid' && $newStatus === 'paid') {
+            $delta = round($newAmount - $oldAmount, 2);
+            if ($delta == 0.0) {
+                return 'لا توجد تغييرات على حركة المصرف (المبلغ لم يتغير)';
+            }
+
+            $bank = \App\Models\Bank::find($newBankId);
+            if (!$bank) {
+                return null;
+            }
+
+            // إنشاء حركة واحدة بفرق المبلغ
+            if ($delta > 0) {
+                // زيادة المبلغ: خصم فرق المبلغ
+                $bank->transactions()->create([
+                    'type' => 'invoice_deduction',
+                    'amount' => $delta,
+                    'description' => "تعديل الفاتورة: فرق خصم +{$delta}",
+                    'reference_id' => $invoice->id,
+                    'reference_type' => \App\Models\Invoice::class,
+                    'date' => $invoice->invoice_date,
+                ]);
+            } else {
+                // نقصان المبلغ: إيداع فرق المبلغ
+                $bank->transactions()->create([
+                    'type' => 'deposit',
+                    'amount' => abs($delta),
+                    'description' => "تعديل الفاتورة: فرق إيداع ".abs($delta),
+                    'reference_id' => $invoice->id,
+                    'reference_type' => \App\Models\Invoice::class,
+                    'date' => $invoice->invoice_date,
+                ]);
+            }
+
+            $bank->updateBalance();
+
+            $oldFormatted = number_format($oldAmount, 2);
+            $newFormatted = number_format($newAmount, 2);
+            $deltaFormatted = number_format(abs($delta), 2);
+            $deltaSign = $delta > 0 ? '+' : '-';
+            return "تأثير على المصرف: المبلغ القديم {$oldFormatted} → الجديد {$newFormatted} (فرق {$deltaSign}{$deltaFormatted}) وتاريخ الحركة {$invoice->invoice_date->format('Y-m-d')}";
+        }
+
+        // في حال تغيير المصرف أو تغيّر الحالة: استرجاع ثم خصم كامل (السلوك الحالي)
+        $messages = [];
         if ($oldStatus === 'paid' && $oldBankId) {
             $oldBank = \App\Models\Bank::find($oldBankId);
             if ($oldBank) {
                 $oldBank->refundInvoiceWithDetails($invoice, 'تعديل الفاتورة');
+                $messages[] = 'تم إيداع مبلغ الفاتورة في المصرف القديم';
             }
         }
 
-        // إذا أصبحت الفاتورة مدفوعة الآن، نخصم المبلغ
         if ($newStatus === 'paid' && $newBankId) {
             $newBank = \App\Models\Bank::find($newBankId);
             if ($newBank) {
                 $newBank->deductInvoiceWithDetails($invoice, 'تحديث الفاتورة');
+                $messages[] = 'تم خصم مبلغ الفاتورة من المصرف الجديد';
             }
         }
+
+        if (!empty($messages)) {
+            return implode('، ', $messages);
+        }
+        
+        return null;
     }
 
     /**
@@ -506,3 +563,4 @@ class InvoiceController extends Controller
         return view('invoices.print-all', compact('company', 'invoices', 'totalAmountUsd', 'totalAmountIqd'));
     }
 }
+
