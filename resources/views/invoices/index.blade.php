@@ -275,6 +275,7 @@
                         invoice: '{{ $invoice->invoice_number }}',
                         name: '{{ $invoice->beneficiary->name ?? $invoice->beneficiary_company }}',
                         bank: '{{ $invoice->bank->name ?? "غير محدد" }}',
+                        shipments: `{!! $invoice->shipments && $invoice->shipments->isNotEmpty() ? $invoice->shipments->map(fn($sh) => '<span class=\'badge bg-info/20 text-info\'>'.$sh->container_number.'</span>')->implode(' ') : '-' !!}`,
                         date: '{{ $invoice->invoice_date->format("d M Y") }}',
                         amount: '{{ number_format($invoice->total_amount_iqd ?? $invoice->amount, 2) }}',
                         status: '{{ $invoice->shipping_status === "shipped" ? "مشحونة" : "غير مشحونة" }}',
@@ -324,6 +325,7 @@
                                 "رقم الفاتورة",
                                 "الشركة المستفيدة",
                                 "المصرف",
+                                "الشحنات",
                                 "التاريخ",
                                 "المبلغ",
                                 "الحالة",
@@ -348,13 +350,19 @@
                                 }
                             },
                             {
-                                select: 5,
+                                select: 4,
+                                render: function(data, cell, row) {
+                                    return data;
+                                }
+                            },
+                            {
+                                select: 6,
                                 render: function(data, cell, row) {
                                     return '<div class="font-semibold">' + data + ' دينار</div>';
                                 }
                             },
                             {
-                                select: 6,
+                                select: 7,
                                 render: function(data, cell, row) {
                                     let statusText = data;
                                     let styleClass = statusText == 'مشحونة' ? 'badge-outline-success' : 'badge-outline-warning';
@@ -362,7 +370,7 @@
                                 },
                             },
                             {
-                                select: 7,
+                                select: 8,
                                 sortable: false,
                                 render: function(data, cell, row) {
                                     let invoiceId = row.cells[0].data;

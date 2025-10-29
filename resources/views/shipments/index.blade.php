@@ -50,6 +50,7 @@
                         id: {{ $shipment->id }},
                         container_number: '{{ $shipment->container_number }}',
                         policy_number: '{{ $shipment->policy_number }}',
+                        invoices: `{!! $shipment->invoices->isNotEmpty() ? $shipment->invoices->map(fn($inv) => '<span class=\'badge bg-primary/20 text-primary\'>#'.$inv->invoice_number.'</span>')->implode(' ') : '-' !!}`,
                         container_size: '{{ $shipment->container_size ?? "-" }}',
                         shipping_date: '{{ $shipment->shipping_date->format("d M Y") }}',
                         status: '{{ $shipment->status === "shipped" ? "مشحون" : "غير مشحون" }}',
@@ -86,6 +87,7 @@
                                 '<input type="checkbox" class="form-checkbox" :checked="checkAllCheckbox" :value="checkAllCheckbox" @change="checkAll($event.target.checked)"/>',
                                 "رقم الحاوية",
                                 "رقم البوليصة",
+                                "الفواتير",
                                 "حجم الحاوية",
                                 "تاريخ الشحن",
                                 "حالة الشحن",
@@ -112,35 +114,41 @@
                                 }
                             },
                             {
-                                select: 4,
+                                select: 3,
+                                render: function(data, cell, row) {
+                                    return data;
+                                },
+                            },
+                            {
+                                select: 5,
                                 render: function(data, cell, row) {
                                     let styleClass = data == 'مشحون' ? 'badge-outline-success' : 'badge-outline-warning';
                                     return '<span class="badge ' + styleClass + '">' + data + '</span>';
                                 },
                             },
                             {
-                                select: 5,
+                                select: 6,
                                 render: function(data, cell, row) {
                                     let styleClass = data == 'مستلمة' ? 'badge-outline-success' : 'badge-outline-danger';
                                     return '<span class="badge ' + styleClass + '">' + data + '</span>';
                                 },
                             },
                             {
-                                select: 6,
+                                select: 7,
                                 render: function(data, cell, row) {
                                     let styleClass = data == 'داخلة' ? 'badge-outline-success' : 'badge-outline-danger';
                                     return '<span class="badge ' + styleClass + '">' + data + '</span>';
                                 },
                             },
                             {
-                                select: 7,
+                                select: 8,
                                 render: function(data, cell, row) {
                                     let styleClass = data == 'مستلم' ? 'badge-outline-success' : 'badge-outline-warning';
                                     return '<span class="badge ' + styleClass + '">' + data + '</span>';
                                 },
                             },
                             {
-                                select: 8,
+                                select: 9,
                                 sortable: false,
                                 render: function(data, cell, row) {
                                     let shipmentId = row.cells[0].data;
