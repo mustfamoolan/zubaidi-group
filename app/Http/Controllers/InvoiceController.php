@@ -140,6 +140,7 @@ class InvoiceController extends Controller
         $oldBankId = $invoice->bank_id;
         $oldAmount = $invoice->getAmountForDeduction();
         $oldStatus = $invoice->status;
+        $oldInvoiceDate = $invoice->invoice_date;
 
         // حساب المبلغ الإجمالي الجديد بالدينار العراقي
         $totalAmountIqd = ($request->amount_usd * $request->exchange_rate) + ($request->bank_commission ?? 0);
@@ -164,7 +165,7 @@ class InvoiceController extends Controller
         ]);
 
         // التعامل مع الحركات المصرفية وإرجاع رسالة تفصيلية
-        $bankMessage = $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, 'paid');
+        $bankMessage = $this->handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $request->bank_id, $totalAmountIqd, 'paid', $oldInvoiceDate);
 
         // تحديث ربط الفاتورة بالشحنات
         if ($request->shipping_status === 'shipped') {
@@ -188,10 +189,19 @@ class InvoiceController extends Controller
     /**
      * إدارة الحركات المصرفية المبسطة
      */
-    private function handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $newBankId, $newAmount, $newStatus)
+    private function handleBankTransactions($invoice, $oldBankId, $oldAmount, $oldStatus, $newBankId, $newAmount, $newStatus, $oldInvoiceDate = null)
     {
-        // حالة تعديل داخل نفس المصرف مع بقاء الحالة مدفوعة: سجل فرق المبلغ فقط
-        if ($oldBankId && $newBankId && $oldBankId === $newBankId && $oldStatus === 'paid' && $newStatus === 'paid') {
+        // إذا لم يكن هناك مصرف قديم أو جديد، لا نفعل شيء
+        if (!$oldBankId && !$newBankId) {
+            return null;
+        }
+
+        // حالة تعديل داخل نفس المصرف: سجل فرق المبلغ فقط
+        // تحويل إلى integer للمقارنة الصحيحة
+        $oldBankIdInt = (int) $oldBankId;
+        $newBankIdInt = (int) $newBankId;
+
+        if ($oldBankId && $newBankId && $oldBankIdInt === $newBankIdInt) {
             $delta = round($newAmount - $oldAmount, 2);
             if ($delta == 0.0) {
                 return 'لا توجد تغييرات على حركة المصرف (المبلغ لم يتغير)';
@@ -231,23 +241,42 @@ class InvoiceController extends Controller
             $newFormatted = number_format($newAmount, 2);
             $deltaFormatted = number_format(abs($delta), 2);
             $deltaSign = $delta > 0 ? '+' : '-';
-            return "تأثير على المصرف: المبلغ القديم {$oldFormatted} → الجديد {$newFormatted} (فرق {$deltaSign}{$deltaFormatted}) وتاريخ الحركة {$invoice->invoice_date->format('Y-m-d')}";
+            $invoiceDate = is_string($invoice->invoice_date) ? $invoice->invoice_date : $invoice->invoice_date->format('Y-m-d');
+            return "تأثير على المصرف: المبلغ القديم {$oldFormatted} → الجديد {$newFormatted} (فرق {$deltaSign}{$deltaFormatted}) وتاريخ الحركة {$invoiceDate}";
         }
 
-        // في حال تغيير المصرف أو تغيّر الحالة: استرجاع ثم خصم كامل (السلوك الحالي)
+        // في حال تغيير المصرف: استرجاع ثم خصم كامل (السلوك الحالي)
         $messages = [];
-        if ($oldStatus === 'paid' && $oldBankId) {
+        if ($oldBankId) {
             $oldBank = \App\Models\Bank::find($oldBankId);
             if ($oldBank) {
-                $oldBank->refundInvoiceWithDetails($invoice, 'تعديل الفاتورة');
+                // استخدام المبلغ القديم للإرجاع
+                $oldBank->transactions()->create([
+                    'type' => 'deposit',
+                    'amount' => $oldAmount,
+                    'description' => "إرجاع فاتورة رقم {$invoice->invoice_number} - {$invoice->beneficiary_company} (تعديل الفاتورة)",
+                    'reference_id' => $invoice->id,
+                    'reference_type' => \App\Models\Invoice::class,
+                    'date' => $oldInvoiceDate ?? $invoice->invoice_date,
+                ]);
+                $oldBank->updateBalance();
                 $messages[] = 'تم إيداع مبلغ الفاتورة في المصرف القديم';
             }
         }
 
-        if ($newStatus === 'paid' && $newBankId) {
+        if ($newBankId) {
             $newBank = \App\Models\Bank::find($newBankId);
             if ($newBank) {
-                $newBank->deductInvoiceWithDetails($invoice, 'تحديث الفاتورة');
+                // استخدام المبلغ الجديد للخصم
+                $newBank->transactions()->create([
+                    'type' => 'invoice_deduction',
+                    'amount' => $newAmount,
+                    'description' => "خصم فاتورة رقم {$invoice->invoice_number} - {$invoice->beneficiary_company} (تحديث الفاتورة)",
+                    'reference_id' => $invoice->id,
+                    'reference_type' => \App\Models\Invoice::class,
+                    'date' => $invoice->invoice_date,
+                ]);
+                $newBank->updateBalance();
                 $messages[] = 'تم خصم مبلغ الفاتورة من المصرف الجديد';
             }
         }
@@ -255,7 +284,7 @@ class InvoiceController extends Controller
         if (!empty($messages)) {
             return implode('، ', $messages);
         }
-        
+
         return null;
     }
 
@@ -364,7 +393,7 @@ class InvoiceController extends Controller
                 <td style="width: 50%;">
                     <strong>معلومات الفاتورة</strong><br>
                     رقم الفاتورة: #' . $invoice->invoice_number . '<br>
-                    تاريخ الإصدار: ' . $invoice->invoice_date->format('Y-m-d') . '<br>
+                    تاريخ الإصدار: ' . (is_string($invoice->invoice_date) ? $invoice->invoice_date : $invoice->invoice_date->format('Y-m-d')) . '<br>
                     الحالة: ' . ($invoice->status === 'paid' ? 'مدفوعة' : 'غير مدفوعة') . '
                 </td>
                 <td style="width: 50%;">
@@ -536,7 +565,7 @@ class InvoiceController extends Controller
                     'notifiable_id' => $invoice->id,
                     'notifiable_type' => \App\Models\Invoice::class,
                     'type' => 'unshipped_invoice',
-                    'message' => "تم إنشاء فاتورة جديدة غير مشحونة #{$invoice->invoice_number} بتاريخ {$invoice->invoice_date->format('Y-m-d')}",
+                    'message' => "تم إنشاء فاتورة جديدة غير مشحونة #{$invoice->invoice_number} بتاريخ " . (is_string($invoice->invoice_date) ? $invoice->invoice_date : $invoice->invoice_date->format('Y-m-d')),
                 ]);
             }
 
