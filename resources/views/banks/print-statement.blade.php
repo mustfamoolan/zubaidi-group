@@ -252,7 +252,7 @@
                 @endphp
                 <tr>
                     <td>{{ $transactionNumber++ }}</td>
-                    <td>{{ \Carbon\Carbon::parse($transaction->date)->format('Y-m-d') }}</td>
+                    <td>{{ $transaction->created_at->format('Y-m-d') }}</td>
                     <td>
                         @if($transaction->type === 'deposit')
                             <span class="transaction-type type-deposit">إيداع</span>
