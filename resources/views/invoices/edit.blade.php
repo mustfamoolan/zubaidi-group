@@ -97,7 +97,7 @@
             <div class="mb-5">
                 <label for="total_amount_iqd">المبلغ الإجمالي (دينار عراقي)</label>
                 <div class="flex">
-                    <input id="total_amount_iqd" name="total_amount_iqd" type="number" step="0.01" value="{{ old('total_amount_iqd', $invoice->total_amount_iqd) }}" class="form-input rounded-none bg-gray-100" readonly />
+                    <input id="total_amount_iqd" name="total_amount_iqd" type="text" step="0.01" value="{{ old('total_amount_iqd', number_format($invoice->total_amount_iqd, 2)) }}" class="form-input rounded-none bg-gray-100 number-input" readonly />
                     <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار</div>
                 </div>
                 <small class="text-gray-500">يتم حسابه تلقائياً: (المبلغ بالدولار × سعر الصرف) + عمولة المصرف</small>
