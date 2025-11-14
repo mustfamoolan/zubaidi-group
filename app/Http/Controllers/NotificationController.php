@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,14 +12,34 @@ class NotificationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Company $company = null)
     {
-        $notifications = Notification::where('user_id', Auth::id())
-            ->with('notifiable')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $query = Notification::where('user_id', Auth::id());
 
-        return view('notifications.index', compact('notifications'));
+        // تصفية حسب الشركة إذا تم تمريرها
+        if ($company) {
+            $query->whereHasMorph('notifiable', [\App\Models\Shipment::class, \App\Models\Invoice::class], function ($q) use ($company) {
+                $q->where('company_id', $company->id);
+            });
+        }
+
+        $notifications = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // تحميل notifiable أولاً
+        $notifications->load('notifiable');
+
+        // ثم تحميل company لكل نوع
+        foreach ($notifications as $notification) {
+            if ($notification->notifiable) {
+                if ($notification->notifiable instanceof \App\Models\Shipment) {
+                    $notification->notifiable->load('company');
+                } elseif ($notification->notifiable instanceof \App\Models\Invoice) {
+                    $notification->notifiable->load('company');
+                }
+            }
+        }
+
+        return view('notifications.index', compact('notifications', 'company'));
     }
 
     /**
@@ -56,11 +77,19 @@ class NotificationController extends Controller
     /**
      * Mark all notifications as read.
      */
-    public function markAllAsRead()
+    public function markAllAsRead(Company $company = null)
     {
-        Notification::where('user_id', Auth::id())
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+        $query = Notification::where('user_id', Auth::id())
+            ->whereNull('read_at');
+
+        // تصفية حسب الشركة إذا تم تمريرها
+        if ($company) {
+            $query->whereHasMorph('notifiable', [\App\Models\Shipment::class, \App\Models\Invoice::class], function ($q) use ($company) {
+                $q->where('company_id', $company->id);
+            });
+        }
+
+        $query->update(['read_at' => now()]);
 
         return redirect()->back()->with('success', 'تم تحديد جميع الإشعارات كمقروءة');
     }
@@ -68,11 +97,19 @@ class NotificationController extends Controller
     /**
      * Get unread notifications count.
      */
-    public function getUnreadCount()
+    public function getUnreadCount(Company $company = null)
     {
-        $count = Notification::where('user_id', Auth::id())
-            ->whereNull('read_at')
-            ->count();
+        $query = Notification::where('user_id', Auth::id())
+            ->whereNull('read_at');
+
+        // تصفية حسب الشركة إذا تم تمريرها
+        if ($company) {
+            $query->whereHasMorph('notifiable', [\App\Models\Shipment::class, \App\Models\Invoice::class], function ($q) use ($company) {
+                $q->where('company_id', $company->id);
+            });
+        }
+
+        $count = $query->count();
 
         return response()->json(['count' => $count]);
     }

@@ -59,10 +59,10 @@ class ShipmentController extends Controller
         // ربط الشحنة بالفواتير
         if ($request->has('invoices')) {
             $shipment->invoices()->attach($request->invoices);
-            
+
             // تحديث حالة الفواتير المرتبطة
             $newInvoiceStatus = $request->status === 'shipped' ? 'shipped' : 'not_shipped';
-            
+
             foreach ($shipment->invoices as $invoice) {
                 $invoice->update([
                     'shipping_status' => $newInvoiceStatus,
@@ -148,7 +148,7 @@ class ShipmentController extends Controller
         // تحديث حالة الفواتير المرتبطة إذا تغيرت حالة الشحن
         if ($request->has('status') && $request->status !== $oldStatus) {
             $newInvoiceStatus = $request->status === 'shipped' ? 'shipped' : 'not_shipped';
-            
+
             foreach ($shipment->invoices as $invoice) {
                 $invoice->update([
                     'shipping_status' => $newInvoiceStatus,

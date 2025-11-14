@@ -323,7 +323,10 @@
                 </div>
 
                 <div class="dropdown" x-data="dropdown" @click.outside="open = false">
-                    <a href="{{ route('notifications.index') }}"
+                    @php
+                        $currentCompany = request()->route('company');
+                    @endphp
+                    <a href="{{ $currentCompany ? route('companies.notifications.index', $currentCompany) : route('notifications.index') }}"
                         class="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
@@ -375,7 +378,7 @@
                             </div>
                         </li>
                         @php
-                            $latestNotifications = auth()->check() ? \App\Models\Notification::where('user_id', auth()->id())->orderBy('created_at', 'desc')->limit(5)->get() : collect([]);
+                            $latestNotifications = auth()->check() ? \App\Models\Notification::where('user_id', auth()->id())->with('notifiable.company')->orderBy('created_at', 'desc')->limit(5)->get() : collect([]);
                         @endphp
                         @forelse($latestNotifications as $notification)
                             <li class=" dark:text-white-light/90 ">
@@ -390,9 +393,16 @@
                                     <div class="ltr:pl-3 rtl:pr-3 flex flex-auto">
                                         <div class="ltr:pr-3 rtl:pl-3">
                                             <h6 class="text-sm">{{ Str::limit($notification->message, 50) }}</h6>
-                                            <span class="text-xs block font-normal dark:text-gray-500">
-                                                {{ $notification->created_at->diffForHumans() }}
-                                            </span>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                @if($notification->notifiable && $notification->notifiable->company)
+                                                    <span class="text-xs inline-flex items-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">
+                                                        {{ $notification->notifiable->company->name }}
+                                                    </span>
+                                                @endif
+                                                <span class="text-xs block font-normal dark:text-gray-500">
+                                                    {{ $notification->created_at->diffForHumans() }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -421,7 +431,10 @@
                         @if($latestNotifications->count() > 0)
                             <li>
                                 <div class="p-4">
-                                    <a href="{{ route('notifications.index') }}" class="btn btn-primary block w-full btn-small" @click="toggle">عرض جميع الإشعارات</a>
+                                    @php
+                                        $currentCompany = request()->route('company');
+                                    @endphp
+                                    <a href="{{ $currentCompany ? route('companies.notifications.index', $currentCompany) : route('notifications.index') }}" class="btn btn-primary block w-full btn-small" @click="toggle">عرض جميع الإشعارات</a>
                                 </div>
                             </li>
                         @endif
@@ -466,7 +479,10 @@
                                 الشركات</a>
                         </li>
                         <li>
-                            <a href="{{ route('notifications.index') }}" class="dark:hover:text-white" @click="toggle">
+                            @php
+                                $currentCompany = request()->route('company');
+                            @endphp
+                            <a href="{{ $currentCompany ? route('companies.notifications.index', $currentCompany) : route('notifications.index') }}" class="dark:hover:text-white" @click="toggle">
                                 <svg class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" width="18" height="18"
                                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path

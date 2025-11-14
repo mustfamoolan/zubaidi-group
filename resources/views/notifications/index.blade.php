@@ -1,25 +1,12 @@
-@php
-    // تحديد الشركة من آخر شركة زارها المستخدم (من الـ session أو من آخر إشعار)
-    $currentCompany = null;
-    if (session('last_company_id')) {
-        $currentCompany = \App\Models\Company::find(session('last_company_id'));
-    } elseif ($notifications->first() && $notifications->first()->notifiable) {
-        $currentCompany = $notifications->first()->notifiable->company;
-        if ($currentCompany) {
-            session(['last_company_id' => $currentCompany->id]);
-        }
-    }
-@endphp
-
-@if($currentCompany)
-    <x-layout.company :company="$currentCompany">
+@if($company)
+    <x-layout.company :company="$company">
         <div>
             <ul class="flex space-x-2 rtl:space-x-reverse">
                 <li>
                     <a href="{{ route('companies.index') }}" class="text-primary hover:underline">الشركات</a>
                 </li>
                 <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                    <a href="{{ route('companies.show', $currentCompany) }}" class="text-primary hover:underline">{{ $currentCompany->name }}</a>
+                    <a href="{{ route('companies.show', $company) }}" class="text-primary hover:underline">{{ $company->name }}</a>
                 </li>
                 <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
                     <span>الإشعارات</span>
@@ -36,7 +23,7 @@
 
                 <div class="panel">
                     <div class="flex items-center justify-between mb-5">
-                        <h5 class="font-semibold text-lg dark:text-white-light">الإشعارات</h5>
+                        <h5 class="font-semibold text-lg dark:text-white-light">إشعارات {{ $company->name }}</h5>
                         <div class="flex items-center gap-2">
                             <span class="badge bg-primary">{{ $notifications->count() }} إشعار</span>
                         </div>
@@ -74,6 +61,11 @@
                                                 {{ $notification->message }}
                                             </p>
                                             <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                                                @if($notification->notifiable && $notification->notifiable->company)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">
+                                                        {{ $notification->notifiable->company->name }}
+                                                    </span>
+                                                @endif
                                                 <span>{{ $notification->created_at->diffForHumans() }}</span>
                                                 @if($notification->sent_at)
                                                     <span class="flex items-center gap-1">
@@ -140,7 +132,7 @@
         </div>
     </x-layout.company>
 @else
-    <x-layout.default>
+    <x-layout.custom-default>
         <div>
             <ul class="flex space-x-2 rtl:space-x-reverse">
                 <li>
@@ -199,6 +191,11 @@
                                                 {{ $notification->message }}
                                             </p>
                                             <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                                                @if($notification->notifiable && $notification->notifiable->company)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">
+                                                        {{ $notification->notifiable->company->name }}
+                                                    </span>
+                                                @endif
                                                 <span>{{ $notification->created_at->diffForHumans() }}</span>
                                                 @if($notification->sent_at)
                                                     <span class="flex items-center gap-1">
@@ -263,5 +260,5 @@
                 </div>
             </div>
         </div>
-    </x-layout.default>
+    </x-layout.custom-default>
 @endif

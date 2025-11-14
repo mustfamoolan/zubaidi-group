@@ -63,6 +63,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('companies/{company}/shipments/{shipment}/quick-update-entry-permit', [\App\Http\Controllers\QuickUpdateController::class, 'updateEntryPermitStatusQuick'])->name('companies.shipments.quick-update-entry-permit');
 
     // Notifications
+    // Route للإشعارات مع شركة محددة
+    Route::get('companies/{company}/notifications', [NotificationController::class, 'index'])->name('companies.notifications.index');
+    Route::patch('companies/{company}/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('companies.notifications.mark-all-as-read');
+    Route::get('companies/{company}/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('companies.notifications.unread-count');
+    // Route للإشعارات العامة (للتوافق)
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
     Route::post('notifications/{notification}/resend-email', [NotificationController::class, 'resendEmail'])->name('notifications.resend-email');

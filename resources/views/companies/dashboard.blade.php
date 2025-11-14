@@ -140,7 +140,7 @@
             <div class="panel h-full">
                 <div class="flex items-center justify-between mb-5">
                     <h5 class="font-semibold text-lg dark:text-white-light">آخر الإشعارات</h5>
-                    <a href="{{ route('notifications.index') }}" class="text-primary hover:underline text-sm">عرض الكل</a>
+                    <a href="{{ route('companies.notifications.index', $company) }}" class="text-primary hover:underline text-sm">عرض الكل</a>
                 </div>
                 <div class="space-y-4">
                     @forelse($recentNotifications->take(5) as $notification)
