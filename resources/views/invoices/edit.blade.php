@@ -95,6 +95,14 @@
             </div>
 
             <div class="mb-5">
+                <label for="bank_commission_display">مبلغ العمولة (دينار عراقي)</label>
+                <div class="flex">
+                    <input id="bank_commission_display" type="text" value="{{ old('bank_commission_display', number_format($invoice->bank_commission ?? 0, 2)) }}" class="form-input rounded-none bg-gray-100 number-input" readonly />
+                    <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار</div>
+                </div>
+            </div>
+
+            <div class="mb-5">
                 <label for="total_amount_iqd">المبلغ الإجمالي (دينار عراقي)</label>
                 <div class="flex">
                     <input id="total_amount_iqd" name="total_amount_iqd" type="text" step="0.01" value="{{ old('total_amount_iqd', number_format($invoice->total_amount_iqd, 2)) }}" class="form-input rounded-none bg-gray-100 number-input" readonly />
@@ -218,6 +226,11 @@
             const commissionInput = document.getElementById('bank_commission');
             if (commissionInput) {
                 commissionInput.value = bankCommission.toFixed(2);
+            }
+
+            const commissionDisplayInput = document.getElementById('bank_commission_display');
+            if (commissionDisplayInput) {
+                commissionDisplayInput.value = NumberFormatter.addThousandSeparator(bankCommission.toFixed(2));
             }
 
             const totalInput = document.getElementById('total_amount_iqd');

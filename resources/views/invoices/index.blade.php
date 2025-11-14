@@ -153,6 +153,14 @@
                         </div>
 
                         <div class="mb-5">
+                            <label for="bank_commission_display">مبلغ العمولة (دينار عراقي)</label>
+                            <div class="flex">
+                                <input id="bank_commission_display" type="text" value="0.00" class="form-input rounded-none bg-gray-100 number-input" readonly />
+                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">دينار</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
                             <label for="total_amount_iqd">المبلغ الإجمالي (دينار عراقي)</label>
                             <div class="flex">
                                 <input id="total_amount_iqd" name="total_amount_iqd" type="text" step="0.01" placeholder="0.00" class="form-input rounded-none bg-gray-100 number-input" readonly />
@@ -259,6 +267,11 @@
                 commissionInput.value = bankCommission.toFixed(2);
             }
 
+            const commissionDisplayInput = document.getElementById('bank_commission_display');
+            if (commissionDisplayInput) {
+                commissionDisplayInput.value = NumberFormatter.addThousandSeparator(bankCommission.toFixed(2));
+            }
+
             const totalInput = document.getElementById('total_amount_iqd');
             if (totalInput) {
                 totalInput.value = NumberFormatter.addThousandSeparator(totalAmount.toFixed(2));
@@ -278,6 +291,7 @@
                         shipments: `{!! $invoice->shipments && $invoice->shipments->isNotEmpty() ? $invoice->shipments->map(fn($sh) => '<span class=\'badge bg-info/20 text-info\'>'.$sh->container_number.'</span>')->implode(' ') : '-' !!}`,
                         date: '{{ $invoice->invoice_date->format("d M Y") }}',
                         amount: '{{ number_format($invoice->total_amount_iqd ?? $invoice->amount, 2) }}',
+                        commission: '{{ number_format($invoice->bank_commission ?? 0, 2) }}',
                         status: '{{ $invoice->shipping_status === "shipped" ? "مشحونة" : "غير مشحونة" }}',
                         action: {{ $invoice->id }},
                     },
@@ -328,6 +342,7 @@
                                 "الشحنات",
                                 "التاريخ",
                                 "المبلغ",
+                                "عمولة المصرف",
                                 "الحالة",
                                 "الإجراءات",
                             ],
@@ -364,13 +379,19 @@
                             {
                                 select: 7,
                                 render: function(data, cell, row) {
+                                    return '<div class="text-sm text-gray-600 dark:text-gray-400">' + data + ' دينار</div>';
+                                }
+                            },
+                            {
+                                select: 8,
+                                render: function(data, cell, row) {
                                     let statusText = data;
                                     let styleClass = statusText == 'مشحونة' ? 'badge-outline-success' : 'badge-outline-warning';
                                     return '<span class="badge ' + styleClass + '">' + statusText + '</span>';
                                 },
                             },
                             {
-                                select: 8,
+                                select: 9,
                                 sortable: false,
                                 render: function(data, cell, row) {
                                     let invoiceId = row.cells[0].data;
@@ -470,12 +491,18 @@
                 setTableData() {
                     this.dataArr = [];
                     for (let i = 0; i < this.items.length; i++) {
-                        this.dataArr[i] = [];
-                        for (let p in this.items[i]) {
-                            if (this.items[i].hasOwnProperty(p)) {
-                                this.dataArr[i].push(this.items[i][p]);
-                            }
-                        }
+                        this.dataArr[i] = [
+                            this.items[i].id,
+                            this.items[i].invoice,
+                            this.items[i].name,
+                            this.items[i].bank,
+                            this.items[i].shipments,
+                            this.items[i].date,
+                            this.items[i].amount,
+                            this.items[i].commission,
+                            this.items[i].status,
+                            this.items[i].action,
+                        ];
                     }
                 },
 
