@@ -65,25 +65,33 @@
                             <th>التاريخ</th>
                             <th>النوع</th>
                             <th>الوصف</th>
-                            <th>المبلغ</th>
+                            <th>المبلغ الكلي</th>
+                            <th>بدون عمولة</th>
+                            <th>عمولة</th>
                             <th>الرصيد بعد العملية</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
-                            $runningBalance = $bank->opening_balance;
+                            // حساب الرصيد من الأحدث للأقدم (نبدأ من الرصيد الحالي ونرجع للخلف)
+                            $runningBalance = $bank->current_balance;
                         @endphp
 
-                        @forelse($bank->transactions->reverse() as $transaction)
+                        @forelse($bank->transactions as $transaction)
                             @php
+                                // حساب الرصيد بعد هذه العملية (نبدأ من current_balance ونرجع للخلف)
+                                // أولاً نحسب الرصيد بعد العملية
+                                $balanceAfterTransaction = $runningBalance;
+
+                                // ثم نحسب الرصيد قبل العملية للحركة التالية
                                 if ($transaction->type === 'deposit') {
-                                    $runningBalance += $transaction->amount;
-                                } else {
                                     $runningBalance -= $transaction->amount;
+                                } else {
+                                    $runningBalance += $transaction->amount;
                                 }
                             @endphp
                             <tr>
-                                <td>{{ $bank->transactions->count() - $loop->index }}</td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $transaction->created_at->format('Y/n/j') }}</td>
                                 <td>
                                     @if($transaction->type === 'deposit')
@@ -103,11 +111,33 @@
                                     @endif
                                     <span class="text-xs">{{ $bank->currency }}</span>
                                 </td>
-                                <td class="font-semibold">{{ number_format($runningBalance, 2) }} {{ $bank->currency }}</td>
+                                <td>
+                                    @if($transaction->reference_type === 'App\\Models\\Invoice' && $transaction->reference)
+                                        @php
+                                            $invoice = $transaction->reference;
+                                            $amountWithoutCommission = ($invoice->total_amount_iqd ?? $invoice->amount ?? 0) - ($invoice->bank_commission ?? 0);
+                                        @endphp
+                                        <span class="text-xs">{{ number_format($amountWithoutCommission, 2) }} {{ $bank->currency }}</span>
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($transaction->reference_type === 'App\\Models\\Invoice' && $transaction->reference)
+                                        @php
+                                            $invoice = $transaction->reference;
+                                            $commission = $invoice->bank_commission ?? 0;
+                                        @endphp
+                                        <span class="text-xs">{{ number_format($commission, 2) }} {{ $bank->currency }}</span>
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="font-semibold">{{ number_format($balanceAfterTransaction, 2) }} {{ $bank->currency }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">لا توجد حركات</td>
+                                <td colspan="8" class="text-center">لا توجد حركات</td>
                             </tr>
                         @endforelse
                     </tbody>

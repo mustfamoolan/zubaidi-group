@@ -54,7 +54,7 @@ class BankController extends Controller
     {
         $bank->load(['transactions' => function($query) {
             $query->orderBy('date', 'desc')->orderBy('created_at', 'desc');
-        }]);
+        }, 'transactions.reference']);
 
         return view('banks.show', compact('company', 'bank'));
     }
@@ -163,7 +163,7 @@ class BankController extends Controller
     {
         $bank->load(['transactions' => function($query) {
             $query->orderBy('date', 'asc')->orderBy('created_at', 'asc');
-        }]);
+        }, 'transactions.reference']);
 
         return view('banks.print-statement', compact('company', 'bank'));
     }

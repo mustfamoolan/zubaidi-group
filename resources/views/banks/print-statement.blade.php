@@ -232,7 +232,9 @@
                 <th>التاريخ</th>
                 <th>النوع</th>
                 <th>الوصف</th>
-                <th>المبلغ</th>
+                <th>المبلغ الكلي</th>
+                <th>بدون عمولة</th>
+                <th>عمولة</th>
                 <th>الرصيد بعد العملية</th>
             </tr>
         </thead>
@@ -271,11 +273,33 @@
                         @endif
                         <span style="font-size: 12px;">{{ $bank->currency }}</span>
                     </td>
+                    <td>
+                        @if($transaction->reference_type === 'App\\Models\\Invoice' && $transaction->reference)
+                            @php
+                                $invoice = $transaction->reference;
+                                $amountWithoutCommission = ($invoice->total_amount_iqd ?? $invoice->amount ?? 0) - ($invoice->bank_commission ?? 0);
+                            @endphp
+                            <span style="font-size: 12px;">{{ number_format($amountWithoutCommission, 2) }} {{ $bank->currency }}</span>
+                        @else
+                            <span style="font-size: 12px; color: #999;">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($transaction->reference_type === 'App\\Models\\Invoice' && $transaction->reference)
+                            @php
+                                $invoice = $transaction->reference;
+                                $commission = $invoice->bank_commission ?? 0;
+                            @endphp
+                            <span style="font-size: 12px;">{{ number_format($commission, 2) }} {{ $bank->currency }}</span>
+                        @else
+                            <span style="font-size: 12px; color: #999;">-</span>
+                        @endif
+                    </td>
                     <td class="amount-positive">{{ number_format($runningBalance, 2) }} {{ $bank->currency }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 20px; color: #666;">لا توجد حركات</td>
+                    <td colspan="8" style="text-align: center; padding: 20px; color: #666;">لا توجد حركات</td>
                 </tr>
             @endforelse
         </tbody>
