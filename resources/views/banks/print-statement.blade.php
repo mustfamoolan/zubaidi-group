@@ -109,6 +109,15 @@
             text-align: center;
         }
 
+        .transactions-table td.description-cell {
+            font-size: 10px;
+            text-align: right;
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 150px;
+            line-height: 1.3;
+        }
+
         .transactions-table th {
             background-color: #f5f5f5;
             font-weight: bold;
@@ -264,7 +273,7 @@
                             <span class="transaction-type type-invoice">خصم فاتورة</span>
                         @endif
                     </td>
-                    <td>{{ $transaction->description ?? '-' }}</td>
+                    <td class="description-cell">{{ $transaction->description ?? '-' }}</td>
                     <td>
                         @if($transaction->type === 'deposit')
                             <span class="amount-positive">+ {{ number_format($transaction->amount, 2) }}</span>
