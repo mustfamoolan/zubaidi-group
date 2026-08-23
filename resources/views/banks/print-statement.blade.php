@@ -263,7 +263,7 @@
                 @endphp
                 <tr>
                     <td>{{ $transactionNumber++ }}</td>
-                    <td>{{ $transaction->created_at->format('Y/n/j') }}</td>
+                    <td>{{ ($transaction->date ?? $transaction->created_at)->format('Y/n/j') }}</td>
                     <td>
                         @if($transaction->type === 'deposit')
                             <span class="transaction-type type-deposit">إيداع</span>
