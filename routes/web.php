@@ -25,13 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard', [AuthController::class, 'dashboard']);
 
-    // Exchange Rate & Ledger Calculator (Excel-like Sheet with Real DB)
+    // Exchange Rate & Ledger Calculator (Independent Excel Sheet)
     Route::get('/exchange-calculator', [LedgerCalculatorController::class, 'index'])->name('exchange-calculator.index');
-    Route::post('/exchange-calculator/items', [LedgerCalculatorController::class, 'storeItem'])->name('exchange-calculator.items.store');
-    Route::put('/exchange-calculator/items/{id}', [LedgerCalculatorController::class, 'updateItem'])->name('exchange-calculator.items.update');
-    Route::delete('/exchange-calculator/items/{id}', [LedgerCalculatorController::class, 'deleteItem'])->name('exchange-calculator.items.delete');
-    Route::post('/exchange-calculator/ledgers', [LedgerCalculatorController::class, 'storeLedger'])->name('exchange-calculator.ledgers.store');
-    Route::post('/exchange-calculator/customers', [LedgerCalculatorController::class, 'storeCustomer'])->name('exchange-calculator.customers.store');
+    Route::post('/exchange-calculator/save', [LedgerCalculatorController::class, 'save'])->name('exchange-calculator.save');
+    Route::post('/exchange-calculator/clear', [LedgerCalculatorController::class, 'clear'])->name('exchange-calculator.clear');
 
     // Companies Management
     Route::resource('companies', CompanyController::class);
