@@ -12,6 +12,7 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\LedgerCalculatorController;
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -23,6 +24,9 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard', [AuthController::class, 'dashboard']);
+
+    // Exchange Rate & Ledger Calculator (Excel-like Sheet)
+    Route::get('/exchange-calculator', [LedgerCalculatorController::class, 'index'])->name('exchange-calculator.index');
 
     // Companies Management
     Route::resource('companies', CompanyController::class);

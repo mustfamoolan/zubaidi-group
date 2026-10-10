@@ -49,6 +49,23 @@
                 </li>
 
                 <li class="menu nav-item">
+                    <a href="{{ route('exchange-calculator.index') }}" class="nav-link group">
+                        <div class="flex items-center">
+                            <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                                <path opacity="0.5" d="M3 9H21" stroke="currentColor" stroke-width="1.5"/>
+                                <path opacity="0.5" d="M3 15H21" stroke="currentColor" stroke-width="1.5"/>
+                                <path opacity="0.5" d="M9 3V21" stroke="currentColor" stroke-width="1.5"/>
+                                <path opacity="0.5" d="M15 9V21" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M5.5 6H6.5M11.5 6H12.5M17.5 6H18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <span
+                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">حاسبة الصرف (إكسل)</span>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="menu nav-item">
                     <a href="{{ route('users.index') }}" class="nav-link group">
                         <div class="flex items-center">
                             <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24"
