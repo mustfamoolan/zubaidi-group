@@ -122,4 +122,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function dinarCalculatorRecords()
+    {
+        return $this->hasMany(DinarCalculatorRecord::class);
+    }
+
+    public function exchangeCalculatorRecords()
+    {
+        return $this->hasMany(ExchangeCalculatorRecord::class);
+    }
 }

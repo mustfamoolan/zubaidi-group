@@ -55,4 +55,14 @@ class Company extends Model
     {
         return $this->hasMany(Beneficiary::class);
     }
+
+    public function dinarCalculatorRecords()
+    {
+        return $this->hasMany(DinarCalculatorRecord::class);
+    }
+
+    public function exchangeCalculatorRecords()
+    {
+        return $this->hasMany(ExchangeCalculatorRecord::class);
+    }
 }
