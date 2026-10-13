@@ -18,8 +18,7 @@ class LedgerCalculatorController extends Controller
     public function index()
     {
         $data = [
-            'title' => 'كشف حساب العملات والمشتريات',
-            'default_rate' => 7.25,
+            'title' => 'جدول الحسابات وسعر الصرف والعمولات',
             'items' => [],
         ];
 
@@ -30,20 +29,23 @@ class LedgerCalculatorController extends Controller
             }
         }
 
-        // If items are completely empty, start with 5 empty rows ready for immediate typing like Excel
-        if (empty($data['items'])) {
+        // If items are empty or contain old structure, initialize with 5 fresh rows
+        $isOldStructure = !empty($data['items']) && !isset($data['items'][0]['currency']);
+        if (empty($data['items']) || $isOldStructure) {
             $data['items'] = [];
             for ($i = 0; $i < 5; $i++) {
                 $data['items'][] = [
                     'id' => $i + 1,
-                    'details' => '',
-                    'purchase_amount' => '',
-                    'store_payment_details' => '',
-                    'store_payment' => '',
-                    'usd_amount' => '',
-                    'exchange_rate' => 7.25,
-                    'rmb_amount' => '',
-                    'transfer_date' => date('Y-m-d'),
+                    'transaction_no' => $i + 1,
+                    'currency' => 'USD',
+                    'amount' => '',
+                    'exchange_rate' => '',
+                    'iqd_amount' => 0,
+                    'commission_rate' => 1,
+                    'commission_type' => 'per_thousand', // 'per_thousand' (‰) or 'percent' (%)
+                    'commission_iqd' => 0,
+                    'total_iqd' => 0,
+                    'notes' => '',
                 ];
             }
         }
@@ -57,8 +59,7 @@ class LedgerCalculatorController extends Controller
     public function save(Request $request)
     {
         $payload = [
-            'title' => $request->input('title', 'كشف حساب العملات والمشتريات'),
-            'default_rate' => (float) $request->input('default_rate', 7.25),
+            'title' => $request->input('title', 'جدول الحسابات وسعر الصرف والعمولات'),
             'items' => $request->input('items', []),
             'updated_at' => now()->toDateTimeString(),
         ];
