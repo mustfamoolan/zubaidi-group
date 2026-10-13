@@ -60,7 +60,21 @@
                                 <path d="M5.5 6H6.5M11.5 6H12.5M17.5 6H18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
                             <span
-                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">حاسبة الصرف (إكسل)</span>
+                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">حاسبة الصرف عملات</span>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="menu nav-item">
+                    <a href="{{ url('/dinar-calculator') }}" class="nav-link group">
+                        <div class="flex items-center">
+                            <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M9 12H15M12 9V15" opacity="0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M8 8.5C8.5 7.5 10 7 12 7C14.2091 7 16 8.34315 16 10C16 11.6569 14.2091 12.5 12 12.5C9.79086 12.5 8 13.3431 8 15C8 16.6569 9.79086 18 12 18C14 18 15.5 17.5 16 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <span
+                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">حاسبة الصرف دينار</span>
                         </div>
                     </a>
                 </li>

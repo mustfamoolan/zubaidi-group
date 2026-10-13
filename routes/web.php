@@ -13,6 +13,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\LedgerCalculatorController;
+use App\Http\Controllers\DinarCalculatorController;
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -25,10 +26,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard', [AuthController::class, 'dashboard']);
 
-    // Exchange Rate & Ledger Calculator (Independent Excel Sheet)
+    // حاسبة الصرف عملات (Exchange Rate & Ledger Calculator - Multi-currency)
     Route::get('/exchange-calculator', [LedgerCalculatorController::class, 'index'])->name('exchange-calculator.index');
     Route::post('/exchange-calculator/save', [LedgerCalculatorController::class, 'save'])->name('exchange-calculator.save');
     Route::post('/exchange-calculator/clear', [LedgerCalculatorController::class, 'clear'])->name('exchange-calculator.clear');
+
+    // حاسبة الصرف دينار (Dinar Calculator - with customs & country rate)
+    Route::get('/dinar-calculator', [DinarCalculatorController::class, 'index'])->name('dinar-calculator.index');
+    Route::post('/dinar-calculator/save', [DinarCalculatorController::class, 'save'])->name('dinar-calculator.save');
+    Route::post('/dinar-calculator/clear', [DinarCalculatorController::class, 'clear'])->name('dinar-calculator.clear');
 
     // Companies Management
     Route::resource('companies', CompanyController::class);
