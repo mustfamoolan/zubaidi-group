@@ -39,10 +39,9 @@ class DinarCalculatorController extends Controller
             $records = $query->orderBy('sort_order', 'asc')->orderBy('id', 'asc')->get();
 
             if ($records->isNotEmpty()) {
-                $data['items'] = $records->map(function ($r, $idx) {
+                $data['items'] = $records->map(function ($r) {
                     return [
                         'id'                 => $r->id,
-                        'transaction_no'     => $r->transaction_no ?: ($idx + 1),
                         'currency'           => $r->currency ?: 'USD',
                         'exchange_rate'      => $r->exchange_rate > 0 ? (float)$r->exchange_rate : '',
                         'iqd_base'           => (float)$r->iqd_base,
@@ -56,7 +55,6 @@ class DinarCalculatorController extends Controller
                         'country_rate'       => $r->country_rate > 0 ? (float)$r->country_rate : '',
                         'country_op'         => $r->country_op ?: 'mul',
                         'country_final_rate' => (float)$r->country_final_rate,
-                        'notes'              => $r->notes ?: '',
                     ];
                 })->toArray();
             }
@@ -72,13 +70,12 @@ class DinarCalculatorController extends Controller
             }
         }
 
-        // 3. إذا لم توجد أي بيانات سابقة، ننشئ 5 أسطر افتراضية متطابقة مع التحديث
+        // 3. إذا لم توجد أي بيانات سابقة، ننشئ 5 أسطر افتراضية
         if (empty($data['items'])) {
             $data['items'] = [];
             for ($i = 0; $i < 5; $i++) {
                 $data['items'][] = [
                     'id'                 => $i + 1,
-                    'transaction_no'     => $i + 1,
                     'currency'           => 'USD',
                     'exchange_rate'      => '',
                     'iqd_base'           => 0,
@@ -92,7 +89,6 @@ class DinarCalculatorController extends Controller
                     'country_rate'       => '',
                     'country_op'         => 'mul',
                     'country_final_rate' => 0,
-                    'notes'              => '',
                 ];
             }
         }
@@ -127,7 +123,6 @@ class DinarCalculatorController extends Controller
                 DinarCalculatorRecord::create([
                     'user_id'            => $userId,
                     'company_id'         => $companyId,
-                    'transaction_no'     => $item['transaction_no'] ?? ($idx + 1),
                     'currency'           => $item['currency'] ?? 'USD',
                     'exchange_rate'      => floatval($item['exchange_rate'] ?? 0),
                     'iqd_base'           => floatval($item['iqd_base'] ?? 0),
@@ -141,7 +136,6 @@ class DinarCalculatorController extends Controller
                     'country_rate'       => !empty($item['country_rate']) ? floatval($item['country_rate']) : null,
                     'country_op'         => $item['country_op'] ?? 'mul',
                     'country_final_rate' => floatval($item['country_final_rate'] ?? 0),
-                    'notes'              => $item['notes'] ?? null,
                     'sort_order'         => $idx + 1,
                 ]);
             }

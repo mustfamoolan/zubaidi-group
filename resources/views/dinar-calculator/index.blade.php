@@ -25,8 +25,8 @@
             #dinarPrintSection table { width: 100% !important; border-collapse: collapse !important; }
             #dinarPrintSection th, #dinarPrintSection td {
                 border: 1px solid #333 !important;
-                padding: 4px 5px !important;
-                font-size: 10px !important;
+                padding: 5px 6px !important;
+                font-size: 11px !important;
                 color: #000 !important;
             }
             #dinarPrintSection th { background-color: #f1f3f5 !important; font-weight: bold !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -109,16 +109,15 @@
                     <table class="w-full text-xs text-right border-collapse">
                         <thead class="sticky top-0 bg-[#eaedf1] dark:bg-[#0e1726] z-10 border-b border-gray-300 dark:border-white-dark/20 text-gray-800 dark:text-gray-200 font-bold text-[11px] shadow-sm">
                             <tr>
-                                <th class="w-10 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">#</th>
-                                <th class="w-24 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">رقم الحركة</th>
-                                <th class="w-36 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">العملة</th>
-                                <th class="min-w-[130px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">سعر الصرف</th>
-                                <th class="min-w-[135px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-cyan-50/50 dark:bg-cyan-950/20 text-cyan-800 dark:text-cyan-300 font-black" dir="ltr">مبلغ عراقي تلقائي</th>
-                                <th class="min-w-[145px] py-2.5 px-3 text-center border-l border-gray-300 dark:border-white-dark/10">العمولة</th>
-                                <th class="min-w-[125px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-purple-50/50 dark:bg-purple-950/20 text-purple-800 dark:text-purple-300 font-black" dir="ltr">مبلغ العمولة</th>
-                                <th class="min-w-[145px] py-2.5 px-3 text-center border-l border-gray-300 dark:border-white-dark/10">كمرك ضريبة</th>
-                                <th class="min-w-[125px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-orange-50/50 dark:bg-orange-950/20 text-orange-800 dark:text-orange-300 font-black" dir="ltr">مبلغ الكمرك</th>
-                                <th class="min-w-[150px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 font-black" dir="ltr">
+                                <th class="w-12 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">#</th>
+                                <th class="w-44 text-center py-2.5 px-3 border-l border-gray-300 dark:border-white-dark/10">العملة</th>
+                                <th class="min-w-[140px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">سعر الصرف</th>
+                                <th class="min-w-[145px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-cyan-50/50 dark:bg-cyan-950/20 text-cyan-800 dark:text-cyan-300 font-black" dir="ltr">مبلغ عراقي تلقائي</th>
+                                <th class="min-w-[150px] py-2.5 px-3 text-center border-l border-gray-300 dark:border-white-dark/10">العمولة</th>
+                                <th class="min-w-[130px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-purple-50/50 dark:bg-purple-950/20 text-purple-800 dark:text-purple-300 font-black" dir="ltr">مبلغ العمولة</th>
+                                <th class="min-w-[150px] py-2.5 px-3 text-center border-l border-gray-300 dark:border-white-dark/10">كمرك ضريبة</th>
+                                <th class="min-w-[130px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-orange-50/50 dark:bg-orange-950/20 text-orange-800 dark:text-orange-300 font-black" dir="ltr">مبلغ الكمرك</th>
+                                <th class="min-w-[160px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 font-black" dir="ltr">
                                     <div>مجموع عراقي</div>
                                     <div class="text-[9px] font-normal text-gray-500">(عراقي + عمولة + كمرك)</div>
                                 </th>
@@ -130,30 +129,21 @@
                                     <div>سعر صرف الدولة</div>
                                     <div class="text-[9px] font-normal text-blue-600 dark:text-blue-400">(النتيجة النهائية)</div>
                                 </th>
-                                <th class="min-w-[150px] py-2.5 px-3 border-l border-gray-300 dark:border-white-dark/10">البيان / ملاحظات</th>
-                                <th class="w-12 text-center py-2.5 px-2">حذف</th>
+                                <th class="w-14 text-center py-2.5 px-2">حذف</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200/80 dark:divide-white-dark/10 font-medium">
                             <template x-for="(item, index) in items" :key="index">
                                 <tr class="group hover:bg-primary/5 transition-colors focus-within:bg-blue-50/30 dark:focus-within:bg-[#132238]">
 
-                                    <!-- # -->
+                                    <!-- # (التسلسل) -->
                                     <td class="text-center font-bold text-gray-500 py-1.5 px-2 border-l border-gray-200 dark:border-white-dark/10 bg-gray-50/40 dark:bg-[#0e1726]/40" x-text="index + 1"></td>
-
-                                    <!-- رقم الحركة -->
-                                    <td class="p-0 border-l border-gray-200 dark:border-white-dark/10 text-center">
-                                        <input type="text" x-model="item.transaction_no"
-                                               @input="onCellInput(item)" @keydown.enter.prevent="onEnterKey(index)"
-                                               placeholder="رقم..."
-                                               class="w-full py-2 px-2 text-xs text-center font-semibold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
-                                    </td>
 
                                     <!-- العملة -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10">
                                         <select x-model="item.currency"
                                                 @change="onCurrencyChanged(item)"
-                                                class="w-full py-2 px-2 text-xs font-bold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none cursor-pointer"
+                                                class="w-full py-2.5 px-3 text-xs font-bold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none cursor-pointer"
                                                 :class="{
                                                     'text-blue-600 dark:text-blue-400': item.currency === 'USD',
                                                     'text-emerald-600 dark:text-emerald-400': item.currency === 'AED',
@@ -170,11 +160,11 @@
                                         <input type="number" step="any" x-model="item.exchange_rate"
                                                @input="onRowChanged(item)" @keydown.enter.prevent="onEnterKey(index)"
                                                placeholder="1530"
-                                               class="w-full py-2 px-3 text-xs text-left font-bold text-gray-800 dark:text-gray-200 bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
+                                               class="w-full py-2.5 px-3 text-xs text-left font-bold text-gray-800 dark:text-gray-200 bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
                                     <!-- مبلغ عراقي تلقائي (= سعر الصرف) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-cyan-50/20 dark:bg-cyan-950/10 select-all" dir="ltr">
+                                    <td class="py-2.5 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-cyan-50/20 dark:bg-cyan-950/10 select-all" dir="ltr">
                                         <div class="flex items-center justify-between font-extrabold text-cyan-800 dark:text-cyan-300 text-xs">
                                             <span x-text="formatNumber(item.iqd_base, 2)">0</span>
                                             <span class="text-[10px] text-gray-400 font-normal">د.ع</span>
@@ -183,7 +173,7 @@
 
                                     <!-- العمولة (نسبة + نوع) -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10">
-                                        <div class="flex items-center gap-1 px-1">
+                                        <div class="flex items-center gap-1 px-1.5">
                                             <input type="number" step="any" x-model="item.commission_rate"
                                                    @input="onRowChanged(item)" @keydown.enter.prevent="onEnterKey(index)"
                                                    placeholder="1"
@@ -197,7 +187,7 @@
                                     </td>
 
                                     <!-- مبلغ العمولة (محسوب) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-purple-50/20 dark:bg-purple-950/10 select-all" dir="ltr">
+                                    <td class="py-2.5 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-purple-50/20 dark:bg-purple-950/10 select-all" dir="ltr">
                                         <div class="flex items-center justify-between font-extrabold text-purple-700 dark:text-purple-300 text-xs">
                                             <span x-text="formatNumber(item.commission_iqd, 2)">0</span>
                                             <span class="text-[10px] text-gray-400 font-normal">د.ع</span>
@@ -206,7 +196,7 @@
 
                                     <!-- كمرك ضريبة (نسبة + نوع) -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10">
-                                        <div class="flex items-center gap-1 px-1">
+                                        <div class="flex items-center gap-1 px-1.5">
                                             <input type="number" step="any" x-model="item.customs_rate"
                                                    @input="onRowChanged(item)" @keydown.enter.prevent="onEnterKey(index)"
                                                    placeholder="0"
@@ -220,7 +210,7 @@
                                     </td>
 
                                     <!-- مبلغ الكمرك (محسوب) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-orange-50/20 dark:bg-orange-950/10 select-all" dir="ltr">
+                                    <td class="py-2.5 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-orange-50/20 dark:bg-orange-950/10 select-all" dir="ltr">
                                         <div class="flex items-center justify-between font-extrabold text-orange-700 dark:text-orange-300 text-xs">
                                             <span x-text="formatNumber(item.customs_iqd, 2)">0</span>
                                             <span class="text-[10px] text-gray-400 font-normal">د.ع</span>
@@ -228,7 +218,7 @@
                                     </td>
 
                                     <!-- مجموع عراقي (عراقي + عمولة + كمرك) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-emerald-50/30 dark:bg-emerald-950/20 select-all" dir="ltr">
+                                    <td class="py-2.5 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-emerald-50/30 dark:bg-emerald-950/20 select-all" dir="ltr">
                                         <div class="flex items-center justify-between font-black text-emerald-700 dark:text-emerald-300 text-xs">
                                             <span x-text="formatNumber(item.total_iqd, 2)">0</span>
                                             <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">د.ع</span>
@@ -246,12 +236,12 @@
                                             </div>
                                         </template>
                                         <template x-if="item.currency === 'USD'">
-                                            <div class="py-2 px-3 text-center text-gray-300 dark:text-gray-700 text-[11px] select-none">— دولار أمريكي —</div>
+                                            <div class="py-2.5 px-3 text-center text-gray-300 dark:text-gray-700 text-[11px] select-none">— دولار أمريكي —</div>
                                         </template>
                                     </td>
 
                                     <!-- سعر صرف الدولة (المجموع عراقي × سعر البلد) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-blue-50/30 dark:bg-blue-950/20 select-all" dir="ltr">
+                                    <td class="py-2.5 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-blue-50/30 dark:bg-blue-950/20 select-all" dir="ltr">
                                         <template x-if="item.currency === 'AED' || item.currency === 'RMB'">
                                             <div class="flex items-center justify-between font-black text-blue-700 dark:text-blue-300 text-xs">
                                                 <span x-text="formatNumber(item.country_final_rate, 4)">0</span>
@@ -264,14 +254,6 @@
                                                 <span class="text-[10px] text-gray-400 font-normal">د.ع / $</span>
                                             </div>
                                         </template>
-                                    </td>
-
-                                    <!-- البيان / ملاحظات -->
-                                    <td class="p-0 border-l border-gray-200 dark:border-white-dark/10">
-                                        <input type="text" x-model="item.notes"
-                                               @input="onCellInput(item)" @keydown.enter.prevent="onEnterKey(index)"
-                                               placeholder="بيان / ملاحظات..."
-                                               class="w-full py-2 px-3 text-xs bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
                                     <!-- حذف -->
@@ -287,8 +269,9 @@
                         <tfoot class="bg-[#eaedf0] dark:bg-[#14233c] font-bold text-xs text-gray-800 dark:text-white-light border-t-2 border-gray-300 dark:border-white-dark/20 sticky bottom-0 z-10 shadow-md">
                             <tr>
                                 <td class="text-center py-3 px-2 border-l border-gray-300 dark:border-white-dark/20">∑</td>
-                                <td class="text-center py-3 px-2 border-l border-gray-300 dark:border-white-dark/20 text-gray-500" x-text="items.length + ' حركات'"></td>
-                                <td class="py-3 px-3 border-l border-gray-300 dark:border-white-dark/20 text-center font-black">المجاميع</td>
+                                <td class="py-3 px-3 border-l border-gray-300 dark:border-white-dark/20 text-center font-black">
+                                    المجاميع (<span x-text="items.length"></span>)
+                                </td>
                                 <td class="py-3 px-3 border-l border-gray-300 dark:border-white-dark/20 text-gray-500 text-center text-[11px]">—</td>
 
                                 <!-- إجمالي مبالغ عراقي تلقائي -->
@@ -322,7 +305,6 @@
                                     <span x-text="formatNumber(totalCountryFinalRate, 4)"></span>
                                 </td>
 
-                                <td class="py-3 px-3 border-l border-gray-300 dark:border-white-dark/20 text-center text-[10px] text-gray-500">الصافي</td>
                                 <td class="py-3 px-2"></td>
                             </tr>
                         </tfoot>
@@ -386,66 +368,61 @@
             </div>
 
             <!-- جدول الطباعة -->
-            <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; text-align: right; direction: rtl;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; text-align: right; direction: rtl;">
                 <thead>
                     <tr style="background-color: #f1f3f5; font-weight: bold;">
-                        <th style="width: 3%; text-align: center; border: 1px solid #444; padding: 4px;">#</th>
-                        <th style="width: 8%; text-align: center; border: 1px solid #444; padding: 4px;">رقم الحركة</th>
-                        <th style="width: 11%; text-align: center; border: 1px solid #444; padding: 4px;">العملة</th>
-                        <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">سعر الصرف</th>
-                        <th style="width: 11%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">مبلغ عراقي</th>
-                        <th style="width: 7%; text-align: center; border: 1px solid #444; padding: 4px;">العمولة</th>
-                        <th style="width: 9%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">مبلغ العمولة</th>
-                        <th style="width: 7%; text-align: center; border: 1px solid #444; padding: 4px;">كمرك ضريبة</th>
-                        <th style="width: 9%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">مبلغ الكمرك</th>
-                        <th style="width: 11%; text-align: left; border: 1px solid #444; padding: 4px; font-weight: 900;" dir="ltr">مجموع عراقي</th>
-                        <th style="width: 9%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">سعر البلد</th>
-                        <th style="width: 11%; text-align: left; border: 1px solid #444; padding: 4px; font-weight: 900;" dir="ltr">سعر صرف الدولة</th>
-                        <th style="width: 14%; text-align: right; border: 1px solid #444; padding: 4px;">البيان</th>
+                        <th style="width: 4%; text-align: center; border: 1px solid #444; padding: 5px;">#</th>
+                        <th style="width: 12%; text-align: center; border: 1px solid #444; padding: 5px;">العملة</th>
+                        <th style="width: 11%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">سعر الصرف</th>
+                        <th style="width: 12%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ عراقي</th>
+                        <th style="width: 8%; text-align: center; border: 1px solid #444; padding: 5px;">العمولة</th>
+                        <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ العمولة</th>
+                        <th style="width: 8%; text-align: center; border: 1px solid #444; padding: 5px;">كمرك ضريبة</th>
+                        <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ الكمرك</th>
+                        <th style="width: 12%; text-align: left; border: 1px solid #444; padding: 5px; font-weight: 900;" dir="ltr">مجموع عراقي</th>
+                        <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">سعر البلد</th>
+                        <th style="width: 13%; text-align: left; border: 1px solid #444; padding: 5px; font-weight: 900;" dir="ltr">سعر صرف الدولة</th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="(item, pIdx) in printableItems" :key="'p' + pIdx">
                         <tr>
-                            <td style="text-align: center; border: 1px solid #555; padding: 3px 4px;" x-text="pIdx + 1"></td>
-                            <td style="text-align: center; font-weight: bold; border: 1px solid #555; padding: 3px 4px;" x-text="item.transaction_no || (pIdx + 1)"></td>
-                            <td style="text-align: center; border: 1px solid #555; padding: 3px 4px;" x-text="getPrintCurrencyLabel(item.currency)"></td>
-                            <td style="text-align: left; border: 1px solid #555; padding: 3px 4px;" dir="ltr" x-text="formatNumber(item.exchange_rate, 2)"></td>
-                            <td style="text-align: left; border: 1px solid #555; padding: 3px 4px; font-weight: bold;" dir="ltr" x-text="formatNumber(item.iqd_base, 2)"></td>
-                            <td style="text-align: center; border: 1px solid #555; padding: 3px 4px;" x-text="item.commission_type === 'per_thousand' ? (item.commission_rate || 0) + '‰' : (item.commission_rate || 0) + '%'"></td>
-                            <td style="text-align: left; border: 1px solid #555; padding: 3px 4px;" dir="ltr" x-text="formatNumber(item.commission_iqd, 2)"></td>
-                            <td style="text-align: center; border: 1px solid #555; padding: 3px 4px;" x-text="item.customs_type === 'per_thousand' ? (item.customs_rate || 0) + '‰' : (item.customs_rate || 0) + '%'"></td>
-                            <td style="text-align: left; border: 1px solid #555; padding: 3px 4px;" dir="ltr" x-text="formatNumber(item.customs_iqd, 2)"></td>
-                            <td style="text-align: left; border: 1px solid #555; padding: 3px 4px; font-weight: 900; background: #fafafa;" dir="ltr" x-text="formatNumber(item.total_iqd, 2)"></td>
-                            <td style="text-align: left; border: 1px solid #555; padding: 3px 4px;" dir="ltr">
+                            <td style="text-align: center; border: 1px solid #555; padding: 4px;" x-text="pIdx + 1"></td>
+                            <td style="text-align: center; border: 1px solid #555; padding: 4px;" x-text="getPrintCurrencyLabel(item.currency)"></td>
+                            <td style="text-align: left; border: 1px solid #555; padding: 4px;" dir="ltr" x-text="formatNumber(item.exchange_rate, 2)"></td>
+                            <td style="text-align: left; border: 1px solid #555; padding: 4px; font-weight: bold;" dir="ltr" x-text="formatNumber(item.iqd_base, 2)"></td>
+                            <td style="text-align: center; border: 1px solid #555; padding: 4px;" x-text="item.commission_type === 'per_thousand' ? (item.commission_rate || 0) + '‰' : (item.commission_rate || 0) + '%'"></td>
+                            <td style="text-align: left; border: 1px solid #555; padding: 4px;" dir="ltr" x-text="formatNumber(item.commission_iqd, 2)"></td>
+                            <td style="text-align: center; border: 1px solid #555; padding: 4px;" x-text="item.customs_type === 'per_thousand' ? (item.customs_rate || 0) + '‰' : (item.customs_rate || 0) + '%'"></td>
+                            <td style="text-align: left; border: 1px solid #555; padding: 4px;" dir="ltr" x-text="formatNumber(item.customs_iqd, 2)"></td>
+                            <td style="text-align: left; border: 1px solid #555; padding: 4px; font-weight: 900; background: #fafafa;" dir="ltr" x-text="formatNumber(item.total_iqd, 2)"></td>
+                            <td style="text-align: left; border: 1px solid #555; padding: 4px;" dir="ltr">
                                 <span x-text="(item.currency === 'AED' || item.currency === 'RMB') ? formatNumber(item.country_rate, 4) : '—'"></span>
                             </td>
-                            <td style="text-align: left; border: 1px solid #555; padding: 3px 4px; font-weight: 900; background: #f0f7ff;" dir="ltr">
+                            <td style="text-align: left; border: 1px solid #555; padding: 4px; font-weight: 900; background: #f0f7ff;" dir="ltr">
                                 <span x-text="(item.currency === 'AED' || item.currency === 'RMB') ? formatNumber(item.country_final_rate, 4) : formatNumber(item.total_iqd, 2)"></span>
                             </td>
-                            <td style="text-align: right; border: 1px solid #555; padding: 3px 4px;" x-text="item.notes || '—'"></td>
                         </tr>
                     </template>
                 </tbody>
                 <tfoot>
                     <tr style="background-color: #e8edf0; font-weight: 900; border-top: 2px solid #000;">
-                        <td colspan="3" style="text-align: center; border: 1px solid #444; padding: 4px;">المجاميع (<span x-text="printableItems.length"></span> حركة)</td>
-                        <td style="text-align: center; border: 1px solid #444; padding: 4px;">—</td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr"><span x-text="formatNumber(totalIqdBase, 2)"></span> د.ع</td>
-                        <td style="text-align: center; border: 1px solid #444; padding: 4px; font-size: 8px;">عمولات:</td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr"><span x-text="formatNumber(totalCommissionIqd, 2)"></span> د.ع</td>
-                        <td style="text-align: center; border: 1px solid #444; padding: 4px; font-size: 8px;">كمرك:</td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr"><span x-text="formatNumber(totalCustomsIqd, 2)"></span> د.ع</td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 4px; font-size: 11px; font-weight: 900;" dir="ltr"><span x-text="formatNumber(grandTotalIqd, 2)"></span> د.ع</td>
-                        <td style="text-align: center; border: 1px solid #444; padding: 4px;">—</td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 4px; font-size: 11px; font-weight: 900;" dir="ltr"><span x-text="formatNumber(totalCountryFinalRate, 4)"></span></td>
-                        <td style="text-align: center; border: 1px solid #444; padding: 4px; font-size: 9px;">الصافي</td>
+                        <td colspan="2" style="text-align: center; border: 1px solid #444; padding: 5px;">المجاميع (<span x-text="printableItems.length"></span> حركة)</td>
+                        <td style="text-align: center; border: 1px solid #444; padding: 5px;">—</td>
+                        <td style="text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr"><span x-text="formatNumber(totalIqdBase, 2)"></span> د.ع</td>
+                        <td style="text-align: center; border: 1px solid #444; padding: 5px; font-size: 9px;">عمولات:</td>
+                        <td style="text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr"><span x-text="formatNumber(totalCommissionIqd, 2)"></span> د.ع</td>
+                        <td style="text-align: center; border: 1px solid #444; padding: 5px; font-size: 9px;">كمرك:</td>
+                        <td style="text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr"><span x-text="formatNumber(totalCustomsIqd, 2)"></span> د.ع</td>
+                        <td style="text-align: left; border: 1px solid #444; padding: 5px; font-size: 12px; font-weight: 900;" dir="ltr"><span x-text="formatNumber(grandTotalIqd, 2)"></span> د.ع</td>
+                        <td style="text-align: center; border: 1px solid #444; padding: 5px;">—</td>
+                        <td style="text-align: left; border: 1px solid #444; padding: 5px; font-size: 12px; font-weight: 900;" dir="ltr"><span x-text="formatNumber(totalCountryFinalRate, 4)"></span></td>
                     </tr>
                 </tfoot>
             </table>
 
             <!-- توقيعات -->
-            <div style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold;">
+            <div style="margin-top: 25px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold;">
                 <div style="text-align: center; width: 180px; border-top: 1px dashed #666; padding-top: 5px;">توقيع المحاسب</div>
                 <div style="text-align: center; width: 180px; border-top: 1px dashed #666; padding-top: 5px;">الختم والاعتماد</div>
             </div>
@@ -515,7 +492,7 @@
 
                 // الحركات الفعلية للطباعة والتصدير
                 get printableItems() {
-                    const f = this.items.filter(i => parseFloat(i.exchange_rate) > 0 || (i.notes && i.notes.trim()));
+                    const f = this.items.filter(i => parseFloat(i.exchange_rate) > 0);
                     return f.length > 0 ? f : this.items;
                 },
 
@@ -561,7 +538,7 @@
                 async executeSave() {
                     try {
                         const payload = { title: this.sheetTitle, items: this.items };
-                        localStorage.setItem('dinar_calc_sheet_v2', JSON.stringify(payload));
+                        localStorage.setItem('dinar_calc_sheet_v3', JSON.stringify(payload));
                         await fetch('{{ url("/dinar-calculator/save") }}', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrfToken, 'Accept': 'application/json' },
@@ -576,12 +553,12 @@
                 // ===== إدارة الأسطر =====
                 appendNewRow() {
                     this.items.push({
-                        id: Date.now(), transaction_no: this.items.length + 1,
+                        id: Date.now(),
                         currency: 'USD', exchange_rate: '',
                         iqd_base: 0, commission_rate: 1, commission_type: 'per_thousand',
                         commission_iqd: 0, customs_rate: 0, customs_type: 'percent',
                         customs_iqd: 0, total_iqd: 0, country_rate: '',
-                        country_op: 'mul', country_final_rate: 0, notes: ''
+                        country_op: 'mul', country_final_rate: 0
                     });
                     this.triggerAutoSave();
                 },
@@ -601,12 +578,12 @@
                         this.items = [];
                         for (let i = 0; i < 5; i++) {
                             this.items.push({
-                                id: i + 1, transaction_no: i + 1, currency: 'USD',
+                                id: i + 1, currency: 'USD',
                                 exchange_rate: '',
                                 iqd_base: 0, commission_rate: 1, commission_type: 'per_thousand',
                                 commission_iqd: 0, customs_rate: 0, customs_type: 'percent',
                                 customs_iqd: 0, total_iqd: 0, country_rate: '',
-                                country_op: 'mul', country_final_rate: 0, notes: ''
+                                country_op: 'mul', country_final_rate: 0
                             });
                         }
                         this.triggerAutoSave();
@@ -629,7 +606,7 @@
                             ['إجمالي مبالغ عراقي', 'إجمالي العمولات', 'إجمالي الكمرك والضريبة', 'إجمالي المجموع عراقي', 'إجمالي سعر صرف الدولة'],
                             [this.totalIqdBase, this.totalCommissionIqd, this.totalCustomsIqd, this.grandTotalIqd, this.totalCountryFinalRate],
                             [],
-                            ['#', 'رقم الحركة', 'العملة', 'سعر الصرف', 'مبلغ عراقي تلقائي', 'العمولة', 'مبلغ العمولة', 'كمرك ضريبة', 'مبلغ الكمرك', 'مجموع عراقي', 'سعر صرف البلد', 'سعر صرف الدولة', 'البيان']
+                            ['#', 'العملة', 'سعر الصرف', 'مبلغ عراقي تلقائي', 'العمولة', 'مبلغ العمولة', 'كمرك ضريبة', 'مبلغ الكمرك', 'مجموع عراقي', 'سعر صرف البلد', 'سعر صرف الدولة']
                         ];
 
                         rows.forEach((item, idx) => {
@@ -640,23 +617,22 @@
                             const finalCountry = (item.currency === 'USD') ? parseFloat(item.total_iqd) || 0 : parseFloat(item.country_final_rate) || 0;
 
                             aoa.push([
-                                idx + 1, item.transaction_no || idx + 1, currName,
+                                idx + 1, currName,
                                 parseFloat(item.exchange_rate) || 0,
                                 parseFloat(item.iqd_base) || 0,
                                 commTxt, parseFloat(item.commission_iqd) || 0,
                                 custTxt, parseFloat(item.customs_iqd) || 0,
                                 parseFloat(item.total_iqd) || 0,
                                 cRate,
-                                finalCountry,
-                                item.notes || ''
+                                finalCountry
                             ]);
                         });
 
                         aoa.push([]);
-                        aoa.push(['المجاميع', '', '', '', this.totalIqdBase, '', this.totalCommissionIqd, '', this.totalCustomsIqd, this.grandTotalIqd, '', this.totalCountryFinalRate, 'الصافي الكلي']);
+                        aoa.push(['المجاميع', '', '', this.totalIqdBase, '', this.totalCommissionIqd, '', this.totalCustomsIqd, this.grandTotalIqd, '', this.totalCountryFinalRate]);
 
                         const ws = XLSX.utils.aoa_to_sheet(aoa);
-                        ws['!cols'] = [{wch:4},{wch:12},{wch:18},{wch:14},{wch:16},{wch:12},{wch:16},{wch:14},{wch:16},{wch:18},{wch:16},{wch:18},{wch:30}];
+                        ws['!cols'] = [{wch:5},{wch:18},{wch:14},{wch:16},{wch:12},{wch:16},{wch:14},{wch:16},{wch:18},{wch:16},{wch:18}];
                         ws['!views'] = [{ RTL: true }];
                         const wb = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(wb, ws, 'حاسبة الصرف دينار');
