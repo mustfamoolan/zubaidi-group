@@ -288,7 +288,7 @@
                         <thead class="sticky top-0 bg-[#eaedf1] dark:bg-[#0e1726] z-10 border-b border-gray-300 dark:border-white-dark/20 text-gray-800 dark:text-gray-200 font-bold text-[11px] shadow-sm">
                             <tr>
                                 <th class="w-10 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">#</th>
-                                <th class="w-24 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">رقم الحركة</th>
+                                <th class="w-32 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">رقم الفاتورة</th>
                                 <th class="w-36 py-2.5 px-3 border-l border-gray-300 dark:border-white-dark/10 text-center">العملة</th>
                                 <th class="min-w-[140px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">مبلغ الحركة</th>
                                 <th class="min-w-[130px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">سعر الصرف (د.ع)</th>
@@ -314,13 +314,13 @@
                                     <!-- 1. Index -->
                                     <td class="text-center font-bold text-gray-500 py-1.5 px-2 border-l border-gray-200 dark:border-white-dark/10 bg-gray-50/40 dark:bg-[#0e1726]/40" x-text="index + 1"></td>
 
-                                    <!-- 2. رقم الحركة (Transaction No) -->
+                                    <!-- 2. رقم الفاتورة (Invoice No - يدعم نصوص وأرقام) -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10 text-center">
                                         <input type="text"
                                                x-model="item.transaction_no"
                                                @input="onCellInput(item)"
                                                @keydown.enter.prevent="onEnterKey(index)"
-                                               placeholder="رقم الحركة..."
+                                               placeholder="رقم الفاتورة..."
                                                class="w-full py-2 px-2 text-xs text-center font-semibold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
@@ -568,7 +568,7 @@
                 <thead>
                     <tr style="background-color: #f1f3f5; font-weight: bold;">
                         <th style="width: 4%; text-align: center; border: 1px solid #444; padding: 5px;">#</th>
-                        <th style="width: 9%; text-align: center; border: 1px solid #444; padding: 5px;">رقم الحركة</th>
+                        <th style="width: 10%; text-align: center; border: 1px solid #444; padding: 5px;">رقم الفاتورة</th>
                         <th style="width: 12%; text-align: center; border: 1px solid #444; padding: 5px;">العملة</th>
                         <th style="width: 12%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ الحركة</th>
                         <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">سعر الصرف</th>
@@ -583,7 +583,7 @@
                     <template x-for="(item, pIndex) in printableItems" :key="'print-' + pIndex">
                         <tr style="page-break-inside: avoid;">
                             <td style="text-align: center; border: 1px solid #555; padding: 4px;" x-text="pIndex + 1"></td>
-                            <td style="text-align: center; font-weight: bold; border: 1px solid #555; padding: 4px;" x-text="item.transaction_no || (pIndex + 1)"></td>
+                            <td style="text-align: center; font-weight: bold; border: 1px solid #555; padding: 4px;" x-text="item.transaction_no || '-'"></td>
                             <td style="text-align: center; font-weight: 600; border: 1px solid #555; padding: 4px;" x-text="getPrintCurrencyLabel(item.currency)"></td>
                             <td style="text-align: left; font-weight: bold; border: 1px solid #555; padding: 4px;" dir="ltr">
                                 <span x-text="getCurrencySymbol(item.currency)"></span> <span x-text="formatNumber(item.amount, 2)"></span>
@@ -806,10 +806,9 @@
 
                 // إضافة سطر جديد
                 appendNewRow() {
-                    const nextNo = this.items.length + 1;
                     this.items.push({
                         id: Date.now(),
-                        transaction_no: nextNo,
+                        transaction_no: '',
                         currency: 'USD',
                         amount: '',
                         exchange_rate: '',
@@ -905,7 +904,7 @@
                         // 3. عناوين أعمدة الجدول
                         aoa.push([
                             '#',
-                            'رقم الحركة',
+                            'رقم الفاتورة',
                             'العملة',
                             'مبلغ الحركة',
                             'سعر الصرف (د.ع)',
@@ -928,7 +927,7 @@
 
                             aoa.push([
                                 idx + 1,
-                                item.transaction_no || (idx + 1),
+                                item.transaction_no || '',
                                 currName,
                                 parseFloat(item.amount) || 0,
                                 parseFloat(item.exchange_rate) || 0,

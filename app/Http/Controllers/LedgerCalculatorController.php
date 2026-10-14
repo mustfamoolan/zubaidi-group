@@ -42,7 +42,7 @@ class LedgerCalculatorController extends Controller
                 $data['items'] = $records->map(function ($r, $idx) {
                     return [
                         'id'              => $r->id,
-                        'transaction_no'  => $r->transaction_no ?: ($idx + 1),
+                        'transaction_no'  => $r->transaction_no !== null ? (string)$r->transaction_no : '',
                         'currency'        => $r->currency ?: 'USD',
                         'amount'          => $r->amount > 0 ? (float)$r->amount : '',
                         'exchange_rate'   => $r->exchange_rate > 0 ? (float)$r->exchange_rate : '',
@@ -74,7 +74,7 @@ class LedgerCalculatorController extends Controller
             for ($i = 0; $i < 5; $i++) {
                 $data['items'][] = [
                     'id'              => $i + 1,
-                    'transaction_no'  => $i + 1,
+                    'transaction_no'  => '',
                     'currency'        => 'USD',
                     'amount'          => '',
                     'exchange_rate'   => '',
@@ -118,7 +118,7 @@ class LedgerCalculatorController extends Controller
                 ExchangeCalculatorRecord::create([
                     'user_id'          => $userId,
                     'company_id'       => $companyId,
-                    'transaction_no'   => $item['transaction_no'] ?? ($idx + 1),
+                    'transaction_no'   => isset($item['transaction_no']) ? (string)$item['transaction_no'] : null,
                     'currency'         => $item['currency'] ?? 'USD',
                     'amount'           => floatval($item['amount'] ?? 0),
                     'exchange_rate'    => floatval($item['exchange_rate'] ?? 0),
