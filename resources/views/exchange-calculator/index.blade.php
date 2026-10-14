@@ -287,32 +287,35 @@
                     <table class="table-striped table-hover w-full text-xs text-right border-collapse select-none">
                         <thead class="sticky top-0 bg-[#eaedf1] dark:bg-[#0e1726] z-10 border-b border-gray-300 dark:border-white-dark/20 text-gray-800 dark:text-gray-200 font-bold text-[11px] shadow-sm">
                             <tr>
-                                <th class="w-10 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">#</th>
-                                <th class="w-32 text-center py-2.5 px-2 border-l border-gray-300 dark:border-white-dark/10">رقم الفاتورة</th>
-                                <th class="w-36 py-2.5 px-3 border-l border-gray-300 dark:border-white-dark/10 text-center">العملة</th>
-                                <th class="min-w-[140px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">مبلغ الحركة</th>
-                                <th class="min-w-[130px] py-2.5 px-3 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">سعر الصرف (د.ع)</th>
-                                <th class="min-w-[160px] py-2.5 px-3 text-left text-cyan-800 dark:text-cyan-300 border-l border-gray-300 dark:border-white-dark/10 bg-cyan-50/40 dark:bg-cyan-950/20 font-black" dir="ltr">
+                                <th class="w-8 text-center py-2 px-1 border-l border-gray-300 dark:border-white-dark/10">#</th>
+                                <th class="w-28 text-center py-2 px-1 border-l border-gray-300 dark:border-white-dark/10">رقم الفاتورة</th>
+                                <th class="w-28 py-2 px-1 border-l border-gray-300 dark:border-white-dark/10 text-center">العملة</th>
+                                <th class="min-w-[110px] py-2 px-2 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">مبلغ الحركة</th>
+                                <th class="min-w-[105px] py-2 px-2 text-left border-l border-gray-300 dark:border-white-dark/10" dir="ltr">سعر الصرف (د.ع)</th>
+                                <th class="min-w-[125px] py-2 px-2 text-left text-cyan-800 dark:text-cyan-300 border-l border-gray-300 dark:border-white-dark/10 bg-cyan-50/40 dark:bg-cyan-950/20 font-black" dir="ltr">
                                     مبلغ عراقي (د.ع)
                                 </th>
-                                <th class="min-w-[150px] py-2.5 px-3 text-center border-l border-gray-300 dark:border-white-dark/10">
+                                <th class="min-w-[120px] py-2 px-1.5 text-center border-l border-gray-300 dark:border-white-dark/10">
                                     العمولة (النسبة)
                                 </th>
-                                <th class="min-w-[150px] py-2.5 px-3 text-left text-purple-800 dark:text-purple-300 border-l border-gray-300 dark:border-white-dark/10 bg-purple-50/40 dark:bg-purple-950/20 font-black" dir="ltr">
+                                <th class="min-w-[115px] py-2 px-2 text-left text-purple-800 dark:text-purple-300 border-l border-gray-300 dark:border-white-dark/10 bg-purple-50/40 dark:bg-purple-950/20 font-black" dir="ltr">
                                     مبلغ العمولة عراقي
                                 </th>
-                                <th class="min-w-[170px] py-2.5 px-3 text-left text-emerald-800 dark:text-emerald-300 border-l border-gray-300 dark:border-white-dark/10 bg-emerald-50/50 dark:bg-emerald-950/30 font-black" dir="ltr">
+                                <th class="min-w-[110px] py-2 px-2 text-left text-indigo-800 dark:text-indigo-300 border-l border-gray-300 dark:border-white-dark/10 bg-indigo-50/50 dark:bg-indigo-950/20 font-black" dir="ltr">
+                                    عمولة سويفت
+                                </th>
+                                <th class="min-w-[130px] py-2 px-2 text-left text-emerald-800 dark:text-emerald-300 border-l border-gray-300 dark:border-white-dark/10 bg-emerald-50/50 dark:bg-emerald-950/30 font-black" dir="ltr">
                                     المجموع عراقي (د.ع)
                                 </th>
-                                <th class="min-w-[160px] py-2.5 px-3 border-l border-gray-300 dark:border-white-dark/10">البيان / ملاحظات</th>
-                                <th class="w-12 text-center py-2.5 px-2">حذف</th>
+                                <th class="min-w-[120px] py-2 px-2 border-l border-gray-300 dark:border-white-dark/10">البيان / ملاحظات</th>
+                                <th class="w-8 text-center py-2 px-1">حذف</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200/80 dark:divide-white-dark/10 font-medium">
                             <template x-for="(item, index) in items" :key="index">
                                 <tr class="group hover:bg-primary/5 transition-colors focus-within:bg-blue-50/30 dark:focus-within:bg-[#132238]">
                                     <!-- 1. Index -->
-                                    <td class="text-center font-bold text-gray-500 py-1.5 px-2 border-l border-gray-200 dark:border-white-dark/10 bg-gray-50/40 dark:bg-[#0e1726]/40" x-text="index + 1"></td>
+                                    <td class="text-center font-bold text-gray-500 py-1 px-1 border-l border-gray-200 dark:border-white-dark/10 bg-gray-50/40 dark:bg-[#0e1726]/40" x-text="index + 1"></td>
 
                                     <!-- 2. رقم الفاتورة (Invoice No - يدعم نصوص وأرقام) -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10 text-center">
@@ -321,22 +324,22 @@
                                                @input="onCellInput(item)"
                                                @keydown.enter.prevent="onEnterKey(index)"
                                                placeholder="رقم الفاتورة..."
-                                               class="w-full py-2 px-2 text-xs text-center font-semibold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
+                                               class="w-full py-1.5 px-2 text-xs text-center font-semibold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
-                                    <!-- 3. العملة (Currency Select) -->
+                                    <!-- 3. العملة (Currency Select بدون إيموجيات) -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10">
                                         <select x-model="item.currency"
                                                 @change="onCurrencySelectChange(item)"
-                                                class="w-full py-2 px-2 text-xs font-bold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none cursor-pointer"
+                                                class="w-full py-1.5 px-2 text-xs font-bold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none cursor-pointer"
                                                 :class="{
                                                     'text-blue-600 dark:text-blue-400': item.currency === 'USD',
                                                     'text-emerald-600 dark:text-emerald-400': item.currency === 'AED',
                                                     'text-amber-600 dark:text-amber-400': item.currency === 'RMB'
                                                 }">
-                                            <option value="USD">💵 دولار أمريكي ($ USD)</option>
-                                            <option value="AED">🇦🇪 درهم إماراتي (AED)</option>
-                                            <option value="RMB">🇨🇳 ريمبي صيني (¥ RMB)</option>
+                                            <option value="USD">دولار أمريكي ($ USD)</option>
+                                            <option value="AED">درهم إماراتي (AED)</option>
+                                            <option value="RMB">ريمبي صيني (¥ RMB)</option>
                                         </select>
                                     </td>
 
@@ -349,7 +352,7 @@
                                                    @input="onRowValuesChanged(item)"
                                                    @keydown.enter.prevent="onEnterKey(index)"
                                                    placeholder="0.00"
-                                                   class="w-full py-2 px-2 text-xs text-left font-bold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
+                                                   class="w-full py-1.5 px-2 text-xs text-left font-bold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                         </div>
                                     </td>
 
@@ -360,11 +363,11 @@
                                                @input="onRowValuesChanged(item)"
                                                @keydown.enter.prevent="onEnterKey(index)"
                                                placeholder="سعر الصرف..."
-                                               class="w-full py-2 px-3 text-xs text-left font-semibold text-gray-700 dark:text-gray-300 bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
+                                               class="w-full py-1.5 px-2 text-xs text-left font-semibold text-gray-700 dark:text-gray-300 bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
                                     <!-- 6. مبلغ عراقي (محسوب تلقائياً = المبلغ * سعر الصرف) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-cyan-50/20 dark:bg-cyan-950/10 font-bold select-all" dir="ltr">
+                                    <td class="py-1.5 px-2 border-l border-gray-200 dark:border-white-dark/10 bg-cyan-50/20 dark:bg-cyan-950/10 font-bold select-all" dir="ltr">
                                         <div class="flex items-center justify-between text-cyan-800 dark:text-cyan-300 font-extrabold text-xs">
                                             <span x-text="formatNumber(item.iqd_amount, 2)">0.00</span>
                                             <span class="text-[10px] text-gray-500 font-normal">د.ع</span>
@@ -379,12 +382,12 @@
                                                    @input="onRowValuesChanged(item)"
                                                    @keydown.enter.prevent="onEnterKey(index)"
                                                    placeholder="1"
-                                                   class="w-16 py-2 px-1 text-xs text-center font-bold text-purple-700 dark:text-purple-300 bg-transparent border-0 focus:ring-1 focus:ring-purple-500 focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
+                                                   class="w-14 py-1.5 px-1 text-xs text-center font-bold text-purple-700 dark:text-purple-300 bg-transparent border-0 focus:ring-1 focus:ring-purple-500 focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
 
                                             <!-- اختيار نوع النسبة: بالألف ‰ (الافتراضي) أو % بالمئة -->
                                             <select x-model="item.commission_type"
                                                     @change="onRowValuesChanged(item)"
-                                                    class="py-1 px-1 text-[11px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded border-0 outline-none cursor-pointer">
+                                                    class="py-0.5 px-1 text-[11px] font-bold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded border-0 outline-none cursor-pointer">
                                                 <option value="per_thousand">‰ بالألف</option>
                                                 <option value="percent">% بالمئة</option>
                                             </select>
@@ -392,33 +395,43 @@
                                     </td>
 
                                     <!-- 8. مبلغ العمولة عراقي (محسوب تلقائياً) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-purple-50/20 dark:bg-purple-950/10 select-all" dir="ltr">
+                                    <td class="py-1.5 px-2 border-l border-gray-200 dark:border-white-dark/10 bg-purple-50/20 dark:bg-purple-950/10 select-all" dir="ltr">
                                         <div class="flex items-center justify-between font-extrabold text-purple-700 dark:text-purple-300 text-xs">
                                             <span x-text="formatNumber(item.commission_iqd, 2)">0.00</span>
                                             <span class="text-[10px] text-gray-500 font-normal">د.ع</span>
                                         </div>
                                     </td>
 
-                                    <!-- 9. المجموع عراقي (المبلغ بعد سعر الصرف + العمولة) -->
-                                    <td class="py-2 px-3 border-l border-gray-200 dark:border-white-dark/10 bg-emerald-50/25 dark:bg-emerald-950/20 select-all" dir="ltr">
+                                    <!-- 9. عمولة سويفت (مبلغ ثابت عراقي يكتبه المستخدم) -->
+                                    <td class="p-0 border-l border-gray-200 dark:border-white-dark/10 bg-indigo-50/20 dark:bg-indigo-950/10" dir="ltr">
+                                        <input type="number" step="any"
+                                               x-model="item.swift_commission"
+                                               @input="onRowValuesChanged(item)"
+                                               @keydown.enter.prevent="onEnterKey(index)"
+                                               placeholder="0"
+                                               class="w-full py-1.5 px-2 text-xs text-left font-bold text-indigo-700 dark:text-indigo-300 bg-transparent border-0 focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
+                                    </td>
+
+                                    <!-- 10. المجموع عراقي (المبلغ بعد سعر الصرف + العمولة + سويفت) -->
+                                    <td class="py-1.5 px-2 border-l border-gray-200 dark:border-white-dark/10 bg-emerald-50/25 dark:bg-emerald-950/20 select-all" dir="ltr">
                                         <div class="flex items-center justify-between font-black text-emerald-700 dark:text-emerald-300 text-xs">
                                             <span x-text="formatNumber(item.total_iqd, 2)">0.00</span>
                                             <span class="text-[10px] text-emerald-600 font-semibold">د.ع</span>
                                         </div>
                                     </td>
 
-                                    <!-- 10. البيان / ملاحظات -->
+                                    <!-- 11. البيان / ملاحظات -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10">
                                         <input type="text"
                                                x-model="item.notes"
                                                @input="onCellInput(item)"
                                                @keydown.enter.prevent="onEnterKey(index)"
                                                placeholder="ملاحظات أو بيان الحركة..."
-                                               class="w-full py-2 px-3 text-xs bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
+                                               class="w-full py-1.5 px-2 text-xs bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
-                                    <!-- 11. حذف -->
-                                    <td class="text-center py-2 px-1 whitespace-nowrap">
+                                    <!-- 12. حذف -->
+                                    <td class="text-center py-1.5 px-1 whitespace-nowrap">
                                         <button type="button"
                                                 @click="removeRow(index)"
                                                 title="حذف هذا السطر"
@@ -433,36 +446,41 @@
                         <!-- Table Footer: Totals Row (سطر المجاميع الإجمالية بالأسفل) -->
                         <tfoot class="bg-[#eaedf0] dark:bg-[#14233c] font-bold text-xs text-gray-800 dark:text-white-light border-t-2 border-gray-300 dark:border-white-dark/20 sticky bottom-0 z-10 shadow-md">
                             <tr>
-                                <td class="text-center py-3 px-2 border-l border-gray-300 dark:border-white-dark/20">∑</td>
-                                <td class="text-center py-3 px-2 border-l border-gray-300 dark:border-white-dark/20 text-gray-500" x-text="items.length + ' حركات'"></td>
-                                <td class="py-3 px-3 border-l border-gray-300 dark:border-white-dark/20 font-black text-center">المجاميع الإجمالية</td>
+                                <td class="text-center py-2.5 px-1 border-l border-gray-300 dark:border-white-dark/20">∑</td>
+                                <td class="text-center py-2.5 px-1 border-l border-gray-300 dark:border-white-dark/20 text-gray-500" x-text="items.length + ' حركات'"></td>
+                                <td class="py-2.5 px-1 border-l border-gray-300 dark:border-white-dark/20 font-black text-center">المجاميع</td>
 
-                                <td class="py-3 px-3 text-left border-l border-gray-300 dark:border-white-dark/20 text-gray-600 dark:text-gray-300 text-[11px]" dir="ltr">
-                                    <span>حسب العملة بالأعلى ☝️</span>
+                                <td class="py-2.5 px-2 text-left border-l border-gray-300 dark:border-white-dark/20 text-gray-600 dark:text-gray-300 text-[10px]" dir="ltr">
+                                    <span>حسب العملة بالأعلى</span>
                                 </td>
 
-                                <td class="py-3 px-3 border-l border-gray-300 dark:border-white-dark/20 text-center text-gray-400">-</td>
+                                <td class="py-2.5 px-1 border-l border-gray-300 dark:border-white-dark/20 text-center text-gray-400">-</td>
 
                                 <!-- Total IQD Amount -->
-                                <td class="py-3 px-3 text-left border-l border-gray-300 dark:border-white-dark/20 font-black text-cyan-800 dark:text-cyan-300 text-sm" dir="ltr">
-                                    <span x-text="formatNumber(totalIqdAmount, 2)">0.00</span> <span class="text-[10px] font-normal">د.ع</span>
+                                <td class="py-2.5 px-2 text-left border-l border-gray-300 dark:border-white-dark/20 font-black text-cyan-800 dark:text-cyan-300 text-xs" dir="ltr">
+                                    <span x-text="formatNumber(totalIqdAmount, 2)">0.00</span> <span class="text-[9px] font-normal">د.ع</span>
                                 </td>
 
                                 <!-- Commission label -->
-                                <td class="py-3 px-3 text-center border-l border-gray-300 dark:border-white-dark/20 text-gray-500 font-normal">إجمالي العمولات:</td>
+                                <td class="py-2.5 px-1 border-l border-gray-300 dark:border-white-dark/20 text-center text-gray-500 font-normal text-[10px]">إجمالي العمولات:</td>
 
                                 <!-- Total Commission IQD -->
-                                <td class="py-3 px-3 text-left border-l border-gray-300 dark:border-white-dark/20 font-black text-purple-700 dark:text-purple-300 text-sm" dir="ltr">
-                                    <span x-text="formatNumber(totalCommissionIqd, 2)">0.00</span> <span class="text-[10px] font-normal">د.ع</span>
+                                <td class="py-2.5 px-2 text-left border-l border-gray-300 dark:border-white-dark/20 font-black text-purple-700 dark:text-purple-300 text-xs" dir="ltr">
+                                    <span x-text="formatNumber(totalCommissionIqd, 2)">0.00</span> <span class="text-[9px] font-normal">د.ع</span>
+                                </td>
+
+                                <!-- Total Swift Commission -->
+                                <td class="py-2.5 px-2 text-left border-l border-gray-300 dark:border-white-dark/20 font-black text-indigo-700 dark:text-indigo-300 text-xs" dir="ltr">
+                                    <span x-text="formatNumber(totalSwiftCommission, 2)">0.00</span> <span class="text-[9px] font-normal">د.ع</span>
                                 </td>
 
                                 <!-- Grand Total IQD -->
-                                <td class="py-3 px-3 text-left border-l border-gray-300 dark:border-white-dark/20 font-black text-emerald-700 dark:text-emerald-300 text-base" dir="ltr">
+                                <td class="py-2.5 px-2 text-left border-l border-gray-300 dark:border-white-dark/20 font-black text-emerald-700 dark:text-emerald-300 text-sm" dir="ltr">
                                     <span x-text="formatNumber(grandTotalIqd, 2)">0.00</span> <span class="text-[10px] font-bold">د.ع</span>
                                 </td>
 
-                                <td class="py-3 px-3 text-center border-l border-gray-300 dark:border-white-dark/20 text-gray-500 text-[10px]">الصافي النهائي</td>
-                                <td class="py-3 px-2"></td>
+                                <td class="py-2.5 px-2 text-center border-l border-gray-300 dark:border-white-dark/20 text-gray-500 text-[10px]">الصافي النهائي</td>
+                                <td class="py-2.5 px-1"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -479,6 +497,7 @@
 
                     <div class="text-xs text-gray-500 flex items-center gap-4 font-semibold">
                         <span>مجموع العمولات: <strong class="text-purple-600" dir="ltr"><span x-text="formatNumber(totalCommissionIqd, 0)"></span> د.ع</strong></span>
+                        <span>عمولة سويفت: <strong class="text-indigo-600" dir="ltr"><span x-text="formatNumber(totalSwiftCommission, 0)"></span> د.ع</strong></span>
                         <span>المجموع الكلي: <strong class="text-emerald-600" dir="ltr"><span x-text="formatNumber(grandTotalIqd, 0)"></span> د.ع</strong></span>
                     </div>
                 </div>
@@ -564,19 +583,20 @@
             </div>
 
             <!-- جدول الطباعة الحقيقي (نصوص صافية وحدود دقيقة وبدون إيموجيات) -->
-            <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; text-align: right; direction: rtl;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: right; direction: rtl;">
                 <thead>
                     <tr style="background-color: #f1f3f5; font-weight: bold;">
-                        <th style="width: 4%; text-align: center; border: 1px solid #444; padding: 5px;">#</th>
-                        <th style="width: 10%; text-align: center; border: 1px solid #444; padding: 5px;">رقم الفاتورة</th>
-                        <th style="width: 11%; text-align: center; border: 1px solid #444; padding: 5px;">العملة</th>
-                        <th style="width: 12%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ الحركة</th>
-                        <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">سعر الصرف</th>
-                        <th style="width: 13%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ عراقي (د.ع)</th>
-                        <th style="width: 9%; text-align: center; border: 1px solid #444; padding: 5px;">العمولة</th>
-                        <th style="width: 12%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ العمولة عراقي</th>
-                        <th style="width: 14%; text-align: left; border: 1px solid #444; padding: 5px; font-weight: 900;" dir="ltr">المجموع عراقي (د.ع)</th>
-                        <th style="width: 15%; text-align: right; border: 1px solid #444; padding: 5px;">البيان / ملاحظات</th>
+                        <th style="width: 3.5%; text-align: center; border: 1px solid #444; padding: 4px;">#</th>
+                        <th style="width: 9%; text-align: center; border: 1px solid #444; padding: 4px;">رقم الفاتورة</th>
+                        <th style="width: 10%; text-align: center; border: 1px solid #444; padding: 4px;">العملة</th>
+                        <th style="width: 11%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">مبلغ الحركة</th>
+                        <th style="width: 9%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">سعر الصرف</th>
+                        <th style="width: 11%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">مبلغ عراقي (د.ع)</th>
+                        <th style="width: 8%; text-align: center; border: 1px solid #444; padding: 4px;">العمولة</th>
+                        <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">مبلغ العمولة عراقي</th>
+                        <th style="width: 9.5%; text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">عمولة سويفت</th>
+                        <th style="width: 12%; text-align: left; border: 1px solid #444; padding: 4px; font-weight: 900;" dir="ltr">المجموع عراقي (د.ع)</th>
+                        <th style="width: 7%; text-align: right; border: 1px solid #444; padding: 4px;">البيان</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -592,6 +612,7 @@
                             <td style="text-align: left; font-weight: bold; border: 1px solid #555; padding: 4px;" dir="ltr" x-text="formatNumber(item.iqd_amount, 2)"></td>
                             <td style="text-align: center; border: 1px solid #555; padding: 4px;" x-text="item.commission_type === 'per_thousand' ? (item.commission_rate || 0) + ' ‰ بالألف' : (item.commission_rate || 0) + ' %'"></td>
                             <td style="text-align: left; font-weight: bold; border: 1px solid #555; padding: 4px;" dir="ltr" x-text="formatNumber(item.commission_iqd, 2)"></td>
+                            <td style="text-align: left; font-weight: bold; border: 1px solid #555; padding: 4px;" dir="ltr" x-text="formatNumber(item.swift_commission, 2)"></td>
                             <td style="text-align: left; font-weight: 900; border: 1px solid #555; padding: 4px; background-color: #fafafa;" dir="ltr" x-text="formatNumber(item.total_iqd, 2)"></td>
                             <td style="text-align: right; border: 1px solid #555; padding: 4px;" x-text="item.notes || '-'"></td>
                         </tr>
@@ -599,23 +620,26 @@
                 </tbody>
                 <tfoot>
                     <tr style="background-color: #eaedf0; font-weight: 900; border-top: 2px solid #000; border-bottom: 2px solid #000;">
-                        <td colspan="3" style="text-align: center; border: 1px solid #444; padding: 5px; font-weight: bold;">
+                        <td colspan="3" style="text-align: center; border: 1px solid #444; padding: 4px; font-weight: bold;">
                             المجاميع الإجمالية (<span x-text="printableItems.length"></span> حركة)
                         </td>
-                        <td colspan="2" style="text-align: center; border: 1px solid #444; padding: 5px; font-size: 10px; color: #555;">
+                        <td colspan="2" style="text-align: center; border: 1px solid #444; padding: 4px; font-size: 9px; color: #555;">
                             حسب ملخص العملات أعلاه
                         </td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">
+                        <td style="text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">
                             <span x-text="formatNumber(totalIqdAmount, 2)"></span> د.ع
                         </td>
-                        <td style="text-align: center; border: 1px solid #444; padding: 5px; font-size: 10px;">إجمالي العمولات:</td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">
+                        <td style="text-align: center; border: 1px solid #444; padding: 4px; font-size: 9px;">إجمالي العمولات:</td>
+                        <td style="text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">
                             <span x-text="formatNumber(totalCommissionIqd, 2)"></span> د.ع
                         </td>
-                        <td style="text-align: left; border: 1px solid #444; padding: 5px; font-size: 13px; font-weight: 900;" dir="ltr">
+                        <td style="text-align: left; border: 1px solid #444; padding: 4px;" dir="ltr">
+                            <span x-text="formatNumber(totalSwiftCommission, 2)"></span> د.ع
+                        </td>
+                        <td style="text-align: left; border: 1px solid #444; padding: 4px; font-size: 11px; font-weight: 900;" dir="ltr">
                             <span x-text="formatNumber(grandTotalIqd, 2)"></span> د.ع
                         </td>
-                        <td style="text-align: center; border: 1px solid #444; padding: 5px; font-size: 10px;">الصافي النهائي</td>
+                        <td style="text-align: center; border: 1px solid #444; padding: 4px; font-size: 9px;">الصافي النهائي</td>
                     </tr>
                 </tfoot>
             </table>
@@ -668,8 +692,11 @@
                     // 3. مبلغ العمولة عراقي = مبلغ عراقي × النسبة
                     item.commission_iqd = Math.round((item.iqd_amount * factor) * 100) / 100;
 
-                    // 4. المجموع عراقي = المبلغ بعد سعر الصرف + العمولة
-                    item.total_iqd = Math.round((item.iqd_amount + item.commission_iqd) * 100) / 100;
+                    // 4. عمولة سويفت (مبلغ ثابت بالعراقي)
+                    const swiftComm = parseFloat(item.swift_commission) || 0;
+
+                    // 5. المجموع عراقي = المبلغ بعد سعر الصرف + العمولة + عمولة سويفت
+                    item.total_iqd = Math.round((item.iqd_amount + item.commission_iqd + swiftComm) * 100) / 100;
                 },
 
                 // Helper: رمز العملة
@@ -733,7 +760,12 @@
                     return this.items.reduce((sum, item) => sum + (parseFloat(item.commission_iqd) || 0), 0);
                 },
 
-                // 6. المجموع الكلي النهائي بالعراقي (د.ع) = المبالغ + العمولات
+                // 6. مجموع عمولات سويفت بالعراقي (د.ع)
+                get totalSwiftCommission() {
+                    return this.items.reduce((sum, item) => sum + (parseFloat(item.swift_commission) || 0), 0);
+                },
+
+                // 7. المجموع الكلي النهائي بالعراقي (د.ع) = المبالغ + العمولات + سويفت
                 get grandTotalIqd() {
                     return this.items.reduce((sum, item) => sum + (parseFloat(item.total_iqd) || 0), 0);
                 },
@@ -816,6 +848,7 @@
                         commission_rate: 1,
                         commission_type: 'per_thousand',
                         commission_iqd: 0,
+                        swift_commission: '',
                         total_iqd: 0,
                         notes: ''
                     });
@@ -850,6 +883,7 @@
                                 commission_rate: 1,
                                 commission_type: 'per_thousand',
                                 commission_iqd: 0,
+                                swift_commission: '',
                                 total_iqd: 0,
                                 notes: ''
                             });
@@ -911,6 +945,7 @@
                             'مبلغ عراقي (د.ع)',
                             'نسبة العمولة',
                             'مبلغ العمولة عراقي (د.ع)',
+                            'عمولة سويفت (د.ع)',
                             'المجموع عراقي (د.ع)',
                             'البيان / ملاحظات'
                         ]);
@@ -934,6 +969,7 @@
                                 parseFloat(item.iqd_amount) || 0,
                                 commText,
                                 parseFloat(item.commission_iqd) || 0,
+                                parseFloat(item.swift_commission) || 0,
                                 parseFloat(item.total_iqd) || 0,
                                 item.notes || ''
                             ]);
@@ -949,6 +985,7 @@
                             this.totalIqdAmount,
                             '',
                             this.totalCommissionIqd,
+                            this.totalSwiftCommission,
                             this.grandTotalIqd,
                             'الصافي الكلي النهائي'
                         ]);
@@ -958,13 +995,14 @@
                         // تحديد عرض الأعمدة (Column Widths) لضمان عدم اقتصاص النصوص
                         ws['!cols'] = [
                             { wch: 6 },  // #
-                            { wch: 14 }, // رقم الحركة
+                            { wch: 14 }, // رقم الفاتورة
                             { wch: 22 }, // العملة
                             { wch: 16 }, // مبلغ الحركة
                             { wch: 16 }, // سعر الصرف
                             { wch: 20 }, // مبلغ عراقي
                             { wch: 16 }, // نسبة العمولة
-                            { wch: 22 }, // مبلغ العمولة عراقي
+                            { wch: 20 }, // مبلغ العمولة عراقي
+                            { wch: 18 }, // عمولة سويفت
                             { wch: 22 }, // المجموع عراقي
                             { wch: 35 }  // البيان
                         ];
@@ -1000,15 +1038,16 @@
                     </head>
                     <body>
                         <table>
-                            <tr><th colspan="10" style="font-size: 14pt; background-color: #0f172a;">مجموعة الزبيدي للتجارة والشحن الدولي</th></tr>
-                            <tr><th colspan="10" style="font-size: 12pt; background-color: #1e293b;">${title} - تاريخ: ${dateStr}</th></tr>
-                            <tr><td colspan="10"></td></tr>
+                            <tr><th colspan="11" style="font-size: 14pt; background-color: #0f172a;">مجموعة الزبيدي للتجارة والشحن الدولي</th></tr>
+                            <tr><th colspan="11" style="font-size: 12pt; background-color: #1e293b;">${title} - تاريخ: ${dateStr}</th></tr>
+                            <tr><td colspan="11"></td></tr>
                             <tr>
                                 <th colspan="2" class="kpi-th">إجمالي الدولار</th>
                                 <th colspan="2" class="kpi-th">إجمالي الإماراتي</th>
                                 <th class="kpi-th">إجمالي الريمبي</th>
                                 <th colspan="2" class="kpi-th">إجمالي العراقي</th>
                                 <th class="kpi-th">إجمالي العمولات</th>
+                                <th class="kpi-th">إجمالي سويفت</th>
                                 <th colspan="2" class="kpi-th" style="background-color: #047857;">المجموع الكلي النهائي</th>
                             </tr>
                             <tr>
@@ -1017,18 +1056,20 @@
                                 <td class="kpi-td">¥ ${this.formatNumber(this.totalRmb, 2)}</td>
                                 <td colspan="2" class="kpi-td">${this.formatNumber(this.totalIqdAmount, 0)} د.ع</td>
                                 <td class="kpi-td">${this.formatNumber(this.totalCommissionIqd, 0)} د.ع</td>
+                                <td class="kpi-td">${this.formatNumber(this.totalSwiftCommission, 0)} د.ع</td>
                                 <td colspan="2" class="kpi-td" style="background-color: #d1fae5; color: #065f46; font-size: 12pt;">${this.formatNumber(this.grandTotalIqd, 0)} د.ع</td>
                             </tr>
-                            <tr><td colspan="10"></td></tr>
+                            <tr><td colspan="11"></td></tr>
                             <tr>
                                 <th>#</th>
-                                <th>رقم الحركة</th>
+                                <th>رقم الفاتورة</th>
                                 <th>العملة</th>
                                 <th>مبلغ الحركة</th>
                                 <th>سعر الصرف</th>
                                 <th>مبلغ عراقي</th>
                                 <th>نسبة العمولة</th>
                                 <th>مبلغ العمولة عراقي</th>
+                                <th>عمولة سويفت</th>
                                 <th>المجموع عراقي</th>
                                 <th>البيان / ملاحظات</th>
                             </tr>`;
@@ -1052,6 +1093,7 @@
                             <td class="num">${parseFloat(item.iqd_amount) || 0}</td>
                             <td style="text-align: center;">${commText}</td>
                             <td class="num">${parseFloat(item.commission_iqd) || 0}</td>
+                            <td class="num">${parseFloat(item.swift_commission) || 0}</td>
                             <td class="num" style="font-weight: bold;">${parseFloat(item.total_iqd) || 0}</td>
                             <td>${item.notes || ''}</td>
                         </tr>`;
@@ -1064,6 +1106,7 @@
                                 <td class="num">${this.totalIqdAmount.toFixed(2)}</td>
                                 <td></td>
                                 <td class="num">${this.totalCommissionIqd.toFixed(2)}</td>
+                                <td class="num">${this.totalSwiftCommission.toFixed(2)}</td>
                                 <td class="num" style="font-size: 12pt; color: #047857;">${this.grandTotalIqd.toFixed(2)}</td>
                                 <td>الصافي الكلي</td>
                             </tr>

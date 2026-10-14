@@ -39,19 +39,20 @@ class LedgerCalculatorController extends Controller
             $records = $query->orderBy('sort_order', 'asc')->orderBy('id', 'asc')->get();
 
             if ($records->isNotEmpty()) {
-                $data['items'] = $records->map(function ($r, $idx) {
+                $data['items'] = $records->map(function ($r) {
                     return [
-                        'id'              => $r->id,
-                        'transaction_no'  => $r->transaction_no !== null ? (string)$r->transaction_no : '',
-                        'currency'        => $r->currency ?: 'USD',
-                        'amount'          => $r->amount > 0 ? (float)$r->amount : '',
-                        'exchange_rate'   => $r->exchange_rate > 0 ? (float)$r->exchange_rate : '',
-                        'iqd_amount'      => (float)$r->iqd_amount,
-                        'commission_rate' => (float)$r->commission_rate,
-                        'commission_type' => $r->commission_type ?: 'per_thousand',
-                        'commission_iqd'  => (float)$r->commission_iqd,
-                        'total_iqd'       => (float)$r->total_iqd,
-                        'notes'           => $r->notes ?: '',
+                        'id'               => $r->id,
+                        'transaction_no'   => $r->transaction_no !== null ? (string)$r->transaction_no : '',
+                        'currency'         => $r->currency ?: 'USD',
+                        'amount'           => $r->amount > 0 ? (float)$r->amount : '',
+                        'exchange_rate'    => $r->exchange_rate > 0 ? (float)$r->exchange_rate : '',
+                        'iqd_amount'       => (float)$r->iqd_amount,
+                        'commission_rate'  => (float)$r->commission_rate,
+                        'commission_type'  => $r->commission_type ?: 'per_thousand',
+                        'commission_iqd'   => (float)$r->commission_iqd,
+                        'swift_commission' => isset($r->swift_commission) && $r->swift_commission > 0 ? (float)$r->swift_commission : '',
+                        'total_iqd'        => (float)$r->total_iqd,
+                        'notes'            => $r->notes ?: '',
                     ];
                 })->toArray();
             }
@@ -73,17 +74,18 @@ class LedgerCalculatorController extends Controller
             $data['items'] = [];
             for ($i = 0; $i < 5; $i++) {
                 $data['items'][] = [
-                    'id'              => $i + 1,
-                    'transaction_no'  => '',
-                    'currency'        => 'USD',
-                    'amount'          => '',
-                    'exchange_rate'   => '',
-                    'iqd_amount'      => 0,
-                    'commission_rate' => 1,
-                    'commission_type' => 'per_thousand',
-                    'commission_iqd'  => 0,
-                    'total_iqd'       => 0,
-                    'notes'           => '',
+                    'id'               => $i + 1,
+                    'transaction_no'   => '',
+                    'currency'         => 'USD',
+                    'amount'           => '',
+                    'exchange_rate'    => '',
+                    'iqd_amount'       => 0,
+                    'commission_rate'  => 1,
+                    'commission_type'  => 'per_thousand',
+                    'commission_iqd'   => 0,
+                    'swift_commission' => '',
+                    'total_iqd'        => 0,
+                    'notes'            => '',
                 ];
             }
         }
@@ -126,6 +128,7 @@ class LedgerCalculatorController extends Controller
                     'commission_rate'  => floatval($item['commission_rate'] ?? 0),
                     'commission_type'  => $item['commission_type'] ?? 'per_thousand',
                     'commission_iqd'   => floatval($item['commission_iqd'] ?? 0),
+                    'swift_commission' => floatval($item['swift_commission'] ?? 0),
                     'total_iqd'        => floatval($item['total_iqd'] ?? 0),
                     'notes'            => $item['notes'] ?? null,
                     'sort_order'       => $idx + 1,

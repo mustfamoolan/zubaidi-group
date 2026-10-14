@@ -22,19 +22,21 @@ class ExchangeCalculatorRecord extends Model
         'commission_rate',
         'commission_type',
         'commission_iqd',
+        'swift_commission',
         'total_iqd',
         'notes',
         'sort_order',
     ];
 
     protected $casts = [
-        'amount'          => 'float',
-        'exchange_rate'   => 'float',
-        'iqd_amount'      => 'float',
-        'commission_rate' => 'float',
-        'commission_iqd'  => 'float',
-        'total_iqd'       => 'float',
-        'sort_order'      => 'integer',
+        'amount'           => 'float',
+        'exchange_rate'    => 'float',
+        'iqd_amount'       => 'float',
+        'commission_rate'  => 'float',
+        'commission_iqd'   => 'float',
+        'swift_commission' => 'float',
+        'total_iqd'        => 'float',
+        'sort_order'       => 'integer',
     ];
 
     public function user()
