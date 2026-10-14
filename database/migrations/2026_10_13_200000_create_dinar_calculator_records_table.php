@@ -17,19 +17,21 @@ return new class extends Migration
             $table->foreignId('company_id')->nullable()->constrained()->nullOnDelete();
             $table->string('transaction_no')->nullable(); // رقم الحركة
             $table->string('currency', 10)->default('USD'); // USD, AED, RMB
-            $table->decimal('amount', 18, 4)->default(0); // مبلغ الحركة
-            $table->decimal('exchange_rate', 18, 4)->default(0); // سعر الصرف الرئيسي
-            $table->decimal('country_rate', 18, 4)->nullable(); // ضرب سعر الصرف بالبلد (AED / RMB)
-            $table->decimal('iqd_base', 18, 4)->default(0); // مبلغ عراقي
+            $table->decimal('exchange_rate', 18, 4)->default(0); // سعر الصرف
+            $table->decimal('iqd_base', 18, 4)->default(0); // مبلغ عراقي تلقائي
             $table->decimal('commission_rate', 10, 4)->default(0); // نسبة العمولة
             $table->string('commission_type', 20)->default('per_thousand'); // per_thousand / percent
             $table->decimal('commission_iqd', 18, 4)->default(0); // مبلغ العمولة
             $table->decimal('customs_rate', 10, 4)->default(0); // نسبة كمرك + ضريبة
             $table->string('customs_type', 20)->default('percent'); // percent / per_thousand
             $table->decimal('customs_iqd', 18, 4)->default(0); // مبلغ الكمرك
-            $table->decimal('total_iqd', 18, 4)->default(0); // المجموع عراقي
+            $table->decimal('total_iqd', 18, 4)->default(0); // مجموع عراقي (مبلغ عراقي + عمولة + كمرك)
+            $table->decimal('country_rate', 18, 6)->nullable(); // سعر صرف البلد (للدرهم والريمبي)
+            $table->string('country_op', 10)->default('mul'); // نوع العملية (mul: ضرب, div: قسمة)
+            $table->decimal('country_final_rate', 18, 4)->nullable(); // نتيجة سعر صرف الدولة
+            $table->decimal('amount', 18, 4)->nullable()->default(0); // اختياري
             $table->text('notes')->nullable(); // البيان / ملاحظات
-            $table->integer('sort_order')->default(0); // ترتيب الحركة في الجدول
+            $table->integer('sort_order')->default(0); // ترتيب الحركة
             $table->timestamps();
 
             $table->index('user_id');
