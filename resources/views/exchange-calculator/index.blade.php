@@ -493,69 +493,69 @@
         <div id="realPrintSection" class="hidden">
 
             <!-- رأس مستند الطباعة الرسمي -->
-            <div class="border-b-2 border-black pb-3 mb-3">
-                <div class="flex items-center justify-between">
+            <div style="border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 8px; direction: rtl;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
-                        <h1 class="text-xl font-black text-black tracking-tight" style="font-size: 19px; margin: 0;">
+                        <h1 style="font-size: 18px; font-weight: 900; margin: 0; color: #000;">
                             مجموعة الزبيدي للتجارة والشحن الدولي
                         </h1>
-                        <h2 class="text-sm font-bold text-gray-800 mt-1" style="font-size: 14px; margin: 2px 0 0 0;" x-text="sheetTitle || 'جدول الحسابات وسعر الصرف والعمولات'">
+                        <h2 style="font-size: 13px; font-weight: bold; margin: 3px 0 0 0; color: #333;" x-text="sheetTitle || 'جدول الحسابات وسعر الصرف والعمولات'">
                         </h2>
                     </div>
-                    <div class="text-left text-xs font-semibold text-gray-700" style="font-size: 11px; line-height: 1.4;">
-                        <p style="margin: 0;">تاريخ الكشف: <strong>{{ date('Y-m-d') }}</strong></p>
-                        <p style="margin: 0;">وقت الطباعة: <strong>{{ date('h:i A') }}</strong></p>
-                        <p style="margin: 0;">عدد الحركات: <strong x-text="printableItems.length"></strong></p>
+                    <div style="text-align: left; font-size: 11px; font-weight: 600; line-height: 1.4;">
+                        <div>تاريخ الكشف: <strong>{{ date('Y-m-d') }}</strong></div>
+                        <div>وقت الطباعة: <strong>{{ date('h:i A') }}</strong></div>
+                        <div>عدد الحركات: <strong x-text="printableItems.length"></strong></div>
                     </div>
                 </div>
             </div>
 
-            <!-- شريط المجاميع الصغيرة المخصصة للطباعة (حقول صغيرة متراصة وواضحة) -->
-            <div class="grid grid-cols-6 gap-2 mb-3 text-center" style="margin-bottom: 10px;">
+            <!-- بطاقات ملخص المجاميع للطباعة: مقسمة بالتساوي 3 في كل سطر مثل حاسبة الصرف دينار -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; direction: rtl;">
 
                 <!-- 1. دولار -->
-                <div class="mini-kpi-box rounded p-1.5" style="border: 1px solid #333; padding: 4px 6px; background: #fbfbfb;">
-                    <div style="font-size: 10px; font-weight: bold; color: #555; margin-bottom: 2px;">مجموع الدولار</div>
+                <div class="mini-kpi-box" style="border: 1px solid #333; padding: 4px 8px; background: #fafafa; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 10px; color: #555; margin-bottom: 2px;">مجموع الدولار (USD)</div>
                     <div style="font-size: 12px; font-weight: 900; color: #000;" dir="ltr">
                         $ <span x-text="formatNumber(totalUsd, 2)">0.00</span>
                     </div>
                 </div>
 
                 <!-- 2. إماراتي -->
-                <div class="mini-kpi-box rounded p-1.5" style="border: 1px solid #333; padding: 4px 6px; background: #fbfbfb;">
-                    <div style="font-size: 10px; font-weight: bold; color: #555; margin-bottom: 2px;">مجموع الإماراتي</div>
+                <div class="mini-kpi-box" style="border: 1px solid #333; padding: 4px 8px; background: #fafafa; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 10px; color: #555; margin-bottom: 2px;">مجموع الإماراتي (AED)</div>
                     <div style="font-size: 12px; font-weight: 900; color: #000;" dir="ltr">
                         د.إ <span x-text="formatNumber(totalAed, 2)">0.00</span>
                     </div>
                 </div>
 
                 <!-- 3. ريمبي -->
-                <div class="mini-kpi-box rounded p-1.5" style="border: 1px solid #333; padding: 4px 6px; background: #fbfbfb;">
-                    <div style="font-size: 10px; font-weight: bold; color: #555; margin-bottom: 2px;">مجموع الريمبي</div>
+                <div class="mini-kpi-box" style="border: 1px solid #333; padding: 4px 8px; background: #fafafa; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 10px; color: #555; margin-bottom: 2px;">مجموع الريمبي (RMB)</div>
                     <div style="font-size: 12px; font-weight: 900; color: #000;" dir="ltr">
                         ¥ <span x-text="formatNumber(totalRmb, 2)">0.00</span>
                     </div>
                 </div>
 
                 <!-- 4. عراقي -->
-                <div class="mini-kpi-box rounded p-1.5" style="border: 1px solid #333; padding: 4px 6px; background: #fbfbfb;">
-                    <div style="font-size: 10px; font-weight: bold; color: #555; margin-bottom: 2px;">مجموع العراقي</div>
+                <div class="mini-kpi-box" style="border: 1px solid #333; padding: 4px 8px; background: #fafafa; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 10px; color: #555; margin-bottom: 2px;">مجموع مبالغ الصرف (عراقي)</div>
                     <div style="font-size: 12px; font-weight: 900; color: #000;" dir="ltr">
                         <span x-text="formatNumber(totalIqdAmount, 0)">0</span> <span style="font-size: 9px; font-weight: normal;">د.ع</span>
                     </div>
                 </div>
 
                 <!-- 5. عمولات -->
-                <div class="mini-kpi-box rounded p-1.5" style="border: 1px solid #333; padding: 4px 6px; background: #fbfbfb;">
-                    <div style="font-size: 10px; font-weight: bold; color: #555; margin-bottom: 2px;">مجموع العمولات</div>
+                <div class="mini-kpi-box" style="border: 1px solid #333; padding: 4px 8px; background: #fafafa; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 10px; color: #555; margin-bottom: 2px;">مجموع العمولات (عراقي)</div>
                     <div style="font-size: 12px; font-weight: 900; color: #000;" dir="ltr">
                         <span x-text="formatNumber(totalCommissionIqd, 0)">0</span> <span style="font-size: 9px; font-weight: normal;">د.ع</span>
                     </div>
                 </div>
 
                 <!-- 6. المجموع الكلي -->
-                <div class="mini-kpi-box rounded p-1.5" style="border: 2px solid #000; padding: 4px 6px; background: #eee;">
-                    <div style="font-size: 10px; font-weight: 900; color: #000; margin-bottom: 2px;">المجموع النهائي (الصافي)</div>
+                <div class="mini-kpi-box" style="border: 2px solid #000; padding: 4px 8px; background: #e8f5e9; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 10px; color: #111; font-weight: bold; margin-bottom: 2px;">المجموع النهائي (الصافي)</div>
                     <div style="font-size: 13px; font-weight: 900; color: #000;" dir="ltr">
                         <span x-text="formatNumber(grandTotalIqd, 0)">0</span> <span style="font-size: 10px; font-weight: bold;">د.ع</span>
                     </div>
@@ -563,13 +563,13 @@
 
             </div>
 
-            <!-- جدول الطباعة الحقيقي (نصوص صافية وحدود دقيقة بدون أزرار أو حقول إدخال) -->
-            <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: right;">
+            <!-- جدول الطباعة الحقيقي (نصوص صافية وحدود دقيقة وبدون إيموجيات) -->
+            <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; text-align: right; direction: rtl;">
                 <thead>
                     <tr style="background-color: #f1f3f5; font-weight: bold;">
                         <th style="width: 4%; text-align: center; border: 1px solid #444; padding: 5px;">#</th>
                         <th style="width: 10%; text-align: center; border: 1px solid #444; padding: 5px;">رقم الفاتورة</th>
-                        <th style="width: 12%; text-align: center; border: 1px solid #444; padding: 5px;">العملة</th>
+                        <th style="width: 11%; text-align: center; border: 1px solid #444; padding: 5px;">العملة</th>
                         <th style="width: 12%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ الحركة</th>
                         <th style="width: 10%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">سعر الصرف</th>
                         <th style="width: 13%; text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">مبلغ عراقي (د.ع)</th>
@@ -603,7 +603,7 @@
                             المجاميع الإجمالية (<span x-text="printableItems.length"></span> حركة)
                         </td>
                         <td colspan="2" style="text-align: center; border: 1px solid #444; padding: 5px; font-size: 10px; color: #555;">
-                            حسب ملخص العملات بالأعلى ☝️
+                            حسب ملخص العملات أعلاه
                         </td>
                         <td style="text-align: left; border: 1px solid #444; padding: 5px;" dir="ltr">
                             <span x-text="formatNumber(totalIqdAmount, 2)"></span> د.ع
