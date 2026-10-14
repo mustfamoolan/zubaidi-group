@@ -261,20 +261,20 @@
                     </div>
                 </div>
 
-                <!-- 6. المجموع الكلي النهائي بالعراقي (المبلغ بعد الصرف + العمولة) -->
-                <div class="panel p-3.5 bg-gradient-to-br from-[#0e1726] to-[#1e293b] text-white dark:from-[#1b2e4b] dark:to-[#0e1726] border border-gray-700 dark:border-blue-900/40 rounded-xl relative overflow-hidden shadow-md">
+                <!-- 6. المجموع الكلي النهائي بالعراقي (المبلغ بعد الصرف + العمولة + سويفت) -->
+                <div class="panel p-3.5 bg-gradient-to-br from-emerald-100/80 to-teal-100/60 dark:from-emerald-950/40 dark:to-teal-950/30 border-2 border-emerald-500/40 dark:border-emerald-600/50 rounded-xl relative overflow-hidden shadow-sm">
                     <div class="flex items-center justify-between mb-1.5">
-                        <span class="text-xs font-bold text-amber-300">المجموع الكلي عراقي</span>
-                        <span class="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center font-black text-xs">
+                        <span class="text-xs font-extrabold text-emerald-900 dark:text-emerald-300">المجموع الكلي عراقي</span>
+                        <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-black text-xs">
                             ∑
                         </span>
                     </div>
-                    <div class="text-xl font-extrabold text-white tracking-tight" dir="ltr">
-                        <span x-text="formatNumber(grandTotalIqd, 0)">0</span> <span class="text-xs text-amber-300 font-bold">د.ع</span>
+                    <div class="text-xl font-black text-emerald-950 dark:text-white tracking-tight" dir="ltr">
+                        <span x-text="formatNumber(grandTotalIqd, 0)">0</span> <span class="text-xs text-emerald-700 dark:text-emerald-300 font-bold">د.ع</span>
                     </div>
-                    <div class="mt-1.5 text-[10px] text-gray-300 flex items-center justify-between">
-                        <span>(المبالغ + العمولات)</span>
-                        <span class="badge bg-amber-400 text-gray-900 font-bold text-[10px] py-0 px-1.5">الصافي الكلي</span>
+                    <div class="mt-1.5 text-[10px] text-emerald-900/80 dark:text-emerald-300/80 flex items-center justify-between">
+                        <span>(المبالغ + العمولات + سويفت)</span>
+                        <span class="badge bg-emerald-600 text-white dark:bg-emerald-500 dark:text-gray-900 font-bold text-[10px] py-0 px-1.5">الصافي الكلي</span>
                     </div>
                 </div>
 
