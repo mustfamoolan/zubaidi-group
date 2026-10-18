@@ -14,6 +14,7 @@ use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\LedgerCalculatorController;
 use App\Http\Controllers\DinarCalculatorController;
+use App\Http\Controllers\CalculatorArchiveController;
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -30,11 +31,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/exchange-calculator', [LedgerCalculatorController::class, 'index'])->name('exchange-calculator.index');
     Route::post('/exchange-calculator/save', [LedgerCalculatorController::class, 'save'])->name('exchange-calculator.save');
     Route::post('/exchange-calculator/clear', [LedgerCalculatorController::class, 'clear'])->name('exchange-calculator.clear');
+    Route::get('/exchange-calculator/archives', [CalculatorArchiveController::class, 'exchangeArchives'])->name('exchange-calculator.archives');
+    Route::post('/exchange-calculator/archive', [CalculatorArchiveController::class, 'archiveExchange'])->name('exchange-calculator.archive');
 
     // حاسبة الصرف دينار (Dinar Calculator - with customs & country rate)
     Route::get('/dinar-calculator', [DinarCalculatorController::class, 'index'])->name('dinar-calculator.index');
     Route::post('/dinar-calculator/save', [DinarCalculatorController::class, 'save'])->name('dinar-calculator.save');
     Route::post('/dinar-calculator/clear', [DinarCalculatorController::class, 'clear'])->name('dinar-calculator.clear');
+    Route::get('/dinar-calculator/archives', [CalculatorArchiveController::class, 'dinarArchives'])->name('dinar-calculator.archives');
+    Route::post('/dinar-calculator/archive', [CalculatorArchiveController::class, 'archiveDinar'])->name('dinar-calculator.archive');
+
+    // أرشيف كشوفات الحسابات وحاسبات الصرف (Archives Management)
+    Route::get('/calculator-archives', [CalculatorArchiveController::class, 'index'])->name('calculator-archives.index');
+    Route::get('/calculator-archives/{id}', [CalculatorArchiveController::class, 'show'])->name('calculator-archives.show');
+    Route::delete('/calculator-archives/{id}', [CalculatorArchiveController::class, 'destroy'])->name('calculator-archives.destroy');
 
     // Companies Management
     Route::resource('companies', CompanyController::class);

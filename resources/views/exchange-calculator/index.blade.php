@@ -147,6 +147,22 @@
                         <span>إضافة حركة جديدة</span>
                     </button>
 
+                    <button type="button" @click="openArchiveModal()" class="btn btn-warning btn-sm flex items-center gap-1.5 shadow-sm text-black font-bold" title="أرشفة وحفظ الكشف الحالي وتفريغ الجدول ليوم جديد">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="4" width="18" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M5 8V18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V8" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M10 12H14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <span>أرشفة وحفظ الكشف</span>
+                    </button>
+
+                    <a href="{{ route('calculator-archives.index', ['type' => 'exchange']) }}" class="btn btn-outline-info btn-sm flex items-center gap-1.5 shadow-sm" title="عرض جميع الكشوفات السابقة المؤرشفة">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>سجل الأرشيف</span>
+                    </a>
+
                     <button type="button" @click="exportToExcel()" class="btn btn-outline-success btn-sm flex items-center gap-1.5 shadow-sm" title="تصدير ملف إكسل منسق حقيقي .xlsx">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 16.004V17C4 18.8856 4 19.8284 4.58579 20.4142C5.17157 21 6.11438 21 8 21H16C17.8856 21 18.8284 21 19.4142 20.4142C20 19.8284 20 18.8856 20 17V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -656,6 +672,100 @@
 
         </div>
 
+        <!-- ======================================================== -->
+        <!-- 📦 مودال أرشفة الكشف الحالي وتفريغ الجدول -->
+        <!-- ======================================================== -->
+        <div x-show="isArchiveModalOpen"
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="bg-white dark:bg-[#0e1726] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 dark:border-white-dark/10"
+                 @click.outside="if(!isArchiving) isArchiveModalOpen = false">
+
+                <!-- رأس المودال -->
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-white-dark/10 mb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="4" width="18" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M5 8V18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V8" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M10 12H14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white">أرشفة وحفظ كشف الحسابات</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">حفظ نسخة نهائية دائمة وتفريغ الجدول ليوم جديد</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="if(!isArchiving) isArchiveModalOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 18L18 6M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+
+                <!-- معاينة سريعة لأرقام الكشف -->
+                <div class="grid grid-cols-3 gap-2 p-3 bg-gray-50 dark:bg-[#121e32]/60 rounded-xl border border-gray-100 dark:border-white-dark/10 mb-5 text-center">
+                    <div>
+                        <div class="text-[11px] text-gray-500">عدد الحركات</div>
+                        <div class="text-sm font-extrabold text-gray-800 dark:text-gray-200" x-text="printableItems.length + ' حركات'"></div>
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-gray-500">إجمالي الدولار</div>
+                        <div class="text-sm font-extrabold text-blue-600 dark:text-blue-400" dir="ltr">$ <span x-text="formatNumber(totalUsd, 2)"></span></div>
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-gray-500">المجموع الكلي</div>
+                        <div class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400" dir="ltr"><span x-text="formatNumber(grandTotalIqd, 0)"></span> د.ع</div>
+                    </div>
+                </div>
+
+                <!-- حقول الإدخال -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">عنوان الكشف في الأرشيف <span class="text-danger">*</span></label>
+                        <input type="text" x-model="archiveTitle" placeholder="مثال: كشف حسابات صرف العملات - الأحد"
+                               class="form-input text-xs w-full font-semibold focus:border-amber-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">تاريخ الكشف <span class="text-danger">*</span></label>
+                        <input type="date" x-model="archiveDate"
+                               class="form-input text-xs w-full focus:border-amber-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">ملاحظات أو بيان توضيحي (اختياري)</label>
+                        <textarea x-model="archiveNotes" rows="2" placeholder="أي تفاصيل أو ملاحظات تخص هذا اليوم..."
+                                  class="form-textarea text-xs w-full focus:border-amber-500"></textarea>
+                    </div>
+                </div>
+
+                <!-- تنبيه للمستخدم -->
+                <div class="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-800 dark:text-amber-200 flex items-start gap-2">
+                    <svg class="w-4 h-4 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none"><path d="M12 9V14M12 17.5V18M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    <span>سيتم حفظ نسخة مطابقة ثابتة غير قابلة للتعديل في الأرشيف (مع إمكانية عرضها وطباعتها وتصديرها Excel بأي وقت)، وسيتم تفريغ هذا الجدول للبدء باليوم التالي.</span>
+                </div>
+
+                <!-- أزرار الإجراء -->
+                <div class="flex items-center justify-end gap-2.5 mt-6 pt-4 border-t border-gray-100 dark:border-white-dark/10">
+                    <button type="button" @click="if(!isArchiving) isArchiveModalOpen = false" class="btn btn-outline-secondary btn-sm" :disabled="isArchiving">
+                        إلغاء
+                    </button>
+                    <button type="button" @click="submitArchive()" class="btn btn-warning btn-sm flex items-center gap-2 text-black font-extrabold shadow-md" :disabled="isArchiving">
+                        <template x-if="isArchiving">
+                            <span class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                        </template>
+                        <span x-text="isArchiving ? 'جاري الأرشفة والتفريغ...' : 'تأكيد الأرشفة والتفريغ الآن'"></span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <!-- Alpine.js Spreadsheet Engine -->
@@ -668,6 +778,13 @@
 
                 saveStatus: 'saved', // 'saved', 'saving'
                 saveDebounceTimer: null,
+
+                // حالة الأرشفة
+                isArchiveModalOpen: false,
+                isArchiving: false,
+                archiveTitle: '',
+                archiveDate: new Date().toLocaleDateString('en-CA'),
+                archiveNotes: '',
 
                 initSheet() {
                     // Recalculate all formulas on load
@@ -889,6 +1006,82 @@
                             });
                         }
                         this.triggerAutoSave();
+                    }
+                },
+
+                // ========================================================
+                // 📦 أرشفة الكشف الحالي وتفريغ الجدول
+                // ========================================================
+                openArchiveModal() {
+                    const valid = this.printableItems;
+                    if (!valid.length) {
+                        alert('لا توجد بيانات صالحة للأرشفة في الجدول.');
+                        return;
+                    }
+                    this.archiveTitle = (this.sheetTitle || 'كشف حسابات صرف العملات') + ' - ' + new Date().toLocaleDateString('en-CA');
+                    this.archiveDate = new Date().toLocaleDateString('en-CA');
+                    this.archiveNotes = '';
+                    this.isArchiveModalOpen = true;
+                },
+
+                async submitArchive() {
+                    const valid = this.printableItems;
+                    if (!valid.length) {
+                        alert('لا توجد بيانات صالحة للأرشفة.');
+                        return;
+                    }
+                    if (!this.archiveTitle.trim()) {
+                        alert('يرجى كتابة عنوان للكشف.');
+                        return;
+                    }
+
+                    this.isArchiving = true;
+
+                    const payload = {
+                        title: this.archiveTitle.trim(),
+                        archive_date: this.archiveDate,
+                        notes: this.archiveNotes,
+                        items: this.items,
+                        totals: {
+                            total_usd: this.totalUsd,
+                            total_aed: this.totalAed,
+                            total_rmb: this.totalRmb,
+                            total_iqd_amount: this.totalIqdAmount,
+                            total_commission_iqd: this.totalCommissionIqd,
+                            total_swift_commission: this.totalSwiftCommission,
+                            grand_total_iqd: this.grandTotalIqd,
+                        }
+                    };
+
+                    try {
+                        const res = await fetch('{{ route('exchange-calculator.archive') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this.csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const data = await res.json();
+                        if (data.success) {
+                            this.isArchiveModalOpen = false;
+                            this.isArchiving = false;
+                            // انتقال مباشر لصفحة الكشف المؤرشف الثابت
+                            if (data.show_url) {
+                                window.location.href = data.show_url;
+                            } else {
+                                window.location.href = '{{ route('calculator-archives.index', ['type' => 'exchange']) }}';
+                            }
+                        } else {
+                            alert(data.message || 'تعذرت أرشفة الكشف.');
+                            this.isArchiving = false;
+                        }
+                    } catch (err) {
+                        console.error('Archive error:', err);
+                        alert('حدث خطأ في الاتصال بالخادم أثناء الأرشفة.');
+                        this.isArchiving = false;
                     }
                 },
 

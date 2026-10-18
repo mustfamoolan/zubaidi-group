@@ -78,6 +78,20 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{ url('/calculator-archives') }}" class="nav-link group">
+                        <div class="flex items-center">
+                            <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7V9C20 9.55228 19.5523 10 19 10H5C4.44772 10 4 9.55228 4 9V7Z" stroke="currentColor" stroke-width="1.5"/>
+                                <path opacity="0.5" d="M6 10V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V10" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M10 13H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <span
+                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">أرشيف الكشوفات</span>
+                        </div>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="{{ route('users.index') }}" class="nav-link group">
                         <div class="flex items-center">
                             <svg class="group-hover:!text-primary shrink-0" width="20" height="20" viewBox="0 0 24 24"
