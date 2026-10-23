@@ -534,43 +534,62 @@
                     }
                 },
 
+                parseCleanNumber(val) {
+                    if (val === null || val === undefined || val === '') return 0;
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const num = parseFloat(clean);
+                    return isNaN(num) ? 0 : num;
+                },
+
                 get totalUsd() {
                     return this.items.filter(i => (i.currency || 'USD') === 'USD')
-                        .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+                        .reduce((sum, item) => sum + this.parseCleanNumber(item.amount), 0);
                 },
 
                 get totalAed() {
                     return this.items.filter(i => i.currency === 'AED')
-                        .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+                        .reduce((sum, item) => sum + this.parseCleanNumber(item.amount), 0);
                 },
 
                 get totalRmb() {
                     return this.items.filter(i => i.currency === 'RMB')
-                        .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+                        .reduce((sum, item) => sum + this.parseCleanNumber(item.amount), 0);
                 },
 
                 get totalIqdAmount() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.iqd_amount) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.iqd_amount), 0);
                 },
 
                 get totalCommissionIqd() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.commission_iqd) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.commission_iqd), 0);
                 },
 
                 get totalSwiftCommission() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.swift_commission) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.swift_commission), 0);
                 },
 
                 get grandTotalIqd() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.total_iqd) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.total_iqd), 0);
                 },
 
-                formatNumber(val, decimals = 2) {
-                    const num = Number(val);
-                    if (isNaN(num)) return '0.00';
+                formatNumber(val, decimals = null) {
+                    if (val === null || val === undefined || val === '') return '0';
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const num = parseFloat(clean);
+                    if (isNaN(num)) return '0';
+
+                    if (decimals !== null) {
+                        return num.toLocaleString('en-US', {
+                            minimumFractionDigits: decimals,
+                            maximumFractionDigits: decimals
+                        });
+                    }
+
+                    const parts = clean.split('.');
+                    const dec = parts.length > 1 ? Math.min(parts[1].length, 4) : 0;
                     return num.toLocaleString('en-US', {
-                        minimumFractionDigits: decimals,
-                        maximumFractionDigits: decimals
+                        minimumFractionDigits: dec,
+                        maximumFractionDigits: dec
                     });
                 },
 
@@ -637,13 +656,13 @@
                                 idx + 1,
                                 item.transaction_no || '',
                                 currName,
-                                parseFloat(item.amount) || 0,
-                                parseFloat(item.exchange_rate) || 0,
-                                parseFloat(item.iqd_amount) || 0,
+                                this.parseCleanNumber(item.amount),
+                                this.parseCleanNumber(item.exchange_rate),
+                                this.parseCleanNumber(item.iqd_amount),
                                 commText,
-                                parseFloat(item.commission_iqd) || 0,
-                                parseFloat(item.swift_commission) || 0,
-                                parseFloat(item.total_iqd) || 0,
+                                this.parseCleanNumber(item.commission_iqd),
+                                this.parseCleanNumber(item.swift_commission),
+                                this.parseCleanNumber(item.total_iqd),
                                 item.notes || ''
                             ]);
                         });

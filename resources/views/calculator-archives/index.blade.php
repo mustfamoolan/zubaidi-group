@@ -175,28 +175,31 @@
                                     <td class="py-3 px-3">
                                         @php
                                             $totals = $archive->totals ?? [];
+                                            $parseNum = function($v) {
+                                                return floatval(str_replace(',', '', (string)($v ?? 0)));
+                                            };
                                         @endphp
 
                                         @if($archive->type === 'exchange')
                                             <div class="flex items-center flex-wrap gap-2 text-[11px]" dir="ltr">
                                                 @if(!empty($totals['total_usd']))
                                                     <span class="bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded font-bold">
-                                                        $ {{ number_format($totals['total_usd'], 2) }}
+                                                        $ {{ number_format($parseNum($totals['total_usd']), 2) }}
                                                     </span>
                                                 @endif
                                                 @if(!empty($totals['total_aed']))
                                                     <span class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded font-bold">
-                                                        AED {{ number_format($totals['total_aed'], 2) }}
+                                                        AED {{ number_format($parseNum($totals['total_aed']), 2) }}
                                                     </span>
                                                 @endif
                                                 @if(!empty($totals['total_rmb']))
                                                     <span class="bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded font-bold">
-                                                        ¥ {{ number_format($totals['total_rmb'], 2) }}
+                                                        ¥ {{ number_format($parseNum($totals['total_rmb']), 2) }}
                                                     </span>
                                                 @endif
                                                 @if(!empty($totals['grand_total_iqd']))
                                                     <span class="bg-purple-100 dark:bg-purple-950/50 text-purple-900 dark:text-purple-200 px-2 py-0.5 rounded font-black text-xs">
-                                                        {{ number_format($totals['grand_total_iqd'], 0) }} د.ع
+                                                        {{ number_format($parseNum($totals['grand_total_iqd']), 0) }} د.ع
                                                     </span>
                                                 @endif
                                             </div>
@@ -204,7 +207,7 @@
                                             <div class="flex items-center flex-wrap gap-2 text-[11px]" dir="ltr">
                                                 @if(!empty($totals['grand_total_iqd']))
                                                     <span class="bg-emerald-100 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 px-2 py-0.5 rounded font-black text-xs">
-                                                        الصافي: {{ number_format($totals['grand_total_iqd'], 2) }} د.ع
+                                                        الصافي: {{ number_format($parseNum($totals['grand_total_iqd']), 2) }} د.ع
                                                     </span>
                                                 @endif
                                             </div>

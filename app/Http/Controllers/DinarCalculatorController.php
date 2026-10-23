@@ -119,23 +119,28 @@ class DinarCalculatorController extends Controller
             }
             $query->delete();
 
+            $cleanNum = function($v) {
+                if ($v === null || $v === '') return 0.0;
+                return floatval(str_replace(',', '', (string)$v));
+            };
+
             foreach ($items as $idx => $item) {
                 DinarCalculatorRecord::create([
                     'user_id'            => $userId,
                     'company_id'         => $companyId,
                     'currency'           => $item['currency'] ?? 'USD',
-                    'exchange_rate'      => floatval($item['exchange_rate'] ?? 0),
-                    'iqd_base'           => floatval($item['iqd_base'] ?? 0),
-                    'commission_rate'    => floatval($item['commission_rate'] ?? 0),
+                    'exchange_rate'      => $cleanNum($item['exchange_rate'] ?? 0),
+                    'iqd_base'           => $cleanNum($item['iqd_base'] ?? 0),
+                    'commission_rate'    => $cleanNum($item['commission_rate'] ?? 0),
                     'commission_type'    => $item['commission_type'] ?? 'per_thousand',
-                    'commission_iqd'     => floatval($item['commission_iqd'] ?? 0),
-                    'customs_rate'       => floatval($item['customs_rate'] ?? 0),
+                    'commission_iqd'     => $cleanNum($item['commission_iqd'] ?? 0),
+                    'customs_rate'       => $cleanNum($item['customs_rate'] ?? 0),
                     'customs_type'       => $item['customs_type'] ?? 'percent',
-                    'customs_iqd'        => floatval($item['customs_iqd'] ?? 0),
-                    'total_iqd'          => floatval($item['total_iqd'] ?? 0),
-                    'country_rate'       => !empty($item['country_rate']) ? floatval($item['country_rate']) : null,
+                    'customs_iqd'        => $cleanNum($item['customs_iqd'] ?? 0),
+                    'total_iqd'          => $cleanNum($item['total_iqd'] ?? 0),
+                    'country_rate'       => !empty($item['country_rate']) ? $cleanNum($item['country_rate']) : null,
                     'country_op'         => $item['country_op'] ?? 'mul',
-                    'country_final_rate' => floatval($item['country_final_rate'] ?? 0),
+                    'country_final_rate' => $cleanNum($item['country_final_rate'] ?? 0),
                     'sort_order'         => $idx + 1,
                 ]);
             }

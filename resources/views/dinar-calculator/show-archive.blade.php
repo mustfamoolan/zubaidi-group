@@ -380,37 +380,47 @@
                     }
                 },
 
+                parseCleanNumber(val) {
+                    if (val === null || val === undefined || val === '') return 0;
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const n = parseFloat(clean);
+                    return isNaN(n) ? 0 : n;
+                },
+
                 get totalIqdBase() {
-                    return this.items.reduce((s, it) => s + (parseFloat(it.iqd_base) || 0), 0);
+                    return this.items.reduce((s, it) => s + (this.parseCleanNumber(it.iqd_base) || 0), 0);
                 },
 
                 get totalCommissionIqd() {
-                    return this.items.reduce((s, it) => s + (parseFloat(it.commission_iqd) || 0), 0);
+                    return this.items.reduce((s, it) => s + (this.parseCleanNumber(it.commission_iqd) || 0), 0);
                 },
 
                 get totalCustomsIqd() {
-                    return this.items.reduce((s, it) => s + (parseFloat(it.customs_iqd) || 0), 0);
+                    return this.items.reduce((s, it) => s + (this.parseCleanNumber(it.customs_iqd) || 0), 0);
                 },
 
                 get grandTotalIqd() {
-                    return this.items.reduce((s, it) => s + (parseFloat(it.total_iqd) || 0), 0);
+                    return this.items.reduce((s, it) => s + (this.parseCleanNumber(it.total_iqd) || 0), 0);
                 },
 
                 get totalCountryFinalRate() {
                     return this.items.reduce((s, it) => {
                         const val = (it.currency === 'AED' || it.currency === 'RMB')
-                            ? (parseFloat(it.country_final_rate) || 0)
-                            : (parseFloat(it.total_iqd) || 0);
+                            ? (this.parseCleanNumber(it.country_final_rate) || 0)
+                            : (this.parseCleanNumber(it.total_iqd) || 0);
                         return s + val;
                     }, 0);
                 },
 
                 formatNumber(val, decimals = 2) {
-                    const num = Number(val);
+                    if (val === null || val === undefined || val === '') return '0';
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const num = Number(clean);
                     if (isNaN(num)) return '0';
+                    const dec = (decimals !== null && decimals !== undefined) ? decimals : 2;
                     return num.toLocaleString('en-US', {
-                        minimumFractionDigits: decimals,
-                        maximumFractionDigits: decimals
+                        minimumFractionDigits: dec,
+                        maximumFractionDigits: dec
                     });
                 },
 
@@ -458,20 +468,20 @@
                                 : (it.customs_rate || 0) + ' %';
 
                             const countryFinal = (it.currency === 'AED' || it.currency === 'RMB')
-                                ? (parseFloat(it.country_final_rate) || 0)
-                                : (parseFloat(it.total_iqd) || 0);
+                                ? (this.parseCleanNumber(it.country_final_rate) || 0)
+                                : (this.parseCleanNumber(it.total_iqd) || 0);
 
                             aoa.push([
                                 idx + 1,
                                 curr,
-                                parseFloat(it.exchange_rate) || 0,
-                                parseFloat(it.iqd_base) || 0,
+                                this.parseCleanNumber(it.exchange_rate) || 0,
+                                this.parseCleanNumber(it.iqd_base) || 0,
                                 comm,
-                                parseFloat(it.commission_iqd) || 0,
+                                this.parseCleanNumber(it.commission_iqd) || 0,
                                 cust,
-                                parseFloat(it.customs_iqd) || 0,
-                                parseFloat(it.total_iqd) || 0,
-                                (it.currency === 'AED' || it.currency === 'RMB') ? (parseFloat(it.country_rate) || 0) : '-',
+                                this.parseCleanNumber(it.customs_iqd) || 0,
+                                this.parseCleanNumber(it.total_iqd) || 0,
+                                (it.currency === 'AED' || it.currency === 'RMB') ? (this.parseCleanNumber(it.country_rate) || 0) : '-',
                                 countryFinal
                             ]);
                         });

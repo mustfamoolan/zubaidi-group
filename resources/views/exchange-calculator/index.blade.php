@@ -363,22 +363,26 @@
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10" dir="ltr">
                                         <div class="flex items-center px-2">
                                             <span class="text-gray-400 font-bold text-xs select-none" x-text="getCurrencySymbol(item.currency)"></span>
-                                            <input type="number" step="any"
+                                            <input type="text"
+                                                   inputmode="decimal"
                                                    x-model="item.amount"
-                                                   @input="onRowValuesChanged(item)"
-                                                   @keydown.enter.prevent="onEnterKey(index)"
-                                                   placeholder="0.00"
+                                                   @input="handleAmountInput($event, item, 'amount')"
+                                                   @keydown="handleAmountKeydown($event, index)"
+                                                   @blur="handleAmountBlur(item, 'amount')"
+                                                   placeholder="0"
                                                    class="w-full py-1.5 px-2 text-xs text-left font-bold bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                         </div>
                                     </td>
 
                                     <!-- 5. سعر الصرف (Exchange Rate) -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10" dir="ltr">
-                                        <input type="number" step="any"
+                                        <input type="text"
+                                               inputmode="decimal"
                                                x-model="item.exchange_rate"
-                                               @input="onRowValuesChanged(item)"
-                                               @keydown.enter.prevent="onEnterKey(index)"
-                                               placeholder="سعر الصرف..."
+                                               @input="handleAmountInput($event, item, 'exchange_rate')"
+                                               @keydown="handleAmountKeydown($event, index)"
+                                               @blur="handleAmountBlur(item, 'exchange_rate')"
+                                               placeholder="1,530"
                                                class="w-full py-1.5 px-2 text-xs text-left font-semibold text-gray-700 dark:text-gray-300 bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
@@ -420,10 +424,12 @@
 
                                     <!-- 9. عمولة سويفت (مبلغ ثابت عراقي يكتبه المستخدم) -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10 bg-indigo-50/20 dark:bg-indigo-950/10" dir="ltr">
-                                        <input type="number" step="any"
+                                        <input type="text"
+                                               inputmode="decimal"
                                                x-model="item.swift_commission"
-                                               @input="onRowValuesChanged(item)"
-                                               @keydown.enter.prevent="onEnterKey(index)"
+                                               @input="handleAmountInput($event, item, 'swift_commission')"
+                                               @keydown="handleAmountKeydown($event, index)"
+                                               @blur="handleAmountBlur(item, 'swift_commission')"
                                                placeholder="0"
                                                class="w-full py-1.5 px-2 text-xs text-left font-bold text-indigo-700 dark:text-indigo-300 bg-transparent border-0 focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
@@ -786,23 +792,113 @@
                 archiveDate: new Date().toLocaleDateString('en-CA'),
                 archiveNotes: '',
 
+                // استخراج الرقم الصافي من أي نص أو فوارز لإجراء المعادلات
+                parseCleanNumber(val) {
+                    if (val === null || val === undefined || val === '') return 0;
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const num = parseFloat(clean);
+                    return isNaN(num) ? 0 : num;
+                },
+
+                // تنسيق الرقم مع فوارز الآلاف (مثال: 110,000 أو 110,000.50)
+                formatAmountString(val) {
+                    if (val === null || val === undefined || val === '') return '';
+                    let str = String(val).replace(/,/g, '').trim();
+                    if (str === '' || str === '-' || str === '.') return str;
+                    
+                    const isNegative = str.startsWith('-');
+                    if (isNegative) str = str.substring(1);
+                    
+                    const parts = str.split('.');
+                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    
+                    const result = parts.length > 1 ? (parts[0] + '.' + parts.slice(1).join('')) : parts[0];
+                    return isNegative ? ('-' + result) : result;
+                },
+
+                // إدخال الأرقام مباشرة مع وضع الفوارز تلقائياً أثناء الكتابة
+                handleAmountInput(event, item, field) {
+                    const input = event.target;
+                    const rawVal = input.value;
+                    const cursor = input.selectionStart;
+                    const oldLen = rawVal.length;
+                    
+                    // تنظيف من أي رموز غريبة
+                    let cleaned = rawVal.replace(/[^\d.,-]/g, '');
+                    const dotIdx = cleaned.indexOf('.');
+                    if (dotIdx !== -1) {
+                        cleaned = cleaned.substring(0, dotIdx + 1) + cleaned.substring(dotIdx + 1).replace(/\./g, '');
+                    }
+                    
+                    const formatted = this.formatAmountString(cleaned);
+                    item[field] = formatted;
+                    input.value = formatted;
+                    
+                    // الحفاظ على موقع المؤشر
+                    const newLen = formatted.length;
+                    const newCursor = Math.max(0, cursor + (newLen - oldLen));
+                    input.setSelectionRange(newCursor, newCursor);
+                    
+                    this.onRowValuesChanged(item);
+                },
+
+                // مسح ذكي للأرقام قبل الفواصل وتجاوز الصفوف بـ Enter
+                handleAmountKeydown(event, index = null) {
+                    if (event.key === 'Backspace') {
+                        const input = event.target;
+                        const cursor = input.selectionStart;
+                        if (cursor === input.selectionEnd && cursor > 1 && input.value[cursor - 1] === ',') {
+                            event.preventDefault();
+                            const val = input.value;
+                            input.value = val.slice(0, cursor - 2) + val.slice(cursor - 1);
+                            input.setSelectionRange(cursor - 2, cursor - 2);
+                            input.dispatchEvent(new Event('input'));
+                            return;
+                        }
+                    }
+                    if (event.key === 'Enter' && index !== null) {
+                        event.preventDefault();
+                        this.onEnterKey(index);
+                    }
+                },
+
+                // تنظيف النقطة في نهاية الرقم عند الخروج من الحقل
+                handleAmountBlur(item, field) {
+                    if (item[field]) {
+                        let str = String(item[field]).trim();
+                        if (str.endsWith('.')) str = str.slice(0, -1);
+                        item[field] = this.formatAmountString(str);
+                        this.recomputeRow(item);
+                        this.triggerAutoSave();
+                    }
+                },
+
                 initSheet() {
-                    // Recalculate all formulas on load
+                    // Recalculate and format all inputs on load
                     this.items.forEach(item => {
+                        if (item.amount !== undefined && item.amount !== null && item.amount !== '') {
+                            item.amount = this.formatAmountString(item.amount);
+                        }
+                        if (item.exchange_rate !== undefined && item.exchange_rate !== null && item.exchange_rate !== '') {
+                            item.exchange_rate = this.formatAmountString(item.exchange_rate);
+                        }
+                        if (item.swift_commission !== undefined && item.swift_commission !== null && item.swift_commission !== '') {
+                            item.swift_commission = this.formatAmountString(item.swift_commission);
+                        }
                         this.recomputeRow(item);
                     });
                 },
 
                 // حساب الصف الواحد لحظياً
                 recomputeRow(item) {
-                    const amount = parseFloat(item.amount) || 0;
-                    const rate = parseFloat(item.exchange_rate) || 0;
+                    const amount = this.parseCleanNumber(item.amount);
+                    const rate = this.parseCleanNumber(item.exchange_rate);
 
                     // 1. مبلغ عراقي = مبلغ الحركة × سعر الصرف
                     item.iqd_amount = Math.round((amount * rate) * 100) / 100;
 
                     // 2. نسبة العمولة
-                    const commRate = parseFloat(item.commission_rate) || 0;
+                    const commRate = this.parseCleanNumber(item.commission_rate);
                     const isPerThousand = (item.commission_type || 'per_thousand') === 'per_thousand';
                     const factor = isPerThousand ? (commRate / 1000) : (commRate / 100);
 
@@ -810,7 +906,7 @@
                     item.commission_iqd = Math.round((item.iqd_amount * factor) * 100) / 100;
 
                     // 4. عمولة سويفت (مبلغ ثابت بالعراقي)
-                    const swiftComm = parseFloat(item.swift_commission) || 0;
+                    const swiftComm = this.parseCleanNumber(item.swift_commission);
 
                     // 5. المجموع عراقي = المبلغ بعد سعر الصرف + العمولة + عمولة سويفت
                     item.total_iqd = Math.round((item.iqd_amount + item.commission_iqd + swiftComm) * 100) / 100;
@@ -837,54 +933,59 @@
 
                 // الحركات الجاهزة للطباعة والتصدير (استثناء الأسطر الفارغة بالكامل)
                 get printableItems() {
-                    const filtered = this.items.filter(i => (parseFloat(i.amount) > 0 || parseFloat(i.exchange_rate) > 0 || (i.notes && i.notes.trim() !== '')));
+                    const filtered = this.items.filter(i => (
+                        this.parseCleanNumber(i.amount) > 0 ||
+                        this.parseCleanNumber(i.exchange_rate) > 0 ||
+                        (i.notes && i.notes.trim() !== '') ||
+                        (i.transaction_no && String(i.transaction_no).trim() !== '')
+                    ));
                     return filtered.length > 0 ? filtered : this.items;
                 },
 
                 // عدد الحركات لكل عملة
                 countCurrency(currency) {
-                    return this.items.filter(i => (i.currency || 'USD') === currency && (parseFloat(i.amount) > 0)).length;
+                    return this.items.filter(i => (i.currency || 'USD') === currency && (this.parseCleanNumber(i.amount) > 0)).length;
                 },
 
                 // 1. مجموع الدولار ($)
                 get totalUsd() {
                     return this.items
                         .filter(i => (i.currency || 'USD') === 'USD')
-                        .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+                        .reduce((sum, item) => sum + this.parseCleanNumber(item.amount), 0);
                 },
 
                 // 2. مجموع الدرهم الإماراتي (AED)
                 get totalAed() {
                     return this.items
                         .filter(i => i.currency === 'AED')
-                        .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+                        .reduce((sum, item) => sum + this.parseCleanNumber(item.amount), 0);
                 },
 
                 // 3. مجموع الريمبي الصيني (¥ RMB)
                 get totalRmb() {
                     return this.items
                         .filter(i => i.currency === 'RMB')
-                        .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+                        .reduce((sum, item) => sum + this.parseCleanNumber(item.amount), 0);
                 },
 
                 // 4. مجموع مبالغ الصرف بالعراقي (د.ع) قبل العمولات
                 get totalIqdAmount() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.iqd_amount) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.iqd_amount), 0);
                 },
 
                 // 5. مجموع العمولات بالعراقي (د.ع)
                 get totalCommissionIqd() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.commission_iqd) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.commission_iqd), 0);
                 },
 
                 // 6. مجموع عمولات سويفت بالعراقي (د.ع)
                 get totalSwiftCommission() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.swift_commission) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.swift_commission), 0);
                 },
 
                 // 7. المجموع الكلي النهائي بالعراقي (د.ع) = المبالغ + العمولات + سويفت
                 get grandTotalIqd() {
-                    return this.items.reduce((sum, item) => sum + (parseFloat(item.total_iqd) || 0), 0);
+                    return this.items.reduce((sum, item) => sum + this.parseCleanNumber(item.total_iqd), 0);
                 },
 
                 // عند تعديل أي قيمة حسابية في الصف
@@ -1157,13 +1258,13 @@
                                 idx + 1,
                                 item.transaction_no || '',
                                 currName,
-                                parseFloat(item.amount) || 0,
-                                parseFloat(item.exchange_rate) || 0,
-                                parseFloat(item.iqd_amount) || 0,
+                                this.parseCleanNumber(item.amount),
+                                this.parseCleanNumber(item.exchange_rate),
+                                this.parseCleanNumber(item.iqd_amount),
                                 commText,
-                                parseFloat(item.commission_iqd) || 0,
-                                parseFloat(item.swift_commission) || 0,
-                                parseFloat(item.total_iqd) || 0,
+                                this.parseCleanNumber(item.commission_iqd),
+                                this.parseCleanNumber(item.swift_commission),
+                                this.parseCleanNumber(item.total_iqd),
                                 item.notes || ''
                             ]);
                         });
@@ -1281,13 +1382,13 @@
                             <td style="text-align: center;">${idx + 1}</td>
                             <td style="text-align: center;">${item.transaction_no || (idx + 1)}</td>
                             <td>${currName}</td>
-                            <td class="num">${parseFloat(item.amount) || 0}</td>
-                            <td class="num">${parseFloat(item.exchange_rate) || 0}</td>
-                            <td class="num">${parseFloat(item.iqd_amount) || 0}</td>
+                            <td class="num">${this.parseCleanNumber(item.amount)}</td>
+                            <td class="num">${this.parseCleanNumber(item.exchange_rate)}</td>
+                            <td class="num">${this.parseCleanNumber(item.iqd_amount)}</td>
                             <td style="text-align: center;">${commText}</td>
-                            <td class="num">${parseFloat(item.commission_iqd) || 0}</td>
-                            <td class="num">${parseFloat(item.swift_commission) || 0}</td>
-                            <td class="num" style="font-weight: bold;">${parseFloat(item.total_iqd) || 0}</td>
+                            <td class="num">${this.parseCleanNumber(item.commission_iqd)}</td>
+                            <td class="num">${this.parseCleanNumber(item.swift_commission)}</td>
+                            <td class="num" style="font-weight: bold;">${this.parseCleanNumber(item.total_iqd)}</td>
                             <td>${item.notes || ''}</td>
                         </tr>`;
                     });
@@ -1317,12 +1418,24 @@
                     document.body.removeChild(link);
                 },
 
-                formatNumber(val, decimals = 2) {
-                    const num = Number(val);
-                    if (isNaN(num)) return '0.00';
+                formatNumber(val, decimals = null) {
+                    if (val === null || val === undefined || val === '') return '0';
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const num = parseFloat(clean);
+                    if (isNaN(num)) return '0';
+
+                    if (decimals !== null) {
+                        return num.toLocaleString('en-US', {
+                            minimumFractionDigits: decimals,
+                            maximumFractionDigits: decimals
+                        });
+                    }
+
+                    const parts = clean.split('.');
+                    const dec = parts.length > 1 ? Math.min(parts[1].length, 4) : 0;
                     return num.toLocaleString('en-US', {
-                        minimumFractionDigits: decimals,
-                        maximumFractionDigits: decimals
+                        minimumFractionDigits: dec,
+                        maximumFractionDigits: dec
                     });
                 }
             };

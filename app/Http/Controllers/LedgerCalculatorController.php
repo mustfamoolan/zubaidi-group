@@ -116,20 +116,25 @@ class LedgerCalculatorController extends Controller
             }
             $query->delete();
 
+            $cleanNum = function($v) {
+                if ($v === null || $v === '') return 0.0;
+                return floatval(str_replace(',', '', (string)$v));
+            };
+
             foreach ($items as $idx => $item) {
                 ExchangeCalculatorRecord::create([
                     'user_id'          => $userId,
                     'company_id'       => $companyId,
                     'transaction_no'   => isset($item['transaction_no']) ? (string)$item['transaction_no'] : null,
                     'currency'         => $item['currency'] ?? 'USD',
-                    'amount'           => floatval($item['amount'] ?? 0),
-                    'exchange_rate'    => floatval($item['exchange_rate'] ?? 0),
-                    'iqd_amount'       => floatval($item['iqd_amount'] ?? 0),
-                    'commission_rate'  => floatval($item['commission_rate'] ?? 0),
+                    'amount'           => $cleanNum($item['amount'] ?? 0),
+                    'exchange_rate'    => $cleanNum($item['exchange_rate'] ?? 0),
+                    'iqd_amount'       => $cleanNum($item['iqd_amount'] ?? 0),
+                    'commission_rate'  => $cleanNum($item['commission_rate'] ?? 0),
                     'commission_type'  => $item['commission_type'] ?? 'per_thousand',
-                    'commission_iqd'   => floatval($item['commission_iqd'] ?? 0),
-                    'swift_commission' => floatval($item['swift_commission'] ?? 0),
-                    'total_iqd'        => floatval($item['total_iqd'] ?? 0),
+                    'commission_iqd'   => $cleanNum($item['commission_iqd'] ?? 0),
+                    'swift_commission' => $cleanNum($item['swift_commission'] ?? 0),
+                    'total_iqd'        => $cleanNum($item['total_iqd'] ?? 0),
                     'notes'            => $item['notes'] ?? null,
                     'sort_order'       => $idx + 1,
                 ]);

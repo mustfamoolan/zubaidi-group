@@ -96,9 +96,14 @@ class CalculatorArchiveController extends Controller
         $totals      = $request->input('totals', []);
 
         // تصفية الأسطر الفارغة بالكامل
-        $validItems = array_values(array_filter($items, function ($it) {
-            $amount = floatval($it['amount'] ?? 0);
-            $rate   = floatval($it['exchange_rate'] ?? 0);
+        $cleanNum = function($v) {
+            if ($v === null || $v === '') return 0.0;
+            return floatval(str_replace(',', '', (string)$v));
+        };
+
+        $validItems = array_values(array_filter($items, function ($it) use ($cleanNum) {
+            $amount = $cleanNum($it['amount'] ?? 0);
+            $rate   = $cleanNum($it['exchange_rate'] ?? 0);
             $notes  = trim($it['notes'] ?? '');
             $inv    = trim($it['transaction_no'] ?? '');
             return $amount > 0 || $rate > 0 || !empty($notes) || !empty($inv);
@@ -170,8 +175,13 @@ class CalculatorArchiveController extends Controller
         $totals      = $request->input('totals', []);
 
         // تصفية الأسطر الصالحة
-        $validItems = array_values(array_filter($items, function ($it) {
-            $rate = floatval($it['exchange_rate'] ?? 0);
+        $cleanNum = function($v) {
+            if ($v === null || $v === '') return 0.0;
+            return floatval(str_replace(',', '', (string)$v));
+        };
+
+        $validItems = array_values(array_filter($items, function ($it) use ($cleanNum) {
+            $rate = $cleanNum($it['exchange_rate'] ?? 0);
             return $rate > 0;
         }));
 

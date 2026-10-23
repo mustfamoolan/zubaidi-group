@@ -174,9 +174,11 @@
 
                                     <!-- سعر الصرف -->
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10" dir="ltr">
-                                        <input type="number" step="any" x-model="item.exchange_rate"
-                                               @input="onRowChanged(item)" @keydown.enter.prevent="onEnterKey(index)"
-                                               placeholder="1530"
+                                        <input type="text" inputmode="decimal" x-model="item.exchange_rate"
+                                               @input="handleAmountInput($event, item, 'exchange_rate')"
+                                               @keydown="handleAmountKeydown($event, index)"
+                                               @blur="handleAmountBlur(item, 'exchange_rate')"
+                                               placeholder="1,530"
                                                class="w-full py-2.5 px-3 text-xs text-left font-bold text-gray-800 dark:text-gray-200 bg-transparent border-0 focus:ring-1 focus:ring-primary focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                     </td>
 
@@ -246,8 +248,10 @@
                                     <td class="p-0 border-l border-gray-200 dark:border-white-dark/10 bg-amber-50/10 dark:bg-amber-950/10">
                                         <template x-if="item.currency === 'AED' || item.currency === 'RMB'">
                                             <div class="flex items-center px-2">
-                                                <input type="number" step="any" x-model="item.country_rate"
-                                                       @input="onRowChanged(item)" @keydown.enter.prevent="onEnterKey(index)"
+                                                <input type="text" inputmode="decimal" x-model="item.country_rate"
+                                                       @input="handleAmountInput($event, item, 'country_rate')"
+                                                       @keydown="handleAmountKeydown($event, index)"
+                                                       @blur="handleAmountBlur(item, 'country_rate')"
                                                        :placeholder="item.currency === 'AED' ? 'سعر الدرهم...' : 'سعر الريمبي...'"
                                                        class="w-full py-2 px-1 text-xs text-left font-bold text-amber-700 dark:text-amber-300 bg-transparent border-0 focus:ring-1 focus:ring-amber-500 focus:bg-white dark:focus:bg-[#0e1726] rounded-none outline-none">
                                             </div>
@@ -558,8 +562,95 @@
                 archiveDate: new Date().toLocaleDateString('en-CA'),
                 archiveNotes: '',
 
+                // دالة تنظيف الأرقام من الفوارز بأمان للحسابات
+                parseCleanNumber(val) {
+                    if (val === null || val === undefined || val === '') return 0;
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const n = parseFloat(clean);
+                    return isNaN(n) ? 0 : n;
+                },
+
+                // دالة تنسيق الرقم بفوارز مع الحفاظ على الأجزاء العشرية أثناء الكتابة
+                formatAmountString(val) {
+                    if (val === null || val === undefined || val === '') return '';
+                    let str = String(val).replace(/,/g, '').trim();
+                    if (!str) return '';
+
+                    const isNegative = str.startsWith('-');
+                    if (isNegative) str = str.substring(1);
+
+                    const parts = str.split('.');
+                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                    let formatted = (isNegative ? '-' : '') + parts[0];
+                    if (parts.length > 1) {
+                        formatted += '.' + parts.slice(1).join('');
+                    }
+                    return formatted;
+                },
+
+                handleAmountInput(event, item, field) {
+                    const input = event.target;
+                    const rawVal = input.value;
+
+                    // السماح فقط بالأرقام والنقطة العشرية والسالب
+                    let sanitized = rawVal.replace(/[^\d.-]/g, '');
+                    const firstDot = sanitized.indexOf('.');
+                    if (firstDot !== -1) {
+                        sanitized = sanitized.substring(0, firstDot + 1) + sanitized.substring(firstDot + 1).replace(/\./g, '');
+                    }
+
+                    if (sanitized === '' || sanitized === '-') {
+                        item[field] = sanitized;
+                        this.onRowChanged(item);
+                        return;
+                    }
+
+                    const cursor = input.selectionStart;
+                    const oldLen = rawVal.length;
+
+                    const formatted = this.formatAmountString(sanitized);
+                    item[field] = formatted;
+                    input.value = formatted;
+
+                    const newLen = formatted.length;
+                    const newCursor = Math.max(0, cursor + (newLen - oldLen));
+                    input.setSelectionRange(newCursor, newCursor);
+
+                    this.onRowChanged(item);
+                },
+
+                handleAmountKeydown(event, index) {
+                    if (event.key === 'Backspace') {
+                        const input = event.target;
+                        const cursor = input.selectionStart;
+                        if (cursor === input.selectionEnd && cursor > 0 && input.value[cursor - 1] === ',') {
+                            event.preventDefault();
+                            const val = input.value;
+                            const newVal = val.slice(0, cursor - 2) + val.slice(cursor - 1);
+                            input.value = newVal;
+                            input.setSelectionRange(cursor - 1, cursor - 1);
+                            input.dispatchEvent(new Event('input'));
+                        }
+                    } else if (event.key === 'Enter') {
+                        event.preventDefault();
+                        this.onEnterKey(index);
+                    }
+                },
+
+                handleAmountBlur(item, field) {
+                    if (item[field] && String(item[field]).endsWith('.')) {
+                        item[field] = String(item[field]).slice(0, -1);
+                        this.onRowChanged(item);
+                    }
+                },
+
                 initSheet() {
-                    this.items.forEach(item => this.recomputeRow(item));
+                    this.items.forEach(item => {
+                        if (item.exchange_rate) item.exchange_rate = this.formatAmountString(item.exchange_rate);
+                        if (item.country_rate) item.country_rate = this.formatAmountString(item.country_rate);
+                        this.recomputeRow(item);
+                    });
                 },
 
                 // ============================================================
@@ -571,8 +662,8 @@
                 // 5. سعر صرف الدولة = مجموع عراقي × سعر صرف البلد (للدرهم والريمبي)
                 // ============================================================
                 recomputeRow(item) {
-                    const rate        = parseFloat(item.exchange_rate) || 0;
-                    const countryRate = parseFloat(item.country_rate) || 0;
+                    const rate        = this.parseCleanNumber(item.exchange_rate);
+                    const countryRate = this.parseCleanNumber(item.country_rate);
 
                     // 1. مبلغ عراقي تلقائي (هو الأساس المعادل لسعر الصرف المدخل)
                     item.iqd_base = Math.round(rate * 100) / 100;
@@ -610,25 +701,25 @@
 
                 // الحركات الفعلية للطباعة والتصدير
                 get printableItems() {
-                    const f = this.items.filter(i => parseFloat(i.exchange_rate) > 0);
+                    const f = this.items.filter(i => this.parseCleanNumber(i.exchange_rate) > 0);
                     return f.length > 0 ? f : this.items;
                 },
 
                 // ===== المجاميع =====
                 get totalIqdBase() {
-                    return this.items.reduce((s, i) => s + (parseFloat(i.iqd_base) || 0), 0);
+                    return this.items.reduce((s, i) => s + (this.parseCleanNumber(i.iqd_base) || 0), 0);
                 },
                 get totalCommissionIqd() {
-                    return this.items.reduce((s, i) => s + (parseFloat(i.commission_iqd) || 0), 0);
+                    return this.items.reduce((s, i) => s + (this.parseCleanNumber(i.commission_iqd) || 0), 0);
                 },
                 get totalCustomsIqd() {
-                    return this.items.reduce((s, i) => s + (parseFloat(i.customs_iqd) || 0), 0);
+                    return this.items.reduce((s, i) => s + (this.parseCleanNumber(i.customs_iqd) || 0), 0);
                 },
                 get grandTotalIqd() {
-                    return this.items.reduce((s, i) => s + (parseFloat(i.total_iqd) || 0), 0);
+                    return this.items.reduce((s, i) => s + (this.parseCleanNumber(i.total_iqd) || 0), 0);
                 },
                 get totalCountryFinalRate() {
-                    return this.items.reduce((s, i) => s + (parseFloat(i.country_final_rate) || 0), 0);
+                    return this.items.reduce((s, i) => s + (this.parseCleanNumber(i.country_final_rate) || 0), 0);
                 },
 
                 // ===== أحداث التغيير =====
@@ -805,16 +896,16 @@
                             let currName = { USD: 'دولار أمريكي ($)', AED: 'درهم إماراتي (AED)', RMB: 'ريمبي صيني (¥)' }[item.currency] || item.currency;
                             const commTxt = item.commission_type === 'per_thousand' ? (item.commission_rate || 0) + '‰' : (item.commission_rate || 0) + '%';
                             const custTxt = item.customs_type === 'per_thousand' ? (item.customs_rate || 0) + '‰' : (item.customs_rate || 0) + '%';
-                            const cRate = (item.currency === 'USD') ? '—' : (parseFloat(item.country_rate) || '');
-                            const finalCountry = (item.currency === 'USD') ? parseFloat(item.total_iqd) || 0 : parseFloat(item.country_final_rate) || 0;
+                            const cRate = (item.currency === 'USD') ? '—' : (this.parseCleanNumber(item.country_rate) || '');
+                            const finalCountry = (item.currency === 'USD') ? (this.parseCleanNumber(item.total_iqd) || 0) : (this.parseCleanNumber(item.country_final_rate) || 0);
 
                             aoa.push([
                                 idx + 1, currName,
-                                parseFloat(item.exchange_rate) || 0,
-                                parseFloat(item.iqd_base) || 0,
-                                commTxt, parseFloat(item.commission_iqd) || 0,
-                                custTxt, parseFloat(item.customs_iqd) || 0,
-                                parseFloat(item.total_iqd) || 0,
+                                this.parseCleanNumber(item.exchange_rate) || 0,
+                                this.parseCleanNumber(item.iqd_base) || 0,
+                                commTxt, this.parseCleanNumber(item.commission_iqd) || 0,
+                                custTxt, this.parseCleanNumber(item.customs_iqd) || 0,
+                                this.parseCleanNumber(item.total_iqd) || 0,
                                 cRate,
                                 finalCountry
                             ]);
@@ -835,9 +926,12 @@
                 },
 
                 formatNumber(val, decimals = 2) {
-                    const num = Number(val);
+                    if (val === null || val === undefined || val === '') return '0';
+                    const clean = String(val).replace(/,/g, '').trim();
+                    const num = Number(clean);
                     if (isNaN(num)) return '0';
-                    return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+                    const dec = (decimals !== null && decimals !== undefined) ? decimals : 2;
+                    return num.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
                 }
             };
         }
